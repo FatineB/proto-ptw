@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — STT coordination</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-stt); --module-bg:var(--c-stt-bg)}
+  .stt-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .stt-head .pid{font-size:20px;font-weight:700;color:var(--brand-ink)}
+  .stt-head .desc{font-size:14px;color:var(--muted)}
+  .stt-head .r{margin-left:auto;display:flex;gap:10px}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+  
+  .btn-permit{background:var(--c-permit);border-color:var(--c-permit);color:#fff}
+  .btn-permit:hover{background:#4a43c4;color:#fff}
+
+  .stt-banner{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(180deg,#F3ECF7,#fff);border:1px solid #D9C4EC;border-radius:10px;padding:16px 18px;margin-bottom:20px}
+  .stt-banner .b-ico{font-size:22px}
+  .stt-banner .b-t{font-size:14px;font-weight:700;color:#5B2A87}
+  .stt-banner .b-d{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .stt-banner .b-role{margin-left:auto;font-size:11px;font-weight:700;color:#5B2A87;background:#fff;border:1px solid #D9C4EC;border-radius:16px;padding:5px 12px;white-space:nowrap}
+
+  .sync-wrap{background:#fff;border:1px solid var(--line);border-radius:10px;padding:0;overflow:hidden}
+  .sync-header{display:grid;grid-template-columns:1fr 90px 1fr;background:#F7F9FB;border-bottom:1px solid var(--line)}
+  .sync-header .sh-col{padding:14px 20px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .sh-permit{color:var(--c-permit)}.sh-iso{color:var(--c-iso);justify-content:flex-end}
+  .sh-col .badge{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+  .bp{background:var(--c-permit)}.bi{background:var(--c-iso)}
+  .sh-mid{background:#EFF1F4}
+
+  .sync-row{display:grid;grid-template-columns:1fr 90px 1fr;border-bottom:1px solid var(--line-soft);position:relative}
+  .sync-row:last-child{border-bottom:0}
+  .cell{padding:16px 20px;display:flex;flex-direction:column;gap:3px}
+  .cell.iso{align-items:flex-end;text-align:right}
+  .cell .step-name{font-size:13.5px;font-weight:600}
+  .cell .step-role{font-size:11px;color:var(--muted)}
+  .sync-mid{display:flex;align-items:center;justify-content:center;position:relative}
+  .sync-mid::before{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2px dashed #C3CDD6}
+  .sync-node{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);z-index:2;position:relative}
+  /* states */
+  .sync-row.done .cell .step-name{color:var(--ink)}
+  .sync-row.done .sync-node{background:var(--ok);border-color:var(--ok);color:#fff}
+  .sync-row.done .cell-tag{background:var(--ok-bg);color:var(--ok)}
+  .sync-row.current{background:#FAFAFE}
+  .sync-row.current .sync-node{background:#5B2A87;border-color:#5B2A87;color:#fff;width:40px;height:40px;box-shadow:0 0 0 5px #F3ECF7}
+  .sync-row.current .cell .step-name{font-weight:700}
+  .sync-row.future .cell .step-name{color:#AAB4BD}
+  .sync-row.future .sync-node{border-style:dashed;color:#C3CDD6}
+  .cell-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;background:var(--st-created-bg);color:var(--muted);align-self:flex-start}
+  .cell.iso .cell-tag{align-self:flex-end}
+  .cell-tag.live{background:var(--c-permit-bg);color:var(--c-permit-ink)}
+  .cell-tag.isolive{background:var(--c-iso-bg);color:#9A6212}
+  .row-now{position:absolute;left:0;top:0;bottom:0;width:3px;background:#5B2A87}
+
+  .stt-foot{display:flex;align-items:center;gap:14px;margin-top:18px;padding:16px 18px;background:#F7F9FB;border:1px solid var(--line);border-radius:8px}
+  .stt-foot .f-t{font-size:13px;font-weight:600;flex:1}
+  .stt-foot .f-t span{color:var(--muted);font-weight:400}
+  .stt-decisions{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px}
+  .std-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;margin-bottom:14px}
+  .std-list{display:flex;flex-direction:column;gap:2px}
+  .std-step{display:flex;gap:12px;padding:9px 0;align-items:flex-start;position:relative}
+  .std-step:not(:last-child){border-bottom:1px solid var(--line-soft)}
+  .std-ico{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .std-step.done .std-ico{background:var(--ok);color:#fff}
+  .std-step.current .std-ico{background:var(--c-stt);color:#fff;box-shadow:0 0 0 3px var(--c-stt-bg)}
+  .std-step.future .std-ico{background:#fff;border:2px dashed var(--line);color:#B4BEC7}
+  .std-t{font-size:13.5px;font-weight:700}
+  .std-step.current .std-t{color:var(--c-stt-ink)}
+  .std-step.future .std-t{color:#8A97A3}
+  .std-r{font-size:12px;color:var(--muted);margin-top:2px}
+  .std-comp{font-size:10.5px;font-weight:700;color:var(--c-stt-ink);background:var(--c-stt-bg);padding:1px 7px;border-radius:8px}
+  .std-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:5px;background:var(--c-stt-bg);color:var(--c-stt-ink)}
+  .pilot-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .stt-status{margin-left:auto;font-size:11px;font-weight:700;color:var(--c-stt-ink);background:var(--c-stt-bg);border:1px solid #D9C4EC;border-radius:16px;padding:5px 14px;text-transform:uppercase;letter-spacing:.4px}
+  .pilot-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:22px}
+  .pcard-row{display:flex;align-items:center;gap:16px}
+  .pcard-row>div:first-child{flex:1}
+  .pcard-row .btn{white-space:nowrap}
+  .tp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .tp-cell{display:flex;flex-direction:column;gap:3px}
+  .tp-cell .tp-l{font-size:11px;color:var(--muted);font-weight:600}
+  .tp-cell .tp-v{font-size:13px;color:var(--ink)}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .pcard-h{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#F7F9FB;border-bottom:1px solid var(--line-soft);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted)}
+  .pc-dot{width:9px;height:9px;border-radius:50%}
+  .editable-tag{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--c-stt-ink);background:var(--c-stt-bg);padding:2px 7px;border-radius:8px;text-transform:none;letter-spacing:0}
+  .pcard-b{padding:14px}
+  .pcard-b .pid{font-size:15px;font-weight:700}
+  .pc-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .pc-meta{font-size:11.5px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .tp-row{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--line-soft);font-size:12px}
+  .tp-row:first-child{border-top:0}
+  .tp-l{color:var(--muted);min-width:80px;font-weight:600}
+  .tp-v{flex:1;color:var(--ink)}
+  .iso-link{display:flex;align-items:center;gap:8px}
+  .stepper{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .stepper-h{padding:14px 18px;border-bottom:1px solid var(--line-soft);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+  .wstep{border-bottom:1px solid var(--line-soft)}
+  .wstep:last-child{border-bottom:0}
+  .wstep.done{opacity:.55}
+  .ws-head{display:flex;align-items:center;gap:12px;padding:14px 18px}
+  .ws-num{width:26px;height:26px;border-radius:50%;background:var(--line-soft);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+  .wstep.active .ws-num{background:var(--c-stt);color:#fff}
+  .wstep.done .ws-num{background:var(--ok);color:#fff}
+  .ws-t{flex:1;font-size:14px;font-weight:700}
+  .ws-role{font-size:10.5px;font-weight:700;color:var(--c-stt-ink);background:var(--c-stt-bg);padding:3px 10px;border-radius:10px}
+  .ws-body{padding:0 18px 18px 56px}
+  .wstep:not(.active) .ws-body{display:none}
+  .ws-desc{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .pt-list{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+  .pt-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line-soft);border-radius:8px;font-size:12.5px;cursor:pointer}
+  .pt-tag{font-weight:700;font-variant-numeric:tabular-nums}
+  .pt-move{margin-left:auto;font-size:11px;color:var(--c-iso-ink);background:var(--c-iso-bg);padding:2px 8px;border-radius:8px}
+  .pt-keep{margin-left:auto;font-size:11px;color:var(--muted);background:var(--st-created-bg);padding:2px 8px;border-radius:8px}
+  .ia-q{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .ia-q label{font-size:13px;font-weight:600}
+  .ia-note{background:var(--c-stt-bg);border:1px solid #D9C4EC;border-radius:8px;padding:11px 14px;font-size:12.5px;margin-bottom:16px}
+  .ws-actions{display:flex;align-items:center;gap:10px}
+  .btn-danger-outline{border:1px solid var(--danger);background:#fff;color:var(--danger);border-radius:var(--radius);padding:9px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer}
+  .btn-danger-outline:hover{background:var(--danger-bg)}
+  /* IA review toggle — segmented control */
+  .yn{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:3px;gap:2px}
+  .yn-btn{border:0;background:none;border-radius:16px;padding:7px 16px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all .12s}
+  .yn-btn:hover{color:var(--ink)}
+  .yn-btn.on{background:var(--c-stt);color:#fff;box-shadow:0 1px 3px rgba(91,42,135,.3)}
+  /* isolation blocks with points */
+  .iso-block{border:1px solid var(--line-soft);border-radius:8px;padding:10px;margin-bottom:8px}
+  .iso-block:last-child{margin-bottom:0}
+  .iso-block-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .iso-count{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--c-iso-ink);background:var(--c-iso-bg);padding:2px 8px;border-radius:8px}
+  .iso-pts{display:flex;flex-wrap:wrap;gap:5px}
+  .ipt{font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--ink)}
+  /* permit detail modal sections */
+  .pm-sec{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px}
+  .pm-sec-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:10px}
+  .pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pm-l{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px}
+  .pm-v{display:block;font-size:13px;color:var(--ink)}
+  .pm-sig{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 0;border-top:1px solid var(--line-soft)}
+  .pm-sig:first-of-type{border-top:0}
+  .pm-sig .sig-av{width:24px;height:24px;border-radius:50%;background:var(--c-permit);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+  .iso-card{padding:0;transition:border-color .12s}
+  .iso-card.selected{border-color:var(--c-iso)}
+  .iso-card-h{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+  .iso-card-h .iso-check{width:17px;height:17px;cursor:pointer;flex-shrink:0}
+  .iso-card-h>span:nth-child(3){flex:1;font-size:13px;font-weight:600}
+  .iso-card-h .iso-count{margin-left:0}
+  .iso-card-b{display:none;padding:0 16px 16px 43px;border-top:1px solid var(--line-soft)}
+  .iso-card.selected .iso-card-b{display:block;padding-top:14px}
+  .deiso-list{display:flex;flex-direction:column;gap:6px}
+  .deiso-item{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:12.5px;cursor:grab}
+  .deiso-item.dragging{opacity:.4;border-color:var(--c-stt);border-style:dashed}
+  .deiso-item.drag-over{border-color:var(--c-stt);box-shadow:0 -2px 0 var(--c-stt)}
+  .deiso-item.deiso-locked{cursor:default;background:var(--bg);opacity:.7}
+  .dz-grip{color:#C3CDD6;font-size:14px;cursor:grab}
+  .dz-num{width:22px;height:22px;border-radius:50%;background:var(--c-stt);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .deiso-locked .dz-num{background:var(--line);color:var(--muted)}
+  .dz-desc{flex:1;color:var(--muted)}
+  /* locked isolation cards (from step 3 onwards) */
+  .iso-card.locked .iso-check,.iso-card.locked .iso-card-b input{pointer-events:none;opacity:.6}
+  .iso-card.locked .iso-card-h{cursor:default}
+  .iso-card.locked::after{content:"🔒 locked — confirmed";display:block;font-size:10.5px;color:var(--muted);padding:0 16px 12px 43px}
+</style></head>
+<body data-active="permits">
+<div class="wire-note">WIREFRAME mid-fi · <b>STT — Coordination</b> · vue AA · deux cycles synchronisés (Permit ↔ Isolation)</div>
+<div class="focus-bar">
+  <a class="focus-exit" href="10_permit_live.html"><span class="x">✕</span> Exit STT</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">Permit <span class="ft-ref">27B-CW-01784</span> <span class="live-pill" style="background:var(--c-stt-bg);color:var(--c-stt-ink)"><span class="lp-dot" style="background:var(--c-stt);animation:none"></span>SUSPEND: STT</span></div>
+    <div class="ft-links"><a href="10_permit_live.html">← Back to permit</a><a href="12_isolation_live.html">🔗 Linked isolation</a><a href="#">🖨 Print</a></div>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner">
+    <div class="content">
+      <!-- STT pilot header -->
+      <div class="pilot-head">
+        <div><h1 style="font-size:20px;margin:0">Sanction to Test</h1><div style="font-size:13px;color:var(--muted);margin-top:2px">Pilot the STT workflow · you are <b>A. Denton — Area Authority</b></div></div>
+        <span class="stt-status" id="sttStatus">STT requested</span>
+      </div>
+
+      <!-- 3-column context: permit preview / test plan / linked isolations -->
+      <div class="pilot-stack">
+        <!-- Origin permit -->
+        <div class="pcard">
+          <div class="pcard-h"><span class="pc-dot" style="background:var(--c-permit)"></span>Origin permit</div>
+          <div class="pcard-b">
+            <div class="pcard-row">
+              <div>
+                <div class="pid" style="color:var(--c-permit-ink);font-size:16px">27B-CW-01784</div>
+                <div class="pc-sub">Cold work · Rig up / down &amp; pressure testing of wireline</div>
+                <div class="pc-meta">27B / deck · PA: Y. Carter · <span class="status" style="background:var(--warn-bg);color:#8A5A12">Suspended</span></div>
+              </div>
+              <button class="btn" onclick="openModal('permitModal')">View permit detail</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test Plan -->
+        <div class="pcard">
+          <div class="pcard-h"><span class="pc-dot" style="background:var(--c-stt)"></span>Test Plan <span class="editable-tag">Editable anytime</span>
+            <button class="btn" style="margin-left:auto;padding:6px 14px" onclick="openModal('testPlanModal')">✎ Edit</button>
+          </div>
+          <div class="pcard-b" id="testPlanView">
+            <div class="tp-grid">
+              <div class="tp-cell"><span class="tp-l">Reason for test</span><span class="tp-v">Verify wireline BOP integrity before rig-down</span></div>
+              <div class="tp-cell"><span class="tp-l">Type of test</span><span class="tp-v">Leak test</span></div>
+              <div class="tp-cell"><span class="tp-l">Contingency</span><span class="tp-v">Abort &amp; re-isolate if pressure drop &gt; 5%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Isolation 1 — checkbox selects, expands its points -->
+        <div class="pcard iso-card selected" id="iso-02484">
+          <label class="iso-card-h">
+            <input type="checkbox" class="iso-check" checked onchange="toggleIso('iso-02484',this.checked)">
+            <span class="pc-dot" style="background:var(--c-iso)"></span>
+            <span>Linked isolation · <span style="color:var(--c-iso-ink)">27B-ICC-02484</span></span>
+            <span class="status s-issued" style="font-size:10px">In-Place</span>
+            <span class="iso-count">6 points</span>
+          </label>
+          <div class="iso-card-b">
+            <div class="pc-sub" style="margin-bottom:10px">Electrical isolation · lighting circuit BC-N · <b>select the points involved in the test</b></div>
+            <div class="pt-list">
+              <label class="pt-item"><input type="checkbox" checked> <span class="pt-tag">24-IV-06</span> Wireline BOP inlet valve</label>
+              <label class="pt-item"><input type="checkbox" checked> <span class="pt-tag">24-IV-07</span> Wireline BOP outlet valve</label>
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">P200AEM</span> Drum pump motor</label>
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">24-IV-09</span> Bypass line valve</label>
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">24-IV-10</span> Vent valve</label>
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">LF-1</span> Local feeder</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Isolation 2 — unchecked by default, points collapsed -->
+        <div class="pcard iso-card" id="iso-02501">
+          <label class="iso-card-h">
+            <input type="checkbox" class="iso-check" onchange="toggleIso('iso-02501',this.checked)">
+            <span class="pc-dot" style="background:var(--c-iso)"></span>
+            <span>Linked isolation · <span style="color:var(--c-iso-ink)">27B-ICC-02501</span></span>
+            <span class="status s-issued" style="font-size:10px">In-Place</span>
+            <span class="iso-count">2 points</span>
+          </label>
+          <div class="iso-card-b">
+            <div class="pc-sub" style="margin-bottom:10px">Process isolation · drain line 30-EV · <b>select the points involved in the test</b></div>
+            <div class="pt-list">
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">30-EV-02</span> Drain inlet valve</label>
+              <label class="pt-item"><input type="checkbox"> <span class="pt-tag">30-EV-03</span> Drain outlet valve</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STT workflow stepper (states 2→4) -->
+      <div class="stepper">
+        <div class="stepper-h">STT workflow — pilot the steps</div>
+
+        <!-- STEP: Select isolation points + IA review decision -->
+        <div class="wstep active" id="step-select">
+          <div class="ws-head"><span class="ws-num">1</span><div class="ws-t">Confirm isolation selection &amp; IA review</div><span class="ws-role">AA</span></div>
+          <div class="ws-body">
+            <div class="ws-desc">Selected above: <b id="isoSummary">1 isolation · 2 points</b>. Confirm the selection and decide whether an IA review is required.</div>
+            <div class="ia-q">
+              <label>IA review needed?</label>
+              <div class="yn"><button class="yn-btn" onclick="setIA(true,this)">Yes — notify IA</button><button class="yn-btn on" onclick="setIA(false,this)">No — proceed</button></div>
+            </div>
+            <div class="ws-actions">
+              <button class="btn-danger-outline" onclick="declineStt()">Decline STT</button>
+              <div style="flex:1"></div>
+              <button class="btn-stt" onclick="confirmStep('step-select')">Confirm selection →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP: IA review (conditional) -->
+        <div class="wstep" id="step-ia" style="display:none">
+          <div class="ws-head"><span class="ws-num">2</span><div class="ws-t">IA review &amp; approval</div><span class="ws-role">IA</span></div>
+          <div class="ws-body">
+            <div class="ws-desc">The IA has been notified. They can edit the Test Plan, edit the isolation points, and confirm or refuse the STT.</div>
+            <div class="ia-note">🔔 Notified: <b>H. Shaw</b> — Isolating Authority · awaiting review</div>
+            <div class="ws-actions">
+              <button class="btn" onclick="openModal('testPlanModal')">✎ Edit Test Plan</button>
+              <button class="btn" onclick="(document.getElementById('step-select').scrollIntoView&&document.getElementById('step-select').scrollIntoView())">✎ Edit points</button>
+              <div style="flex:1"></div>
+              <button class="btn-danger-outline" onclick="declineStt()">Refuse STT</button>
+              <button class="btn-stt" onclick="confirmStep('step-ia')">IA confirm STT →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP: Select points to de-isolate -->
+        <div class="wstep" id="step-deiso" style="display:none">
+          <div class="ws-head"><span class="ws-num">3</span><div class="ws-t">Order the points to de-isolate for the test</div><span class="ws-role">AA + IA</span></div>
+          <div class="ws-body">
+            <div class="ws-desc">Drag to set the <b>de-isolation order</b> (this defines the reinstatement sequence — reverse order). Uncheck a point to keep it isolated.</div>
+            <div class="deiso-list" id="deisoList">
+              <div class="deiso-item" draggable="true"><span class="dz-grip">⣿</span><span class="dz-num">1</span><input type="checkbox" checked><span class="pt-tag">24-IV-06</span><span class="dz-desc">Wireline BOP inlet valve</span><span class="pt-move">→ de-isolate</span></div>
+              <div class="deiso-item" draggable="true"><span class="dz-grip">⣿</span><span class="dz-num">2</span><input type="checkbox" checked><span class="pt-tag">24-IV-07</span><span class="dz-desc">Wireline BOP outlet valve</span><span class="pt-move">→ de-isolate</span></div>
+              <div class="deiso-item deiso-locked"><span class="dz-grip" style="visibility:hidden">⣿</span><span class="dz-num">—</span><input type="checkbox" disabled><span class="pt-tag">P200AEM</span><span class="dz-desc">Drum pump motor</span><span class="pt-keep">stays isolated</span></div>
+            </div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:10px">Reinstatement (after test) will follow the <b>reverse</b> of this order.</div>
+            <div class="ws-actions" style="margin-top:16px">
+              <button class="btn-danger-outline" onclick="declineStt()">Decline STT</button>
+              <div style="flex:1"></div>
+              <button class="btn-stt" onclick="location.href='21_stt_start_testing.html'">Confirm &amp; go to Start Testing →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div></div>
+
+<!-- MODAL: permit detail -->
+<div class="modal-bg" id="permitModal">
+  <div class="modal wf-modal">
+    <div class="modal-h"><div><h3>Permit 27B-CW-01784</h3><div class="wf-sub">Rig up / down &amp; pressure testing of wireline · Suspended (STT requested)</div></div><button class="x" onclick="closeModal('permitModal')">×</button></div>
+    <div class="modal-b wf-modal-b">
+      <div class="pm-sec">
+        <div class="pm-sec-h">1 · Details</div>
+        <div class="pm-grid">
+          <div class="pm-f"><span class="pm-l">Type of permit</span><span class="pm-v">Cold work</span></div>
+          <div class="pm-f"><span class="pm-l">Place</span><span class="pm-v">27B / deck</span></div>
+          <div class="pm-f"><span class="pm-l">Start</span><span class="pm-v">27 Jul 2026 · 06:00</span></div>
+          <div class="pm-f"><span class="pm-l">End</span><span class="pm-v">31 Jul 2026 · 06:00</span></div>
+        </div>
+      </div>
+      <div class="pm-sec">
+        <div class="pm-sec-h">2 · Equipment &amp; links</div>
+        <div class="pm-grid">
+          <div class="pm-f"><span class="pm-l">Maximo</span><span class="pm-v">10203040 · LF-1</span></div>
+          <div class="pm-f"><span class="pm-l">Linked isolation</span><span class="pm-v"><a href="12_isolation_live.html" class="bridge-tag bridge-iso" style="text-decoration:none">🔗 27B-ICC-02484</a> In-Place</span></div>
+        </div>
+      </div>
+      <div class="pm-sec">
+        <div class="pm-sec-h">3 · Risk assessment — Level 2</div>
+        <div class="pm-grid">
+          <div class="pm-f"><span class="pm-l">Initial risk</span><span class="pm-v"><span class="risk-badge risk-hi">High · 20</span></span></div>
+          <div class="pm-f"><span class="pm-l">Residual risk</span><span class="pm-v"><span class="risk-badge risk-med">Medium · 6</span></span></div>
+        </div>
+      </div>
+      <div class="pm-sec">
+        <div class="pm-sec-h">4 · Signatures</div>
+        <div class="pm-sig"><span class="sig-av">PN</span> P. Nevitt · Raised (PA) · ✓ 24 Jul 06:02</div>
+        <div class="pm-sig"><span class="sig-av">AD</span> A. Denton · Verified (AA) · ✓ 24 Jul 08:15</div>
+        <div class="pm-sig"><span class="sig-av">LB</span> L. Bailey · Authorised (SC) · ✓ 24 Jul 09:40</div>
+        <div class="pm-sig"><span class="sig-av">AD</span> A. Denton · Issued (AA) · ✓ 27 Jul 05:58</div>
+      </div>
+    </div>
+    <div class="modal-f"><div class="actions" style="margin-left:auto"><button class="btn" onclick="closeModal('permitModal')">Close</button><a class="btn" href="10_permit_live.html" style="text-decoration:none">Open full permit page</a></div></div>
+  </div>
+</div>
+
+<!-- MODAL: edit test plan -->
+<div class="modal-bg" id="testPlanModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-h"><h3>Edit Test Plan</h3><button class="x" onclick="closeModal('testPlanModal')">×</button></div>
+    <div class="modal-b">
+      <div class="field"><label>Reason for test</label><input type="text" value="Verify wireline BOP integrity before rig-down"></div>
+      <div class="field"><label>Type of test</label><select><option>Leak test</option><option>Function test</option><option>Pressure test</option><option>Continuity / electrical test</option><option>Other</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>Contingency</label><textarea>Abort &amp; re-isolate if pressure drop &gt; 5%</textarea></div>
+    </div>
+    <div class="modal-f"><div class="actions" style="margin-left:auto"><button class="btn" onclick="closeModal('testPlanModal')">Cancel</button><button class="btn-stt" onclick="closeModal('testPlanModal')">Save Test Plan</button></div></div>
+  </div>
+</div>
+
+<script>
+  function openModal(id){document.getElementById(id).classList.add('on');}
+  function closeModal(id){document.getElementById(id).classList.remove('on');}
+  document.querySelectorAll('.modal-bg').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('on');});});
+  var iaNeeded=false;
+  function setIA(v,btn){
+    iaNeeded=v;
+    btn.parentNode.querySelectorAll('.yn-btn').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  }
+  function confirmStep(id){
+    document.getElementById(id).classList.remove('active');
+    document.getElementById(id).classList.add('done');
+    if(id==='step-select'){
+      if(iaNeeded){ var s=document.getElementById('step-ia'); s.style.display='block'; s.classList.add('active'); if(s.scrollIntoView)s.scrollIntoView({behavior:'smooth'}); }
+      else { lockIsolations(); var s=document.getElementById('step-deiso'); s.style.display='block'; s.classList.add('active'); if(s.scrollIntoView)s.scrollIntoView({behavior:'smooth'}); }
+    } else if(id==='step-ia'){
+      lockIsolations();
+      var s=document.getElementById('step-deiso'); s.style.display='block'; s.classList.add('active'); if(s.scrollIntoView)s.scrollIntoView({behavior:'smooth'});
+    }
+  }
+  function toggleIso(id,checked){
+    var card=document.getElementById(id);
+    if(checked){card.classList.add('selected');}else{card.classList.remove('selected');}
+    updateIsoSummary();
+  }
+  function updateIsoSummary(){
+    var cards=document.querySelectorAll('.iso-card.selected');
+    var isoN=cards.length, ptN=0;
+    cards.forEach(function(c){ ptN+=c.querySelectorAll('.iso-card-b .pt-item input:checked').length; });
+    var el=document.getElementById('isoSummary');
+    if(el) el.textContent=isoN+' isolation'+(isoN>1?'s':'')+' · '+ptN+' point'+(ptN>1?'s':'');
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.iso-card-b .pt-item input').forEach(function(cb){cb.addEventListener('change',updateIsoSummary);});
+    updateIsoSummary();
+  });
+  function lockIsolations(){
+    document.querySelectorAll('.iso-card').forEach(function(c){ c.classList.add('locked'); });
+  }
+  function renumberDeiso(){
+    var n=1;
+    document.querySelectorAll('#deisoList .deiso-item:not(.deiso-locked)').forEach(function(it){
+      it.querySelector('.dz-num').textContent=n++;
+    });
+  }
+  function initDeisoDnD(){
+    var list=document.getElementById('deisoList'); if(!list) return;
+    var dragged=null;
+    list.querySelectorAll('.deiso-item[draggable="true"]').forEach(function(it){
+      it.addEventListener('dragstart',function(){dragged=it;it.classList.add('dragging');});
+      it.addEventListener('dragend',function(){it.classList.remove('dragging');list.querySelectorAll('.deiso-item').forEach(function(x){x.classList.remove('drag-over');});renumberDeiso();});
+      it.addEventListener('dragover',function(e){e.preventDefault();if(it!==dragged&&!it.classList.contains('deiso-locked'))it.classList.add('drag-over');});
+      it.addEventListener('dragleave',function(){it.classList.remove('drag-over');});
+      it.addEventListener('drop',function(e){e.preventDefault();it.classList.remove('drag-over');
+        if(dragged&&it!==dragged&&!it.classList.contains('deiso-locked')){
+          var items=[].slice.call(list.children);
+          if(items.indexOf(dragged)<items.indexOf(it)) it.after(dragged); else it.before(dragged);
+          renumberDeiso();
+        }
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded',initDeisoDnD);
+  function declineStt(){ if(confirm('Decline this STT request? The permit stays suspended.')){ location.href='10_permit_live.html?status=suspended'; } }
+</script>
+</body></html>

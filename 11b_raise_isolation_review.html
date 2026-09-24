@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Review isolation before submit</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  .rail-step-label{font-size:12px;font-weight:700;margin:0 0 8px}
+  .rail-step-label.s2{margin-top:18px}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;color:var(--ink)}
+  .rail-btn.done{color:var(--ok);border-color:#B4E0CE}
+  .rail-btn.active{background:#3B4657;color:#fff;border-color:#3B4657}
+  .rail-btn.outline{color:var(--c-iso)}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-save{color:var(--muted)}
+  .rail-progress .rp-fill{width:100%}
+  .review-head{text-align:center;margin-bottom:22px}
+  .review-head h1{font-size:24px;font-weight:600}
+  .review-head p{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:22px 26px;margin-bottom:18px;position:relative}
+  .rcard h3{text-align:center;font-size:15px;font-weight:700;margin-bottom:18px}
+  .rcard .edit{position:absolute;top:20px;right:24px;color:var(--c-iso);font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+  .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;text-align:center}
+  .rf label{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px}
+  .rf .v{font-size:13.5px;color:var(--ink)}
+  .sirp-yes{color:#0F6B4F;font-weight:700}
+  .sirp-no{color:var(--danger);font-weight:700}
+  .ip-mini{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-align:left;margin-top:4px}
+  .ip-mini th{background:#F7F9FB;padding:8px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+  .ip-mini td{padding:8px 11px;border-top:1px solid var(--line-soft)}
+  .type-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .tp-elec{background:#FFF4DE;color:var(--c-iso-ink)}
+  .tp-proc{background:#E3F5EE;color:#1C9E7A}
+  .std-badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:10px;background:var(--ok-bg);color:#0F6B4F}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px}
+  .bridge-ora{background:var(--c-ora-bg);color:var(--c-ora-ink)}
+  .bridge-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}
+  .submit-box{background:#F5F7FA;border-radius:8px;padding:26px;text-align:center;margin-top:6px}
+  .submit-box h4{font-size:14px;font-weight:700;margin-bottom:16px}
+  .btn-submit{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn-submit:hover{background:#2C3542}
+  .sig-line{text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:13px}
+  .sig-line b{display:block;margin-bottom:4px}
+  .ip-expand-btn{display:block;width:100%;border:1px dashed var(--line);background:#fff;border-radius:var(--radius);padding:9px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--c-iso);margin-top:8px}
+  .ip-expand-btn:hover{background:var(--c-iso-bg);border-style:solid;border-color:var(--c-iso)}
+</style></head>
+<body>
+<div class="focus-bar">
+  <div class="ft-t">Isolations › <b>Raise a new Isolation</b></div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="02_permits.html">Cancel</a>
+    <a class="btn-outline" href="11_raise_isolation.html">Back to edit</a>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-step-label">Step 1: Isolation sections</div>
+    <a href="11_raise_isolation.html" class="rail-btn done">✓ 1&nbsp;&nbsp;Details</a>
+    <a href="11_raise_isolation.html" class="rail-btn done">✓ 2&nbsp;&nbsp;Isolation points</a>
+    <a href="11_raise_isolation.html" class="rail-btn done">✓ 3&nbsp;&nbsp;Additional details</a>
+    <a href="11_raise_isolation.html" class="rail-btn done">✓ 4&nbsp;&nbsp;Risk assessment</a>
+    <a href="11_raise_isolation.html" class="rail-btn done">✓ 5&nbsp;&nbsp;Documents</a>
+    <div class="rail-step-label s2">Step 2: Review</div>
+    <a class="rail-btn active">6&nbsp;&nbsp;Review</a>
+    <a class="rail-btn outline" onclick="document.getElementById('submitBox').scrollIntoView({behavior:'smooth'})">Sign &amp; submit isolation</a>
+    <div class="rail-progress"><div class="rp-top"><span>Completion</span><span class="rp-save">Auto-save: 09:55</span></div><div class="rp-bar"><div class="rp-fill"></div></div></div>
+  </aside>
+  <div>
+    <div class="review-head"><h1>Review before submit</h1><p>Read-only summary of the isolation you are about to submit. Use Edit to change a section.</p></div>
+
+    <div class="rcard">
+      <a class="edit" href="11_raise_isolation.html">Edit</a>
+      <h3>1 · Details</h3>
+      <div class="rgrid">
+        <div class="rf"><label>Description</label><div class="v">Isolation for LBC-PSV-6700-B</div></div>
+        <div class="rf"><label>SIRP compliant</label><div class="v"><span class="sirp-yes">Yes</span></div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Reason for isolation</label><div class="v">Isolation to facilitate the installation of LBC-PSV-6700-B following recertification</div></div>
+        <div class="rf"><label>Area (georef)</label><div class="v">27B · 27BC · Leg well South · V-6700</div></div>
+        <div class="rf"><label>Start on</label><div class="v">27 Aug 2026 · 09:55</div></div>
+        <div class="rf"><label>Equip. number</label><div class="v">LBC-PSV-6700-B</div></div>
+        <div class="rf"><label>Maximo</label><div class="v">— none —</div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="11_raise_isolation.html">Edit</a>
+      <h3>2 · Isolation points</h3>
+      <table class="ip-mini">
+        <thead><tr><th>Iso #</th><th>Tag</th><th>Description</th><th>Type</th><th>Isolated → De-isolated</th><th>LO/LC</th><th>Standard</th></tr></thead>
+        <tbody id="recapPoints">
+          <tr><td>1</td><td>P200AEM</td><td>P200A KO Drum Pump Motor</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Removed → Replaced</td><td>—</td><td>—</td></tr>
+          <tr><td>2</td><td>LBC-V-201</td><td>Open drains inlet isolation valve</td><td><span class="type-pill tp-proc">Process</span></td><td>Closed → Open</td><td>LC</td><td><span class="std-badge">II — Proved</span></td></tr>
+          <tr><td>3</td><td>PT-503</td><td>Instruments isolation point #3</td><td><span class="type-pill tp-inst">Instruments</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>4</td><td>PT-504</td><td>Electrical isolation point #4</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>5</td><td>PT-505</td><td>Process isolation point #5</td><td><span class="type-pill tp-proc">Process</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>6</td><td>PT-506</td><td>Mechanical isolation point #6</td><td><span class="type-pill tp-mech">Mechanical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>7</td><td>PT-507</td><td>Instruments isolation point #7</td><td><span class="type-pill tp-inst">Instruments</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>8</td><td>PT-508</td><td>Electrical isolation point #8</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>9</td><td>PT-509</td><td>Process isolation point #9</td><td><span class="type-pill tp-proc">Process</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>10</td><td>PT-510</td><td>Mechanical isolation point #10</td><td><span class="type-pill tp-mech">Mechanical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>11</td><td>PT-511</td><td>Instruments isolation point #11</td><td><span class="type-pill tp-inst">Instruments</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>12</td><td>PT-512</td><td>Electrical isolation point #12</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>13</td><td>PT-513</td><td>Process isolation point #13</td><td><span class="type-pill tp-proc">Process</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>14</td><td>PT-514</td><td>Mechanical isolation point #14</td><td><span class="type-pill tp-mech">Mechanical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>15</td><td>PT-515</td><td>Instruments isolation point #15</td><td><span class="type-pill tp-inst">Instruments</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>16</td><td>PT-516</td><td>Electrical isolation point #16</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>17</td><td>PT-517</td><td>Process isolation point #17</td><td><span class="type-pill tp-proc">Process</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>18</td><td>PT-518</td><td>Mechanical isolation point #18</td><td><span class="type-pill tp-mech">Mechanical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>19</td><td>PT-519</td><td>Instruments isolation point #19</td><td><span class="type-pill tp-inst">Instruments</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>20</td><td>PT-520</td><td>Electrical isolation point #20</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>21</td><td>PT-521</td><td>Process isolation point #21</td><td><span class="type-pill tp-proc">Process</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+          <tr><td>22</td><td>PT-522</td><td>Mechanical isolation point #22</td><td><span class="type-pill tp-mech">Mechanical</span></td><td>Set → Reset</td><td>LC</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="sig-line" style="border:0;padding-top:12px"><span style="color:var(--muted)">2 points · 1 process point assessed via Isolation Selection Tool</span></div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="11_raise_isolation.html">Edit</a>
+      <h3>3 · Additional details</h3>
+      <div class="rgrid">
+        <div class="rf"><label>Installation</label><div class="v">Thames</div></div>
+        <div class="rf"><label>RA exists?</label><div class="v">Yes</div></div>
+        <div class="rf"><label>Drawing number(s)</label><div class="v">— none —</div></div>
+        <div class="rf"><label>Registers</label><div class="v">— none —</div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Contingency plan</label><div class="v">— none —</div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="11_raise_isolation.html">Edit</a>
+      <h3>4 · Risk assessment</h3>
+      <div class="rgrid">
+        <div class="rf"><label>TRA level</label><div class="v">Level 2 — full TRA</div></div>
+        <div class="rf"><label>ORA link <span class="bridge-tag bridge-ora">🔗 ORA</span></label><div class="v">— none —</div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Permit link <span class="bridge-tag bridge-permit">🔗 PTW</span></label><div class="v">— none — (can be linked at isolation-live stage)</div></div>
+      </div>
+    </div>
+
+    <div class="submit-box" id="submitBox">
+      <h4>Submit your isolation</h4>
+      <button class="btn-submit" onclick="alert('Isolation submitted → status: Submitted → Counter-sign / Verify (AA)');location.href='02_permits.html'">Submit</button>
+    </div>
+  </div>
+</div></div></div>
+<script>
+  (function(){
+    var LIMIT=15, expanded=false;
+    var tb=document.getElementById('recapPoints'); if(!tb) return;
+    var rows=[].slice.call(tb.querySelectorAll('tr'));
+    var host=document.createElement('div');
+    tb.closest('table').parentNode.insertBefore(host, tb.closest('table').nextSibling);
+    function apply(){
+      rows.forEach(function(tr,i){ tr.style.display=(i<LIMIT||expanded)?'':'none'; });
+      var hidden=Math.max(0,rows.length-LIMIT);
+      host.innerHTML = hidden>0 ? '<button class="ip-expand-btn" onclick="__togglePts()">'+(expanded?'▲ Show less':('▾ Show all '+rows.length+' points ('+hidden+' more)'))+'</button>' : '';
+    }
+    window.__togglePts=function(){ expanded=!expanded; apply(); };
+    apply();
+  })();
+</script>
+</body></html>

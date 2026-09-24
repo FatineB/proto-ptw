@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--brand); --module-bg:var(--brand-soft)}
+  .row-link{cursor:pointer}
+  .p-title{font-weight:600;font-size:13.5px}
+  .p-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .cat-chip{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--brand-soft);color:var(--brand-ink);white-space:nowrap}
+  .counts{display:flex;gap:6px}
+  .cpill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:10px;white-space:nowrap}
+  .cpill .cd{width:7px;height:7px;border-radius:50%}
+  .cpill.permit{background:var(--c-permit-bg);color:var(--c-permit-ink)} .cpill.permit .cd{background:var(--c-permit)}
+  .cpill.iso{background:var(--c-iso-bg);color:var(--c-iso-ink)} .cpill.iso .cd{background:var(--c-iso)}
+  .cpill.zero{background:var(--st-created-bg);color:var(--muted)} .cpill.zero .cd{background:var(--muted)}
+  td .chev{color:var(--muted);font-size:13px}
+
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:12px;width:480px;max-width:100%;box-shadow:0 20px 60px rgba(20,28,38,.25)}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .modal-h h3{font-size:16px;font-weight:700;flex:1}
+  .modal-h .x{cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none}
+  .modal-b{padding:20px}
+  .modal-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;justify-content:flex-end;gap:10px}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+  .field .hint{font-size:11.5px;color:var(--muted);font-weight:400;margin-left:6px}
+  .field input{width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:13.5px;font-family:inherit;background:#fff}
+  .type-toggle{display:flex;gap:8px}
+  .type-toggle button{flex:1;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+  .type-toggle button .d{width:9px;height:9px;border-radius:50%}
+  .type-toggle button.on{border-width:1.5px}
+  .type-toggle button.on.tp{border-color:var(--c-permit);color:var(--c-permit-ink);background:var(--c-permit-bg)}
+  .type-toggle button.on.ti{border-color:var(--c-iso);color:var(--c-iso-ink);background:var(--c-iso-bg)}
+</style>
+</head>
+<body data-active="projects">
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">+</span> Permit</a>
+    <a class="cta cta-npa"><span class="plus">+</span> Non-Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">+</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">+</span> ORA</a>
+  </div>
+  <div class="hd-tools">
+    <div class="hd-search">🔍</div>
+    <div class="hd-lang">EN ▾</div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <div class="subbar">
+      <div class="crumb"><a href="01_homepage.html">Home</a> › <b>Projects</b></div>
+      <div class="site-pill">Site: 27B ▾</div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1>Projects</h1><div class="sub">A project groups the Permits and Isolations of one work scope</div></div>
+        <button class="cta cta-permit" style="background:var(--brand);border-color:var(--brand)" onclick="openModal('mNewProject')"><span class="plus">+</span> Create a new project</button>
+      </div>
+
+      <div class="filterbar">
+        <input class="search-in" placeholder="Search by title, ID, MOC number…">
+        <span class="selectlike">Category ▾</span>
+        <span class="selectlike">Site ▾</span>
+        <span class="selectlike">Sort: Newest ▾</span>
+        <div class="spacer"></div>
+        <span class="result-count">6 projects</span>
+      </div>
+
+      <div class="panel">
+        <table>
+          <thead><tr>
+            <th>Project</th><th>Category</th><th>Site</th><th>Linked items</th><th>Created</th><th>Owner</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Change light fitting — BC deck</div><div class="p-sub">PRJ-0142</div></td>
+              <td><span class="cat-chip">Maintenance</span></td>
+              <td>27B</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>2 permits</span><span class="cpill iso"><span class="cd"></span>1 isolation</span></div></td>
+              <td>12 Sep 2026</td>
+              <td>A. Denton</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Compressor overhaul campaign</div><div class="p-sub">PRJ-0138</div></td>
+              <td><span class="cat-chip">Campaign</span></td>
+              <td>27B</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>2 permits</span><span class="cpill iso"><span class="cd"></span>2 isolations</span></div></td>
+              <td>08 Sep 2026</td>
+              <td>M. Reyni</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Deluge valve replacement — MOC-2261</div><div class="p-sub">PRJ-0131</div></td>
+              <td><span class="cat-chip">Modification (MOC)</span></td>
+              <td>Thames</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>1 permit</span><span class="cpill iso"><span class="cd"></span>1 isolation</span></div></td>
+              <td>03 Sep 2026</td>
+              <td>L. Bailey</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Jacket inspection 2026</div><div class="p-sub">PRJ-0119</div></td>
+              <td><span class="cat-chip">Inspection</span></td>
+              <td>27B</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>1 permit</span><span class="cpill zero"><span class="cd"></span>0 isolation</span></div></td>
+              <td>28 Aug 2026</td>
+              <td>A. Denton</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Gas turbine borescope</div><div class="p-sub">PRJ-0110</div></td>
+              <td><span class="cat-chip">Inspection</span></td>
+              <td>Cleeton</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>3 permits</span><span class="cpill iso"><span class="cd"></span>1 isolation</span></div></td>
+              <td>21 Aug 2026</td>
+              <td>J. Stern</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='04b_project_detail.html'">
+              <td><div class="p-title">Firewater pump refurbishment — MOC-2189</div><div class="p-sub">PRJ-0104</div></td>
+              <td><span class="cat-chip">Modification (MOC)</span></td>
+              <td>Thames</td>
+              <td><div class="counts"><span class="cpill permit"><span class="cd"></span>2 permits</span><span class="cpill iso"><span class="cd"></span>3 isolations</span></div></td>
+              <td>14 Aug 2026</td>
+              <td>L. Bailey</td>
+              <td><span class="chev">›</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Showing 1–6 of 6</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn" disabled>›</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===== MODAL: New Project ===== -->
+<div class="modal-bg" id="mNewProject">
+  <div class="modal">
+    <div class="modal-h"><h3>Create a new project</h3><button class="x" onclick="closeModal('mNewProject')">✕</button></div>
+    <div class="modal-b">
+      <div class="field">
+        <label>Type of project</label>
+        <div class="type-toggle">
+          <button class="tp on" onclick="pickType(this)"><span class="d" style="background:var(--c-permit)"></span> Permit</button>
+          <button class="ti" onclick="pickType(this)"><span class="d" style="background:var(--c-iso)"></span> Isolation</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Title <span class="hint">— project description (max 100)</span></label>
+        <input maxlength="100" placeholder="Change light fitting">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Category</label>
+        <input placeholder="Maintenance / MOC / Inspection / Campaign">
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal('mNewProject')">Cancel</button>
+      <button class="cta cta-permit" style="background:var(--brand);border-color:var(--brand)" onclick="location.href='04b_project_detail.html'">Create project</button>
+    </div>
+  </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  function openModal(id){document.getElementById(id).classList.add('on');}
+  function closeModal(id){document.getElementById(id).classList.remove('on');}
+  function pickType(btn){
+    var wrap=btn.parentElement;
+    wrap.querySelectorAll('button').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Isolation workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  .st-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:12px;background:var(--st-issued-bg);color:var(--st-issued)}
+  .st-pill .d{width:8px;height:8px;border-radius:50%;background:var(--st-issued)}
+  .ft-links{display:flex;gap:10px;align-items:center;margin-top:3px}
+  .ft-links a{font-size:12px;color:var(--brand);text-decoration:none;cursor:pointer}
+  .content{padding:22px 24px 80px;max-width:1200px;margin:0 auto}
+  .layout{display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:20px}
+  .card-h{padding:15px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .card-h h2{font-size:14px;font-weight:600;flex:1}
+  .card-h .muted{font-size:12px;color:var(--muted)}
+  .card-b{padding:18px}
+  /* contextual actions */
+  .ctx-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .ca{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 15px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+  .ca:hover{border-color:var(--brand);color:var(--brand)}
+  .ca.primary{background:var(--c-iso);border-color:var(--c-iso);color:#fff}
+  .ca.primary:hover{background:#c9791f}
+  .ca.warn{border-color:var(--c-iso);color:var(--c-iso)}
+  .ca.warn:hover{background:var(--c-iso-bg)}
+  .ca.danger{border-color:var(--danger);color:var(--danger)}
+  .ca.danger:hover{background:var(--danger-bg)}
+  .ca .role{font-size:10.5px;color:var(--muted);font-weight:500}
+  .ca.primary .role{color:rgba(255,255,255,.8)}
+  /* journal timeline */
+  .wf{position:relative;padding-left:24px}
+  .wf::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .wf-row{position:relative;display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+  .wf-row:last-child{border-bottom:0}
+  .wf-row::before{content:"";position:absolute;left:-21px;top:15px;width:12px;height:12px;border-radius:50%;background:var(--ok);border:2px solid #fff;box-shadow:0 0 0 1px var(--ok)}
+  .wf-row.pending::before{background:#fff;box-shadow:0 0 0 1px var(--c-iso)}
+  .wf-row.pending{opacity:.9}
+  .wf-act{font-weight:600;font-size:13.5px}
+  .wf-act .trans{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+  .wf-who{font-size:12.5px;color:var(--muted)}
+  .wf-who b{color:var(--ink);font-weight:600}
+  .wf-who .role{display:inline-block;font-size:10.5px;background:var(--st-created-bg);color:var(--muted);padding:1px 7px;border-radius:8px;margin-left:6px}
+  .wf-who .cmt{display:block;font-style:italic;margin-top:2px}
+  .wf-time{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+  .wf-row.pending .wf-act{color:var(--c-iso)}
+  .wf-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;margin-left:8px}
+  .wf-badge.now{background:var(--c-iso-bg);color:var(--c-iso)}
+  /* state machine diagram */
+  .sm{position:sticky;top:calc(var(--header-h) + 12px)}
+  .sm-note{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.4}
+  .sm-diagram{display:flex;flex-direction:column;align-items:center;gap:0}
+  .sm-node{border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:8px 14px;font-size:12px;font-weight:600;color:var(--muted);text-align:center;min-width:130px;position:relative}
+  .sm-node.done{border-color:#B4E0CE;background:var(--ok-bg);color:#0F6B4F}
+  .sm-node.current{border-color:var(--c-iso);background:var(--c-iso-bg);color:var(--c-iso);box-shadow:0 0 0 3px rgba(224,138,43,.15)}
+  .sm-node.future{border-style:dashed}
+  .sm-arrow{color:var(--muted);font-size:13px;padding:3px 0;position:relative}
+  .sm-arrow .lbl{font-size:10px;color:var(--muted);background:#fff;padding:0 5px}
+  .sm-branch{display:flex;gap:8px;margin:5px 0;flex-wrap:wrap;justify-content:center}
+  .sm-chip{font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:10px;border:1px dashed var(--line);color:var(--muted);background:#FAFBFC}
+  .sm-chip.stt{border-color:#C9A0E8;color:#730FC3;background:#F7F0FC}
+  .sm-legend{display:flex;gap:14px;margin-top:14px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+  .sm-legend span{display:inline-flex;align-items:center;gap:5px}
+  .lg-dot{width:9px;height:9px;border-radius:3px}
+  .lg-done{background:var(--ok-bg);border:1px solid #B4E0CE}
+  .lg-cur{background:var(--c-iso-bg);border:1px solid var(--c-iso)}
+  .lg-fut{background:#fff;border:1px dashed var(--line)}
+</style>
+</head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit" href="12_isolation_live.html"><span class="x">✕</span> Back to isolation</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">Workflow <span class="ft-ref">27B-ICC-02540</span> <span class="st-pill"><span class="d"></span>ISOLATION-IN-PLACE</span></div>
+    <div class="ft-links"><a href="12_isolation_live.html">← Certificate</a><a href="13_isolation_points.html">🔒 Points</a><a href="#">🖨 Print</a></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="layout">
+    <!-- LEFT: contextual actions + journal -->
+    <div>
+      <div class="card">
+        <div class="card-h"><h2>Next steps</h2><span class="muted">Actions available from <b style="color:var(--c-iso)">Isolation-in-Place</b></span></div>
+        <div class="card-b">
+          <div class="ctx-actions">
+            <button class="ca primary" onclick="alert('Request STT → Testing (controlled test, then re-isolate)')">🧪 Request STT<span class="role">Testing loop</span></button>
+            <button class="ca warn" onclick="alert('Suspend → Suspended')">⏸ Suspend<span class="role">AA</span></button>
+            <a class="ca warn" href="13_isolation_points.html">🔓 Initiate De-Isolation<span class="role">AA</span></a>
+            <button class="ca danger" onclick="alert('Abandon → Abandoned (soft delete)')">⊘ Abandon<span class="role">AA</span></button>
+            <button class="ca" onclick="alert('Counter-sign')">✍ Counter-sign</button>
+            <button class="ca" onclick="alert('Print / Update isolation points')">🏷 Print/update points</button>
+            <button class="ca" onclick="alert('Send email')">✉ Send email</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>Workflow history</h2><span class="muted">7 transitions</span></div>
+        <div class="card-b"><div class="wf">
+          <div class="wf-row pending">
+            <div class="wf-act">De-Isolation<span class="trans">Removal Authorise</span></div>
+            <div class="wf-who">Awaiting <b>Area Authority</b><span class="role">AA</span></div>
+            <div class="wf-time">—</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Confirm<span class="trans">Confirmation</span><span class="wf-badge now">Current</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:23</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Isolate<span class="trans">Isolation</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:22</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Verify<span class="trans">Authorisation</span></div>
+            <div class="wf-who"><b>Y. Smith</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">26 Aug 2025<br>14:31</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Counter-signed</div>
+            <div class="wf-who"><b>P. Wood</b></div>
+            <div class="wf-time">26 Aug 2025<br>14:25</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Submit</div>
+            <div class="wf-who"><b>Y. Smith</b></div>
+            <div class="wf-time">25 Aug 2025<br>16:55</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Created</div>
+            <div class="wf-who"><b>G. Bramley</b><span class="role">Mech Ops</span></div>
+            <div class="wf-time">25 Aug 2025<br>11:33</div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: state machine -->
+    <aside class="sm">
+      <div class="card">
+        <div class="card-h"><h2>Isolation state machine</h2></div>
+        <div class="card-b">
+          <div class="sm-note">Where this certificate sits in the ICC lifecycle. Branches (STT, Suspend, Snag, Abandon) shown as side transitions.</div>
+          <div class="sm-diagram">
+            <div class="sm-node done">Raised</div>
+            <div class="sm-arrow"><span class="lbl">Submit</span></div>
+            <div class="sm-node done">Submitted</div>
+            <div class="sm-arrow"><span class="lbl">Verify</span></div>
+            <div class="sm-node done">Authorised</div>
+            <div class="sm-arrow"><span class="lbl">Isolate</span></div>
+            <div class="sm-node done">Isolating</div>
+            <div class="sm-arrow"><span class="lbl">Confirm</span></div>
+            <div class="sm-node current">Isolation-in-Place</div>
+            <div class="sm-branch">
+              <span class="sm-chip stt">⇄ Request STT · Testing</span>
+              <span class="sm-chip">⏸ Suspend</span>
+              <span class="sm-chip">⊘ Abandon</span>
+            </div>
+            <div class="sm-arrow"><span class="lbl">De-Isolate</span></div>
+            <div class="sm-node future">De-isolating</div>
+            <div class="sm-branch"><span class="sm-chip">⚠ Snag</span></div>
+            <div class="sm-arrow"><span class="lbl">Close</span></div>
+            <div class="sm-node future">Closed</div>
+          </div>
+          <div class="sm-legend">
+            <span><span class="lg-dot lg-done"></span>Done</span>
+            <span><span class="lg-dot lg-cur"></span>Current</span>
+            <span><span class="lg-dot lg-fut"></span>Upcoming</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

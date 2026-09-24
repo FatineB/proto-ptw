@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Permits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line)}
+  .tab{background:transparent;border:1px solid transparent;border-bottom:none;padding:11px 20px;font-size:13.5px;color:var(--muted);cursor:pointer;font-family:inherit;border-radius:8px 8px 0 0;position:relative;top:1px}
+  .tab.on{background:var(--panel);border-color:var(--line);color:var(--brand);font-weight:600}
+  .tab .cnt{font-size:11px;background:var(--st-created-bg);color:var(--muted);padding:1px 7px;border-radius:10px;margin-left:6px}
+  .tab.disabled{color:#AAB4BD;cursor:not-allowed}
+  .tab .tbd{font-size:9px;font-weight:700;letter-spacing:.5px;background:#E7ECF1;color:#9AA6B0;padding:2px 6px;border-radius:4px;margin-left:6px;text-transform:uppercase}
+  .tabpanel{background:var(--panel);border:1px solid var(--line);border-radius:0 8px 8px 8px}
+  .search-in{border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13px;width:240px;font-family:inherit}
+  .selectlike{border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13px;color:var(--muted);background:#fff;cursor:pointer}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .toggle button{border:0;background:#fff;padding:7px 13px;font-size:12.5px;color:var(--muted);cursor:pointer;font-family:inherit}
+  .toggle button.on{background:var(--brand);color:#fff;font-weight:600}
+  .subfilter{display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line-soft);align-items:center;flex-wrap:wrap}
+  .seg-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer}
+  .chip.on{background:var(--brand-soft);border-color:#B9CEDD;color:var(--brand-ink);font-weight:600}
+  .rowact{display:flex;gap:6px;opacity:0;transition:.1s}
+  tbody tr:hover .rowact{opacity:1}
+  .rowact button{border:1px solid var(--line);background:#fff;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--muted)}
+  .rowact button:hover{border-color:var(--brand);color:var(--brand)}
+  .disabled-view{display:none;padding:60px 20px;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:0 8px 8px 8px}
+  .disabled-view .dv-ico{font-size:40px;opacity:.35}
+  .disabled-view h3{margin:14px 0 6px;font-size:16px;color:var(--muted)}
+  .disabled-view p{color:var(--muted);max-width:460px;margin:0 auto;font-size:13px}
+  .disabled-view .tbd-tag{display:inline-block;margin-top:14px;font-size:11px;font-weight:700;letter-spacing:.5px;background:var(--warn-bg);color:var(--warn);padding:5px 12px;border-radius:6px;text-transform:uppercase}
+  .row-link{cursor:pointer}
+  .row-link:hover{background:#F7F9FB}
+  .fav-star{border:0;background:none;cursor:pointer;font-size:15px;color:#C3CDD6;padding:0 2px;line-height:1;vertical-align:middle}
+  .fav-star.on{color:#F5A623}
+  tr.fav-hidden{display:none}
+</style>
+</head>
+<body data-active="permits">
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">＋</span> Permit</a>
+    <a class="cta cta-npa" href="#"><span class="plus">＋</span> Non Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">＋</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">＋</span> ORA</a>
+  </div>
+  <div class="hd-tools">
+    <div class="hd-search">🔍</div>
+    <div class="hd-lang">En ⇅</div>
+  </div>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="content">
+      <div class="page-head"><div><h1>Permits</h1></div><a href="06_raise_permit.html" class="cta cta-permit"><span class="plus">＋</span> Raise a Permit</a></div>
+
+      <div class="tabs">
+        <button class="tab on" onclick="setTab(this,'view-my')">My Permits <span class="cnt">7</span></button>
+        <button class="tab" onclick="setTab(this,'view-all')">All Permits <span class="cnt">142</span></button>
+        <button class="tab disabled" onclick="setTab(this,'view-npa')" title="À définir">Non Permit Activities <span class="tbd">TBD</span></button>
+      </div>
+
+      <div class="tabpanel" id="view-my">
+        <div class="filterbar">
+          <input class="search-in" placeholder="Search in my permits…">
+          <span class="selectlike">Type ▾</span><span class="selectlike">Area ▾</span><span class="selectlike">Project ▾</span><span class="selectlike">Date ▾</span>
+          <div class="spacer"></div>
+          <div class="toggle"><button class="on">▤ List</button><button>▦ Timeline</button><button>◎ Map</button></div>
+        </div>
+        <div class="subfilter">
+          <span class="seg-label">Status</span>
+          <span class="chip on">Issued</span><span class="chip on">Created</span><span class="chip on">Submit</span>
+          <span class="chip on">Inspect</span><span class="chip">Suspended</span><span class="chip">Finished</span><span class="chip">Closed</span><span class="chip">Abandoned</span>
+        </div>
+        <table>
+          <thead><tr><th>Number</th><th>Type</th><th>Description</th><th>Area</th><th>Last accessed</th><th>Last action</th><th></th></tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27G-CW-01784</td><td class="kind">Cold work</td><td>Rig up / down &amp; pressure testing of wireline</td><td>27G / deck</td><td>23-Jun 14:38</td><td><span class="status s-finished">Finished</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27A-HWSP-75666</td><td class="kind">Hot work</td><td>Use of 110v saw — grating change out</td><td>27A / L2</td><td>23-Jun 09:09</td><td><span class="status s-issued">Issued</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27B-CWBC-20590</td><td class="kind">Cold work BC</td><td>Removal / install blinds — open ends of B-train</td><td>27B / B-train</td><td>22-Jun 12:38</td><td><span class="status s-closed">Closed</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html?status=suspended'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27B-CW-01784</td><td class="kind">Cold work</td><td>Rig up / down &amp; pressure testing of wireline</td><td>27B / deck</td><td>22-Jun 12:38</td><td><span class="status s-suspend">Suspended</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html?status=suspended'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27E-RAC-01784</td><td class="kind">Rope access</td><td>27E outboard rope access — remove &amp; replace</td><td>27E / outboard</td><td>19-Jun 10:20</td><td><span class="status s-abandon">Abandoned</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27B-ORA-20461-REV-003</td><td class="kind">ORA</td><td>27BC export compression continued operation</td><td>27BC / process</td><td>18-Jun 11:48</td><td><span class="status s-inspect">Inspect</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button><button>Print</button></div></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Showing 1–6 of 7</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="view-all" style="display:none">
+        <div class="filterbar">
+          <input class="search-in" placeholder="Search all permits…">
+          <span class="selectlike">Type ▾</span><span class="selectlike">Area ▾</span><span class="selectlike">Person in charge ▾</span><span class="selectlike">Project ▾</span><span class="selectlike">Raised by ▾</span>
+          <div class="spacer"></div>
+          <div class="toggle"><button class="on">▤ List</button><button>▦ Timeline</button><button>◎ Map</button></div>
+        </div>
+        <div class="subfilter">
+          <span class="seg-label">Status</span>
+          <span class="chip on">Issued</span><span class="chip on">Created</span><span class="chip on">Submit</span><span class="chip on">Inspect</span><span class="chip">Suspended</span><span class="chip">Finished</span><span class="chip">Closed</span>
+        </div>
+        <table>
+          <thead><tr><th>Number</th><th>Type</th><th>Description</th><th>Area</th><th>Person in charge</th><th>Last action</th><th></th></tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27G-CW-01784</td><td class="kind">Cold work</td><td>Rig up / down &amp; pressure testing</td><td>27G / deck</td><td>L. Bailey</td><td><span class="status s-issued">Issued</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27A-HWSP-75666</td><td class="kind">Hot work</td><td>Use of 110v saw — grating change out</td><td>27A / L2</td><td>M. Read</td><td><span class="status s-issued">Issued</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27A-CWBC-75635</td><td class="kind">Cold work BC</td><td>27A wellhead maintenance &amp; integrity testing</td><td>27A / wellhead</td><td>Y. Carter</td><td><span class="status s-closed">Closed</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button></div></td></tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.rowact'))location.href='10_permit_live.html'"><td class="pid"><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> 27A-CW-75662</td><td class="kind">Cold work</td><td>Entry into Leman SE &amp; SW 500mz for diving</td><td>27A / subsea</td><td>C. Boyd</td><td><span class="status s-closed">Closed</span></td><td><div class="rowact"><button onclick="location.href='10_permit_live.html'">Open</button><button>Copy</button></div></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Showing 1–20 of 142</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <span style="color:var(--muted);padding:0 4px">…</span>
+          <button class="pg-btn">8</button>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+
+      <div class="disabled-view" id="view-npa">
+        <div class="dv-ico">🗂️</div><h3>Non Permit Activities</h3>
+        <p>Onglet prévu mais non défini dans ce lot. Questions ouvertes : donnée gérée dans un autre outil ? Affichage carte uniquement pour la détection de conflit ? Faut-il la « raise » dans l'outil ?</p>
+        <span class="tbd-tag">TBD · hors périmètre wireframe</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function setTab(el,id){
+    if(el.classList.contains('disabled')){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+      ['view-my','view-all'].forEach(v=>document.getElementById(v).style.display='none');
+      document.getElementById('view-npa').style.display='block';return;
+    }
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+    ['view-my','view-all','view-npa'].forEach(v=>document.getElementById(v).style.display='none');
+    document.getElementById(id).style.display='block';
+  }
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+</script>
+<script>
+</script>
+
+<script>
+  // routing listes -> vue permit selon statut
+  document.querySelectorAll('tbody tr').forEach(tr=>{
+    tr.addEventListener('click',(e)=>{
+      if(e.target.closest('.rowact')) return; // laisser les boutons gérer
+      const st=(tr.querySelector('.status')?.textContent||'').toLowerCase();
+      if(st.includes('issued')||st.includes('live')) window.location.href='10_permit_live.html';
+      else window.location.href='09_permit_edit.html';
+    });
+  });
+  document.querySelectorAll('.rowact button').forEach(b=>{
+    b.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const t=b.textContent.trim().toLowerCase();
+      const tr=b.closest('tr');const st=(tr.querySelector('.status')?.textContent||'').toLowerCase();
+      if(t==='open'){ window.location.href=(st.includes('issued')?'10_permit_live.html':'09_permit_edit.html'); }
+      else{ alert(b.textContent+' — action'); }
+    });
+  });
+</script>
+<script>
+  function toggleFav(btn){
+    var on=btn.classList.toggle('on');
+    btn.textContent = on ? '★' : '☆';
+    var tr=btn.closest('tr'); if(tr) tr.setAttribute('data-fav', on?'1':'0');
+  }
+  (function(){
+    var rows=document.querySelectorAll('tr.row-link');
+    [0,2].forEach(function(i){ if(rows[i]){ var st=rows[i].querySelector('.fav-star'); if(st){st.classList.add('on');st.textContent='★';} rows[i].setAttribute('data-fav','1'); } });
+    if(new URLSearchParams(location.search).get('filter')==='fav'){
+      document.querySelectorAll('tr.row-link').forEach(function(tr){ if(tr.getAttribute('data-fav')!=='1') tr.classList.add('fav-hidden'); });
+      var ph=document.querySelector('.page-head h1'); if(ph) ph.textContent='★ Favourite '+ph.textContent;
+    }
+  })();
+</script>
+<script src="sidebar.js"></script>
+</body>
+</html>

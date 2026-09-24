@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — STT Start Testing</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-stt); --module-bg:var(--c-stt-bg)}
+  .stt-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .stt-head .pid{font-size:20px;font-weight:700;color:var(--brand-ink)}
+  .stt-head .desc{font-size:14px;color:var(--muted)}
+  .stt-head .r{margin-left:auto;display:flex;gap:10px}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+
+  .step-context{display:flex;gap:14px;align-items:center;background:#F3ECF7;border:1px solid #D9C4EC;border-radius:10px;padding:14px 18px;margin-bottom:20px}
+  .step-context .sc-ico{font-size:20px}
+  .step-context .sc-t{font-size:14px;font-weight:700;color:#5B2A87;flex:1}
+  .step-context .sc-nav{font-size:12px;color:var(--muted)}
+  .step-context .sc-nav b{color:#5B2A87}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-bottom:18px}
+  .side{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .side-h{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line-soft)}
+  .side-h .badge{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+  .side-h h2{font-size:14px;font-weight:700;flex:1}
+  .side-h .pid{font-size:11.5px;color:var(--muted);font-weight:400}
+  .side.permit .side-h{background:var(--c-permit-bg)}.side.permit .badge{background:var(--c-permit)}.side.permit h2{color:var(--c-permit-ink)}
+  .side.iso .side-h{background:var(--c-iso-bg)}.side.iso .badge{background:var(--c-iso)}.side.iso h2{color:#9A6212}
+  .side-b{padding:18px}
+  .side-action{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .side-action b{color:var(--ink)}
+
+  .check{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+  .check:last-child{border-bottom:0}
+  .check .cb{width:22px;height:22px;border-radius:5px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
+  .check.on .cb{background:var(--ok);border-color:var(--ok);color:#fff}
+  .check .c-t{font-size:13px;font-weight:600}
+  .check .c-d{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+  .signer{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin-top:8px}
+  .signer .sg-av{width:28px;height:28px;border-radius:50%;background:var(--brand-soft);color:var(--brand-ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .signer .sg-b{flex:1}.signer .sg-n{font-size:12.5px;font-weight:600}.signer .sg-r{font-size:11px;color:var(--muted)}
+  .signer .sg-s{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px}
+  .sg-signed{background:var(--ok-bg);color:var(--ok)}.sg-pending{background:var(--warn-bg);color:var(--warn)}
+
+  .iso-points{border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;margin-top:6px}
+  .ip-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line-soft);font-size:12px}
+  .ip-row:last-child{border-bottom:0}
+  .ip-tag{font-weight:600;color:var(--brand-ink);min-width:80px}
+  .ip-move{flex:1;color:var(--muted)}
+  .ip-badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px}
+  .ipb-remove{background:var(--warn-bg);color:var(--warn)}.ipb-keep{background:var(--st-created-bg);color:var(--muted)}
+
+  .gate{display:flex;gap:12px;align-items:center;background:var(--warn-bg);border:1px solid #EAD3A6;border-radius:10px;padding:16px 18px;margin-bottom:16px}
+  .gate .g-ico{font-size:20px}
+  .gate .g-t{font-size:13px;font-weight:700;color:#8A5A12;flex:1}
+  .gate .g-t span{font-weight:400;color:var(--muted)}
+  .gate.ready{background:var(--ok-bg);border-color:#BFE3D3}
+  .gate.ready .g-t{color:var(--ok)}
+
+  .action-bar{display:flex;align-items:center;gap:12px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .action-bar .ab-sp{flex:1}  .btn-stt.disabled{opacity:.5;cursor:not-allowed}
+</style></head>
+<body data-active="permits">
+<div class="wire-note">WIREFRAME mid-fi · <b>STT — Start Testing (action)</b> · vue AA · confirmations synchronisées Permit + Isolation</div>
+<div class="focus-bar">
+  <a class="focus-exit" href="20_stt_coordination.html"><span class="x">✕</span> Back to STT</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">STT · Start Testing <span class="ft-ref">27B-CW-01784</span> <span class="live-pill" style="background:var(--c-stt-bg);color:var(--c-stt-ink)"><span class="lp-dot" style="background:var(--c-stt);animation:none"></span>START TESTING</span></div>
+    <div class="ft-links"><a href="20_stt_coordination.html">← STT coordination</a><a href="10_permit_live.html">🔗 Permit</a><a href="12_isolation_live.html">🔗 Isolation</a></div>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner">
+    <div class="content">
+      <div class="stt-head">
+        <span class="pid">Start Testing</span>
+        <span class="desc">STT step 3 of 6 · synchronised action</span>
+        <span class="r"><a class="btn" href="20_stt_coordination.html" style="text-decoration:none">‹ Back to coordination</a></span>
+      </div>
+
+      <div class="step-context">
+        <span class="sc-ico">🔄</span>
+        <div class="sc-t">Start Testing — both cycles must be confirmed before the equipment goes under test</div>
+        <div class="sc-nav">Permit: <b>Co-Ordinate STT</b> → <b>Start Testing</b> · Isolation: <b>Prepare STT Plan</b> → <b>Implement STT</b></div>
+      </div>
+
+      <div class="two">
+        <!-- PERMIT SIDE -->
+        <div class="side permit">
+          <div class="side-h"><span class="badge">P</span><h2>Permit cycle</h2><span class="pid">27B-CW-01784</span></div>
+          <div class="side-b">
+            <div class="side-action">Action: <b>Start Testing</b> — confirm the work party is ready and the test can begin under controlled isolation.</div>
+            <div class="check on"><div class="cb">✓</div><div><div class="c-t">Work party briefed on STT</div><div class="c-d">Test scope &amp; limits communicated</div></div></div>
+            <div class="check on"><div class="cb">✓</div><div><div class="c-t">Test boundaries confirmed</div><div class="c-d">Only the sanctioned equipment is energised</div></div></div>
+            <div class="check"><div class="cb"></div><div><div class="c-t">Area cleared for test</div><div class="c-d">No conflicting activity in the zone</div></div></div>
+            <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700">Signatures required</div>
+            <div class="signer"><span class="sg-av">AD</span><div class="sg-b"><div class="sg-n">A. Denton</div><div class="sg-r">Area Authority</div></div><span class="sg-s sg-signed">Signed</span></div>
+            <div class="signer"><span class="sg-av">YC</span><div class="sg-b"><div class="sg-n">Y. Carter</div><div class="sg-r">Performing Authority</div></div><span class="sg-s sg-pending">Pending</span></div>
+          </div>
+        </div>
+
+        <!-- ISOLATION SIDE -->
+        <div class="side iso">
+          <div class="side-h"><span class="badge">I</span><h2>Isolation cycle</h2><span class="pid">27B-ICC-02484</span></div>
+          <div class="side-b">
+            <div class="side-action">Action: <b>Implement STT</b> — partial removal of the isolation to allow the test, then it will be restored after Finish Testing.</div>
+            <div class="check on"><div class="cb">✓</div><div><div class="c-t">STT plan prepared</div><div class="c-d">Which points to move, in which order</div></div></div>
+            <div class="check"><div class="cb"></div><div><div class="c-t">Points moved for test</div><div class="c-d">Partial de-isolation per plan below</div></div></div>
+            <div style="margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700">Isolation points — STT plan</div>
+            <div class="iso-points">
+              <div class="ip-row"><span class="ip-tag">24-IV-06</span><span class="ip-move">Locked closed → open for test</span><span class="ip-badge ipb-remove">Move</span></div>
+              <div class="ip-row"><span class="ip-tag">24-IV-07</span><span class="ip-move">Locked closed → open for test</span><span class="ip-badge ipb-remove">Move</span></div>
+              <div class="ip-row"><span class="ip-tag">P200AEM</span><span class="ip-move">Motor stays isolated</span><span class="ip-badge ipb-keep">Keep</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gate">
+        <span class="g-ico">🔒</span>
+        <div class="g-t">Not ready yet — waiting on: <b>PA signature (permit)</b> and <b>points moved (isolation)</b>. <span>Both cycles must be confirmed to start the test.</span></div>
+      </div>
+
+      <div class="action-bar">
+        <span style="font-size:12.5px;color:var(--muted)">Once both sides are confirmed, the equipment is under test (STT In Place).</span>
+        <div class="ab-sp"></div>
+        <button class="btn">Cancel</button>
+        <a class="btn-stt" href="22_stt_finish.html">Confirm Start Testing → equipment under test</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.check .cb').forEach(cb=>cb.addEventListener('click',function(){
+    this.closest('.check').classList.toggle('on');this.textContent=this.closest('.check').classList.contains('on')?'✓':'';
+  }));
+</script>
+</body></html>

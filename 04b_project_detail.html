@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Project detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--brand); --module-bg:var(--brand-soft)}
+
+  .proj-head{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px}
+  .proj-head .ph-top{display:flex;align-items:flex-start;gap:12px}
+  .proj-head h1{font-size:20px;font-weight:700;margin:0;flex:1}
+  .proj-head .cat-chip{font-size:11px;font-weight:700;padding:3px 11px;border-radius:10px;background:var(--brand-soft);color:var(--brand-ink)}
+  .proj-meta{display:flex;gap:22px;margin-top:12px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .proj-meta b{color:var(--ink);font-weight:600}
+
+  .msec{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden}
+  .msec-h{padding:13px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .msec-h .mh-dot{width:10px;height:10px;border-radius:50%}
+  .mh-dot.permit{background:var(--c-permit)} .mh-dot.iso{background:var(--c-iso)}
+  .msec-h h2{font-size:14px;font-weight:700;flex:1}
+  .msec-h .mh-count{font-size:12px;color:var(--muted);font-weight:600}
+  .msec-actions{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--line-soft);background:#FBFCFD}
+  .add-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:8px 14px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--ink);text-decoration:none}
+  .add-btn .plus{font-weight:700}
+  .add-btn.new-permit:hover{border-color:var(--c-permit);color:var(--c-permit-ink)}
+  .add-btn.new-iso:hover{border-color:var(--c-iso);color:var(--c-iso-ink)}
+  .add-btn.link:hover{border-color:var(--brand);color:var(--brand)}
+
+  table.items{width:100%;border-collapse:collapse}
+  table.items th{text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);padding:10px 18px;border-bottom:1px solid var(--line-soft)}
+  table.items td{padding:11px 18px;border-bottom:1px solid var(--line-soft);font-size:12.5px}
+  table.items tr:last-child td{border-bottom:0}
+  table.items tr.row-link{cursor:pointer}
+  table.items tr.row-link:hover{background:#F7F9FB}
+  .unlink{border:1px solid transparent;background:none;border-radius:4px;padding:3px 7px;font-size:12px;cursor:pointer;color:var(--muted)}
+  .unlink:hover{background:var(--danger-bg);color:var(--danger)}
+  .sec-empty{padding:20px 18px;font-size:13px;color:var(--muted);font-style:italic}
+
+  /* modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:12px;width:560px;max-width:100%;box-shadow:0 20px 60px rgba(20,28,38,.25)}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .modal-h h3{font-size:16px;font-weight:700;flex:1}
+  .modal-h .x{cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none}
+  .modal-b{padding:16px 20px}
+  .modal-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;justify-content:flex-end;gap:10px}
+  .lk-search{position:relative;margin-bottom:12px}
+  .lk-search input{width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px 10px 34px;font-size:13.5px;font-family:inherit}
+  .lk-search .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .lk-list{max-height:280px;overflow-y:auto;border:1px solid var(--line-soft);border-radius:8px}
+  .lk-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line-soft);cursor:pointer}
+  .lk-item:last-child{border-bottom:0}
+  .lk-item:hover{background:#F7F9FB}
+  .lk-item input{margin:0}
+  .lk-item .lk-id{font-weight:600;font-size:12.5px}
+  .lk-item .lk-desc{font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body data-active="projects">
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">+</span> Permit</a>
+    <a class="cta cta-npa"><span class="plus">+</span> Non-Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">+</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">+</span> ORA</a>
+  </div>
+  <div class="hd-tools">
+    <div class="hd-search">🔍</div>
+    <div class="hd-lang">EN ▾</div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <div class="subbar">
+      <div class="crumb"><a href="01_homepage.html">Home</a> › <a href="04_projects.html">Projects</a> › <b>Change light fitting — BC deck</b></div>
+      <div class="site-pill">Site: 27B ▾</div>
+    </div>
+
+    <div class="content">
+      <div class="proj-head">
+        <div class="ph-top">
+          <div style="flex:1">
+            <h1>Change light fitting — BC deck</h1>
+            <div class="proj-meta">
+              <span>Ref <b>PRJ-0142</b></span>
+              <span>Site <b>27B · BC deck</b></span>
+              <span>Owner <b>A. Denton</b></span>
+              <span>Created <b>12 Sep 2026</b></span>
+            </div>
+          </div>
+          <span class="cat-chip">Maintenance</span>
+        </div>
+      </div>
+
+      <!-- PERMITS -->
+      <div class="msec">
+        <div class="msec-h"><span class="mh-dot permit"></span><h2>Permits</h2><span class="mh-count">2 linked</span></div>
+        <div class="msec-actions">
+          <a class="add-btn new-permit" href="06_raise_permit.html?project=PRJ-0142"><span class="plus">+</span> New permit</a>
+          <button class="add-btn link" onclick="openModal('mLinkPermit')">🔗 Link existing</button>
+        </div>
+        <table class="items">
+          <thead><tr><th>Permit ID</th><th>Description</th><th>Status</th><th>PA</th><th></th></tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="if(!event.target.closest('.unlink'))location.href='10_permit_live.html'">
+              <td class="pid">27B-CW-01784</td><td>Replace corroded light fitting, BC deck N-side</td><td><span class="status s-issued">Live</span></td><td>M. Reyni</td>
+              <td><button class="unlink" title="Unlink from project" onclick="unlinkRow(this)">🗑</button></td>
+            </tr>
+            <tr class="row-link" onclick="if(!event.target.closest('.unlink'))location.href='09_permit_edit.html'">
+              <td class="pid">27B-CW-01799</td><td>Follow-up electrical test</td><td><span class="status s-submit">Submitted</span></td><td>H. Shaw</td>
+              <td><button class="unlink" title="Unlink from project" onclick="unlinkRow(this)">🗑</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ISOLATIONS -->
+      <div class="msec">
+        <div class="msec-h"><span class="mh-dot iso"></span><h2>Isolations</h2><span class="mh-count">1 linked</span></div>
+        <div class="msec-actions">
+          <a class="add-btn new-iso" href="11_raise_isolation_start.html?project=PRJ-0142"><span class="plus">+</span> New isolation</a>
+          <button class="add-btn link" onclick="openModal('mLinkIso')">🔗 Link existing</button>
+        </div>
+        <table class="items">
+          <thead><tr><th>Isolation ID</th><th>Description</th><th>Status</th><th>IA</th><th></th></tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="if(!event.target.closest('.unlink'))location.href='12_isolation_live.html'">
+              <td class="pid">27B-ICC-02484</td><td>Electrical isolation — lighting circuit BC-N</td><td><span class="status s-issued">In-Place</span></td><td>H. Shaw</td>
+              <td><button class="unlink" title="Unlink from project" onclick="unlinkRow(this)">🗑</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: Link existing permit -->
+<div class="modal-bg" id="mLinkPermit">
+  <div class="modal">
+    <div class="modal-h"><h3>Link an existing permit</h3><button class="x" onclick="closeModal('mLinkPermit')">✕</button></div>
+    <div class="modal-b">
+      <div class="lk-search"><span class="si">🔍</span><input placeholder="Search permit by ID or description…"></div>
+      <div class="lk-list">
+        <label class="lk-item"><input type="checkbox"><div><div class="lk-id">27B-CW-01820</div><div class="lk-desc">Cable tray inspection — BC deck</div></div></label>
+        <label class="lk-item"><input type="checkbox"><div><div class="lk-id">27B-HWSP-20351</div><div class="lk-desc">Hot work — welding repair, 27BC</div></div></label>
+        <label class="lk-item"><input type="checkbox"><div><div class="lk-id">27B-CW-01650</div><div class="lk-desc">General maintenance, cellar deck</div></div></label>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal('mLinkPermit')">Cancel</button>
+      <button class="cta cta-permit" style="background:var(--brand);border-color:var(--brand)" onclick="closeModal('mLinkPermit')">Link selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Link existing isolation -->
+<div class="modal-bg" id="mLinkIso">
+  <div class="modal">
+    <div class="modal-h"><h3>Link an existing isolation</h3><button class="x" onclick="closeModal('mLinkIso')">✕</button></div>
+    <div class="modal-b">
+      <div class="lk-search"><span class="si">🔍</span><input placeholder="Search isolation by ID or description…"></div>
+      <div class="lk-list">
+        <label class="lk-item"><input type="checkbox"><div><div class="lk-id">27B-ICC-02890</div><div class="lk-desc">Process isolation — compressor suction</div></div></label>
+        <label class="lk-item"><input type="checkbox"><div><div class="lk-id">27B-ICC-02894</div><div class="lk-desc">Electrical isolation — MCC feeder</div></div></label>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal('mLinkIso')">Cancel</button>
+      <button class="cta cta-permit" style="background:var(--brand);border-color:var(--brand)" onclick="closeModal('mLinkIso')">Link selected</button>
+    </div>
+  </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  function openModal(id){document.getElementById(id).classList.add('on');}
+  function closeModal(id){document.getElementById(id).classList.remove('on');}
+  function unlinkRow(btn){
+    var tr=btn.closest('tr');
+    if(confirm('Unlink this item from the project? The permit/isolation itself is not deleted.')){tr.remove();}
+  }
+</script>
+</body>
+</html>

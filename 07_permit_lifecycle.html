@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Permit lifecycle drawer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  .edit-context{padding:22px 24px}
+  .ec-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .ec-head .pid{font-size:20px;font-weight:700;color:var(--brand-ink)}
+  .ec-head .desc{font-size:14px;color:var(--muted)}
+  .ec-head .r{margin-left:auto;display:flex;gap:10px}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+  
+  .btn-permit{background:var(--c-permit);border-color:var(--c-permit);color:#fff}
+  .btn-permit:hover{background:#5348d8;color:#fff}
+  .btn-wf{border-color:var(--c-permit);color:var(--c-permit)}
+  .btn-wf:hover{background:var(--c-permit-bg)}
+  .ghost-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:14px}
+  .ghost-line{height:12px;background:var(--line-soft);border-radius:4px;margin-bottom:10px}
+  .ghost-line.s{width:40%}.ghost-line.m{width:70%}.ghost-line.l{width:90%}
+  .ec-hint{font-size:12.5px;color:var(--muted);margin-bottom:16px}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,28,38,.42);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+  .overlay.on{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:600px;max-width:94vw;background:#fff;z-index:41;box-shadow:-8px 0 32px rgba(0,0,0,.16);transform:translateX(100%);transition:transform .24s ease;display:flex;flex-direction:column}
+  .drawer.on{transform:translateX(0)}
+  .drawer-h{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line-soft)}
+  .drawer-h h2{font-size:16px;font-weight:700;flex:1}
+  .drawer-h .sub{font-size:12px;color:var(--muted);font-weight:400}
+  .drawer-x{border:0;background:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1}
+  .drawer-b{padding:22px;overflow-y:auto;flex:1}
+
+  .wf-obj{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+  .wf-obj .pid{font-size:15px;font-weight:700;color:var(--brand-ink)}
+  .wf-obj .status{margin-left:auto}
+
+  .wf-section-t{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;margin:4px 0 12px}
+  .chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px 4px;margin-bottom:10px}
+  .chip-step{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:20px;font-size:12px;font-weight:600}
+  .chip-done{background:var(--ok);color:#fff}
+  .chip-current{background:var(--c-permit);color:#fff;box-shadow:0 0 0 3px var(--c-permit-bg)}
+  .chip-future{background:#EEF1F4;color:#8A97A3}
+  .chip-here{font-size:9px;font-weight:800;letter-spacing:.5px;margin-left:2px;opacity:.9}
+
+  /* vertical detailed timeline */
+  .tl{margin:22px 0 8px;position:relative}
+  .tl-item{display:flex;gap:14px;padding-bottom:20px;position:relative}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:var(--line)}
+  .tl-item:last-child::before{display:none}
+  .tl-item.done::before{background:var(--ok)}
+  .tl-dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;z-index:2}
+  .tl-done .tl-dot{background:var(--ok);color:#fff}
+  .tl-current .tl-dot{background:var(--c-permit);color:#fff;box-shadow:0 0 0 4px var(--c-permit-bg)}
+  .tl-future .tl-dot{background:#fff;border:2px dashed var(--line);color:#B4BEC7}
+  .tl-body{flex:1;padding-top:4px}
+  .tl-step{font-size:13.5px;font-weight:700}
+  .tl-current .tl-step{color:var(--c-permit)}
+  .tl-future .tl-step{color:#8A97A3}
+  .tl-who{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .tl-who b{color:var(--ink)}
+  .tl-when{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .tl-comment{font-size:12px;color:var(--muted);margin-top:6px;padding:8px 11px;background:#F7F9FB;border-left:2px solid var(--line);border-radius:0 4px 4px 0;font-style:italic}
+  .tl-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:5px}
+  .tb-here{background:var(--c-permit-bg);color:#3F36B0}
+  .tb-pending{background:var(--warn-bg);color:var(--warn)}
+  .tb-notstarted{background:#EEF1F4;color:#8A97A3}
+  .tl-gate{font-size:11.5px;color:#8A5A12;margin-top:6px;padding:8px 11px;background:var(--warn-bg);border:1px solid #EAD3A6;border-radius:var(--radius)}
+  .tl-gate b{color:var(--warn)}
+
+  .alt-sep{border-top:1px solid var(--line-soft);padding-top:18px;margin-top:8px}
+  .alt-t{font-size:12px;font-weight:700;margin-bottom:4px}
+  .alt-sub{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+  .alt-legend{display:flex;flex-direction:column;gap:8px}
+  .alt-item{display:flex;align-items:flex-start;gap:10px;font-size:12px}
+  .alt-key{width:10px;height:10px;border-radius:50%;margin-top:3px;flex-shrink:0}
+  .ak-decline{background:#E0A82B}.ak-reject{background:var(--danger)}.ak-suspend{background:var(--c-iso)}.ak-abandon{background:#AC6363}
+  .alt-item .ai-t{font-weight:600}
+  .alt-item .ai-d{color:var(--muted)}
+</style>
+</head>
+<body data-active="permits">
+<div class="wire-note">WIREFRAME mid-fi · <b>Vie d'un permit — drawer informatif</b> · chips + timeline détaillée (qui/quand) + alternate paths en légende · aucune action</div>
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">＋</span> Permit</a>
+    <a class="cta cta-npa" href="#"><span class="plus">＋</span> Non Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">＋</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">＋</span> ORA</a>
+  </div>
+  <div class="hd-tools"><div class="hd-search">🔍</div><div class="hd-lang">En ⇅</div></div>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="subbar"><span class="crumb"><a href="#">Permits</a> › <b>27B-HWSP-20351</b> › Edit — AA Verify</span><span class="site-pill">Site: Thames ▾</span></div>
+    <div class="edit-context">
+      <div class="ec-head">
+        <span class="pid">27B-HWSP-20351</span>
+        <span class="desc">Opening BC deck hatches using electrical HPU</span>
+        <span class="r">
+          <button class="btn btn-wf" onclick="openWf()">⤳ See on workflow</button>
+          <button class="btn">Reject</button>
+          <button class="btn btn-permit">Verify permit</button>
+        </span>
+      </div>
+      <div class="ec-hint">Screen: <b>Edit permit — AA Verify</b> (neutral). Actions live here on the page. The workflow drawer is <b>informational only</b>.</div>
+      <div class="ghost-card"><div class="ghost-line l"></div><div class="ghost-line m"></div><div class="ghost-line s"></div></div>
+      <div class="ghost-card"><div class="ghost-line m"></div><div class="ghost-line l"></div><div class="ghost-line m"></div></div>
+    </div>
+
+    <div class="overlay" id="ov" onclick="closeWf()"></div>
+    <aside class="drawer" id="dw">
+      <div class="drawer-h">
+        <div><h2>Permit lifecycle</h2><div class="sub">History &amp; upcoming steps — read only</div></div>
+        <button class="drawer-x" onclick="closeWf()">×</button>
+      </div>
+      <div class="drawer-b">
+        <div class="wf-obj"><span class="pid">27B-HWSP-20351</span><span class="status s-inspect">Verify</span></div>
+
+        <div class="wf-section-t">Workflow overview</div>
+        <div class="chips"><span class="chip-step chip-done">Raise ✓</span><span class="chev">›</span><span class="chip-step chip-done">Sign-off ✓</span><span class="chev">›</span><span class="chip-step chip-current">● Verify<span class="chip-here">HERE</span></span><span class="chev">›</span><span class="chip-step chip-future">Authorise</span><span class="chev">›</span><span class="chip-step chip-future">Issue</span></div>
+        <div class="chips"><span class="chip-step chip-future">Accept</span><span class="chev">›</span><span class="chip-step chip-future">Live</span><span class="chev">›</span><span class="chip-step chip-future">Finish</span><span class="chev">›</span><span class="chip-step chip-future">Closed</span></div>
+
+        <div class="wf-section-t" style="margin-top:20px">Detailed history &amp; next steps</div>
+        
+        <div class="tl">
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Raised</div><div class="tl-who">by <b>Y. Carter</b> · Performing Authority</div><div class="tl-when">22 Jul 2026 · 06:40</div>
+            <div class="tl-comment">Permit created &amp; saved. Hot work — BC deck hatches.</div>
+          </div></div>
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Submitted</div><div class="tl-who">by <b>Y. Carter</b> · Performing Authority</div><div class="tl-when">22 Jul · 06:45</div>
+          </div></div>
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Specialist sign-off</div><div class="tl-who">by <b>D. Holt</b> (Deck) &amp; <b>J. Stern</b> (HSEA)</div><div class="tl-when">22 Jul · 07:00</div>
+            <div class="tl-comment">HSEA: controls adequate, fire watch confirmed for hot work near HC lines.</div>
+          </div></div>
+          <div class="tl-item tl-current"><div class="tl-dot">●</div><div class="tl-body">
+            <div class="tl-step">Verify</div><div class="tl-who">assigned to <b>A. Denton</b> · Area Authority</div><div class="tl-when">In this state since 07:00 · 40 min</div>
+            <span class="tl-badge tb-here">You are here</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">4</div><div class="tl-body">
+            <div class="tl-step">Authorise</div><div class="tl-who">will be done by <b>Site Controller</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">5</div><div class="tl-body">
+            <div class="tl-step">Issue</div><div class="tl-who">will be done by <b>Area Authority</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+            <div class="tl-gate">🔗 <b>Gate:</b> can only be issued once isolation <b>27B-ICC-02484</b> is confirmed in place.</div>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">6</div><div class="tl-body">
+            <div class="tl-step">Accept → Live → Finish</div><div class="tl-who"><b>PA</b> accepts, work goes live, then PA finishes</div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">7</div><div class="tl-body">
+            <div class="tl-step">Closed</div><div class="tl-who">will be done by <b>Area Authority</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+        </div>
+
+        <div class="alt-sep">
+          <div class="alt-t">Alternate paths</div>
+          <div class="alt-sub">Possible deviations in this workflow — for information.</div>
+          <div class="alt-legend">
+            <div class="alt-item"><span class="alt-key ak-decline"></span><span><span class="ai-t">Decline</span> <span class="ai-d">→ back to previous step, with a mandatory comment</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-reject"></span><span><span class="ai-t">Reject</span> <span class="ai-d">→ soft-delete, available at verify / authorise</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-suspend"></span><span><span class="ai-t">Suspend (PA)</span> <span class="ai-d">→ pause work once the permit is live</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-abandon"></span><span><span class="ai-t">Abandon (AA)</span> <span class="ai-d">→ terminate once the permit is live</span></span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script>
+  function openWf(){document.getElementById('ov').classList.add('on');document.getElementById('dw').classList.add('on');}
+  function closeWf(){document.getElementById('ov').classList.remove('on');document.getElementById('dw').classList.remove('on');}
+  window.addEventListener('load',()=>setTimeout(openWf,150));
+</script>
+<script src="sidebar.js"></script>
+</body>
+</html>

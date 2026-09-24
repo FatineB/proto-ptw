@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Raise a new Isolation</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  html{scroll-behavior:smooth}
+  .focus-title .ft-t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .focus-title .ft-ref{font-variant-numeric:tabular-nums;font-size:12px;color:var(--brand-ink);background:var(--brand-soft);border-radius:4px;padding:1px 7px;font-weight:700}
+  .focus-title .ft-s{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .focus-title .ft-s .dot{width:8px;height:8px;border-radius:50%;background:var(--c-iso);display:inline-block}
+  .rail-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;padding-left:4px}
+  .rail-item.active .rk{background:var(--c-iso);border-color:var(--c-iso);color:#fff}
+  .rail-item .ri-t{font-size:13px;font-weight:600}
+  .rail-item .ri-s{font-size:11px;color:var(--muted)}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;color:var(--muted)}
+  .rail-btn.disabled{opacity:.5}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-save{color:var(--muted)}
+  .rail-progress .rp-fill{width:62%}
+  .sec-h .req{font-size:11px;color:var(--danger);font-weight:600}
+  .sec-h .opt{font-size:11px;color:var(--muted);font-weight:600}
+  .field:last-child{margin-bottom:0}
+  .field .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+  input[readonly]{background:#F1F3F5;color:var(--muted)}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .search-field{position:relative}
+  .search-field input{padding-right:38px}
+  .search-field .si{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .geo-result{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-top:10px;background:#FAFBFC}
+  .geo-result .gr-id{font-weight:600;color:var(--brand-ink)}
+  .geo-result .gr-meta{font-size:12px;color:var(--muted)}
+  .geo-result .gr-counts{margin-left:auto;display:flex;gap:8px}
+  .gr-chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;display:inline-flex;gap:4px;align-items:center}
+  .gr-haz{background:var(--danger-bg);color:var(--danger)}
+  .gr-link{background:var(--c-iso-bg);color:var(--c-iso)}
+  /* SIRP compliance toggle + conditional justification */
+  .yn{display:flex;gap:10px}
+  .yn-chip{flex:1;border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;cursor:pointer;text-align:center;font-weight:600;font-size:13.5px}
+  .yn-chip.on-yes{border-color:var(--ok);background:var(--ok-bg);color:#0F6B4F;box-shadow:inset 0 0 0 1px var(--ok)}
+  .yn-chip.on-no{border-color:var(--danger);background:var(--danger-bg);color:var(--danger);box-shadow:inset 0 0 0 1px var(--danger)}
+  .cond{display:none}
+  .cond.show{display:block;animation:fade .2s ease}
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+  .sirp-warn{background:var(--danger-bg);border:1px solid #E7B3BC;border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:#9B2233;margin-top:12px;display:flex;gap:9px}
+  /* Source of isolation (planned vs reactive) */
+  .src-note{display:flex;gap:9px;background:var(--c-iso-bg);border:1px solid #EAD3AE;border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:#7A4E12;margin-bottom:16px}
+  .bridge-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px}
+  .bridge-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}
+  .bridge-max{background:#EAF1F7;color:#12507A}
+  .bridge-ora{background:var(--c-ora-bg);color:var(--c-ora-ink)}
+  /* Isolation type (process → selection tool) */
+  .type-note{display:flex;gap:9px;background:#F5F7FA;border:1px solid var(--line);border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  /* Isolation points table */
+  .ip-note{display:flex;gap:9px;background:var(--c-iso-bg);border:1px solid #EAD3AE;border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:#7A4E12;margin-bottom:14px}
+  .ip-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .ip-scroll{overflow-x:auto}
+  table.ip{width:100%;min-width:1020px;border-collapse:collapse;font-size:12.5px}
+  table.ip thead th{background:#F7F9FB;text-align:left;padding:9px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  table.ip tbody td{padding:8px 11px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  table.ip tbody tr:last-child td{border-bottom:none}
+  table.ip select,table.ip input{padding:7px 9px;font-size:12.5px}
+  .ord{width:52px;text-align:center}
+  .type-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .tp-elec{background:#FFF4DE;color:var(--c-iso-ink)}
+  .tp-mech{background:#E7ECF1;color:#3B4657}
+  .tp-inst{background:#E5EEF7;color:#2C6FB5}
+  .tp-proc{background:#E3F5EE;color:#1C9E7A}
+  .row-del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:4px 6px;border-radius:4px}
+  .row-del:hover{background:var(--danger-bg);color:var(--danger)}
+  .ip-foot{display:flex;align-items:center;gap:12px;padding:11px 12px;background:#FBFCFD;border-top:1px solid var(--line-soft)}
+  .add-ip{border:1px dashed var(--c-iso);background:var(--c-iso-bg);color:var(--c-iso);font-weight:700;padding:8px 14px;border-radius:var(--radius);font-size:12.5px;cursor:pointer;font-family:inherit}
+  .ip-sum{margin-left:auto;font-size:12px;color:var(--muted)}
+  .ip-sum b{color:var(--ink)}
+  .ip-actions-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .ip-linkbtn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:var(--radius);padding:8px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:600}
+  .ip-linkbtn:hover{border-color:var(--c-iso);color:var(--c-iso)}
+  /* Isolation Selection Tool (process only) */
+  .ist-block{display:none}
+  .ist-block.show{display:block;animation:fade .2s ease}
+  .ist-warn{background:var(--danger-bg);border:1px solid #E7B3BC;border-radius:var(--radius);padding:10px 13px;font-size:12px;color:#9B2233;margin-bottom:12px;display:flex;gap:8px}
+  table.ist{width:100%;min-width:900px;border-collapse:collapse;font-size:12px}
+  table.ist thead th{background:#F7F9FB;text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  table.ist tbody td{padding:7px 10px;border-bottom:1px solid var(--line-soft)}
+  table.ist select,table.ist input{padding:6px 8px;font-size:12px}
+  .std-badge{font-size:11px;font-weight:700;padding:5px 9px;border-radius:10px;white-space:nowrap;text-align:center;display:block}
+  .std-2{background:var(--ok-bg);color:#0F6B4F}
+  .std-empty{background:#fff;border:1px dashed var(--line);color:var(--muted);text-align:center;display:block;padding:5px}
+  .btn-permit{background:var(--c-iso);border:1px solid var(--c-iso);color:#fff;font-weight:600;padding:8px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-permit:hover{background:#c9791f}
+  .btn-validate{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+  .btn-validate:hover{background:#2C3542}
+  .btn-select{border:1px solid var(--c-iso);background:#fff;color:var(--c-iso);border-radius:var(--radius);padding:10px 16px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+  /* multi-select chip list (permits, areas) */
+  .chip-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .chip-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--radius);padding:9px 12px;background:#FAFBFC;font-size:13px}
+  .chip-row .cr-id{font-weight:600;color:var(--brand-ink);font-variant-numeric:tabular-nums;flex:1}
+  .chip-row .cr-meta{font-size:11.5px;color:var(--muted)}
+  .chip-row .cr-x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:4px}
+  .chip-row .cr-x:hover{background:var(--danger-bg);color:var(--danger)}
+  .field-hint-r{float:right;font-size:11.5px;color:var(--c-iso);font-weight:600}
+  /* risk matrix (L2) */
+  .risk-badge{font-size:11px;font-weight:700;padding:5px 8px;border-radius:8px;display:inline-block;cursor:pointer}
+  .risk-lo{background:var(--ok-bg);color:#0F6B4F}
+  /* compact points table */
+  table.ipc-tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.ipc-tbl thead th{background:#F7F9FB;text-align:left;padding:10px 14px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft)}
+  table.ipc-tbl tbody td{padding:11px 14px;border-bottom:1px solid var(--line-soft)}
+  table.ipc-tbl tbody tr{cursor:pointer}
+  table.ipc-tbl tbody tr:hover{background:#F7F9FB}
+  table.ipc-tbl tbody tr.sel{background:var(--c-iso-bg)}
+  table.ipc-tbl tbody tr:last-child td{border-bottom:0}
+  .c-ord{width:40px;text-align:center;color:var(--muted);font-weight:600}
+  .c-drag{width:26px;text-align:center;color:#B4BEC8;cursor:grab;user-select:none;font-size:14px}
+  .c-drag:active{cursor:grabbing}
+  table.ipc-tbl tbody tr.dragging{opacity:.4}
+  table.ipc-tbl tbody tr.drop-above td{box-shadow:inset 0 2px 0 var(--c-iso)}
+  table.ipc-tbl tbody tr.drop-below td{box-shadow:inset 0 -2px 0 var(--c-iso)}
+  .c-tag{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .c-desc{color:var(--ink);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .c-status{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .cs-ok{background:var(--ok-bg);color:#0F6B4F}
+  .cs-todo{background:var(--warn-bg);color:var(--warn)}
+  .c-open{color:var(--c-iso);font-weight:600;font-size:12.5px;white-space:nowrap}
+  .tbl-foot{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  .add-ip-btn{border:1px dashed var(--c-iso);background:var(--c-iso-bg);color:var(--c-iso);font-weight:700;padding:8px 14px;border-radius:var(--radius);font-size:12.5px;cursor:pointer;font-family:inherit}
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:rgba(20,28,38,.34);backdrop-filter:blur(1.5px);opacity:0;visibility:hidden;transition:.22s;z-index:50}
+  .scrim.on{opacity:1;visibility:visible}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:560px;max-width:94vw;background:var(--bg);box-shadow:-12px 0 40px rgba(20,28,38,.20);transform:translateX(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);z-index:51;display:flex;flex-direction:column}
+  .drawer.on{transform:none}
+  .dw-head{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#fff;border-bottom:1px solid var(--line)}
+  .dw-ord{width:28px;height:28px;border-radius:7px;background:var(--c-iso);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0}
+  .dw-title-wrap{flex:1;min-width:0}
+  .dw-title{font-weight:600;font-size:15px;line-height:1.2}
+  .dw-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .dw-nav{display:flex;gap:4px}
+  .dw-nav button{border:1px solid var(--line);background:#fff;border-radius:var(--radius);width:30px;height:30px;cursor:pointer;color:var(--muted);font-family:inherit;font-size:13px;transition:.12s}
+  .dw-nav button:hover{border-color:var(--c-iso);color:var(--c-iso);background:var(--c-iso-bg)}
+  .dw-close{border:0;background:none;font-size:17px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:var(--radius);line-height:1}
+  .dw-close:hover{background:var(--line-soft);color:var(--ink)}
+  .dw-body{padding:18px;overflow-y:auto;flex:1}
+  .dw-block{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:14px}
+  .dw-block:last-child{margin-bottom:0}
+  .dw-block-h{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;margin-bottom:14px}
+  .dw-foot{display:flex;gap:10px;padding:14px 18px;background:#fff;border-top:1px solid var(--line)}
+  .dw-foot .save{background:var(--c-iso);border:0;color:#fff;font-weight:600;padding:11px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit;flex:1;transition:.12s}
+  .dw-foot .save:hover{background:#c9791f}
+  .dw-foot .savenext{background:#fff;border:1px solid var(--c-iso);color:var(--c-iso);font-weight:600;padding:11px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit;flex:1;transition:.12s}
+  .dw-foot .savenext:hover{background:var(--c-iso-bg)}
+  .dw-foot .del{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:var(--radius);padding:11px 14px;cursor:pointer;font-family:inherit;transition:.12s}
+  .dw-foot .del:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-bg)}
+  .dwf{margin-bottom:15px}
+  .dwf:last-child{margin-bottom:0}
+  .dwf label{display:block;font-size:11.5px;font-weight:600;margin-bottom:6px;color:var(--muted)}
+  .dw-body input[type=text],.dw-body input:not([type]),.dw-body select{width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;font-size:13.5px;font-family:inherit;background:#fff;color:var(--ink);transition:border-color .12s,box-shadow .12s}
+  .dw-body input:focus,.dw-body select:focus{outline:none;border-color:var(--c-iso);box-shadow:0 0 0 3px var(--c-iso-bg)}
+  .dwgrid{display:grid;gap:14px}
+  .dwgrid.g2{grid-template-columns:1fr 1fr}
+  .dwgrid.g3{grid-template-columns:1fr 1fr 1fr}
+  .ist-in{background:linear-gradient(180deg,#F1FAF6,#EAF6F0);border:1px solid #BFE6D6;border-radius:8px;padding:16px 18px;margin-bottom:0}
+  .ist-in .ist-h2{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#0F6B4F;margin-bottom:4px}
+  .ist-in .ist-badge{margin-left:auto;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;background:#D3EFE2;color:#0F6B4F;padding:3px 8px;border-radius:10px}
+  .ist-in .ist-sub2{font-size:11.5px;color:#3B7A64;margin-bottom:14px;line-height:1.4}
+  .ist-g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ist-o{margin-top:14px;padding-top:14px;border-top:1px solid #CFE9DD;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .out-f{font-size:12px;color:#3B7A64}
+  .out-f b{color:#0F6B4F;font-size:15px}
+  .ip-expand-btn{display:block;width:100%;border:1px dashed var(--line);background:#fff;border-radius:var(--radius);padding:9px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--c-iso);margin-top:8px}
+  .ip-expand-btn:hover{background:var(--c-iso-bg);border-style:solid;border-color:var(--c-iso)}
+</style></head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit focus-exit--danger" href="02_permits.html"><span class="x">✕</span> Exit</a>
+  <div class="focus-sep"></div>
+  <div class="focus-title">
+    <div class="ft-t">Isolations › <b>Raise a new Isolation</b> <span class="ft-ref">DRAFT · Thames-ICC-04592</span></div>
+    <div class="ft-s"><span class="dot"></span>Draft — auto-saving</div>
+  </div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="02_permits.html">Cancel</a>
+    <a class="btn-outline" href="02_permits.html">Save &amp; exit</a>
+  </div>
+</div>
+
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-title">Step 1: Isolation sections</div>
+    <a href="#sec-details" class="rail-item active"><span class="rk">1</span><div><div class="ri-t">Details</div><div class="ri-s">Certificate header</div></div></a>
+    <a href="#sec-area" class="rail-item"><span class="rk">2</span><div><div class="ri-t">Area &amp; Equipment</div><div class="ri-s">Locations &amp; refs</div></div></a>
+    <a href="#sec-points" class="rail-item"><span class="rk">3</span><div><div class="ri-t">Isolation points</div><div class="ri-s">Points &amp; sequence</div></div></a>
+    <a href="#sec-additional" class="rail-item"><span class="rk">4</span><div><div class="ri-t">Additional details</div><div class="ri-s">Contingency, RA status</div></div></a>
+    <a href="#sec-ra" class="rail-item"><span class="rk">5</span><div><div class="ri-t">Risk assessment</div><div class="ri-s">Matrix / compliance</div></div></a>
+    <a href="#sec-doc" class="rail-item"><span class="rk">6</span><div><div class="ri-t">Documents</div><div class="ri-s">Optional</div></div></a>
+    <a href="#sec-testplan" class="rail-item"><span class="rk">7</span><div><div class="ri-t">Test Plan</div><div class="ri-s">Live when STT requested</div></div></a>
+    <div class="rail-title" style="margin-top:16px">Step 2: Review</div>
+    <a href="11b_raise_isolation_review.html" class="rail-btn">7&nbsp;&nbsp;Review</a>
+    <a href="11b_raise_isolation_review.html" class="rail-btn disabled">8&nbsp;&nbsp;Submit</a>
+    <div class="rail-progress"><div class="rp-top"><span>Completion</span><span class="rp-save">Auto-save: 09:55</span></div><div class="rp-bar"><div class="rp-fill"></div></div></div>
+  </aside>
+
+  <div>
+    <!-- SECTION 1 — DETAILS (certificate header) -->
+    <section class="sec" id="sec-details">
+      <div class="sec-h"><span class="sh-num">1</span><h2>Details</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="src-note">↔ <div><b>Source of isolation.</b> This isolation can be raised standalone, or from a Permit / SECE failure. If raised from a permit, Area &amp; Equipment are pre-filled.</div></div>
+
+        <div class="field">
+          <label>Description <span class="hint">— short title of the isolation</span></label>
+          <input type="text" value="Isolation for LBC-PSV-6700-B">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Isolation type</label>
+            <select id="isoType" onchange="onIsoType(this.value)">
+              <option value="">Select…</option>
+              <option>Electrical</option><option>Instruments</option><option>Mechanical</option><option>Process</option>
+            </select>
+          </div>
+          <div class="field"><label>Application</label>
+            <select><option>Breaking of Containment</option><option>Electrical isolation</option><option>Mechanical isolation</option><option>Other</option></select>
+          </div>
+        </div>
+
+        <!-- Isolation Selection Tool — appears when Isolation type = Process (certificate level, provisional) -->
+        <div class="ist-block" id="istCert" style="margin-top:4px">
+          <div class="type-note" style="background:#F1FAF6;border-color:#BFE6D6;color:#0F6B4F">⚙ <div><b>Isolation Selection Tool</b> — Isolation type is Process. Derives the minimum isolation standard from substance, release &amp; location. ⚠ Confined space / hot work → positive isolations mandatory.</div></div>
+          <div class="row3">
+            <div class="field"><label>Substance category</label><select><option>2. Flammable/Explosive</option><option>1. Toxic</option><option>3. Non-hazardous</option></select></div>
+            <div class="field"><label>Pressure</label><select><option>≤ 10 barg</option><option>10–50 barg</option><option>&gt; 50 barg</option></select></div>
+            <div class="field"><label>Line size</label><select><option>≤ 2"</option><option>2–6"</option><option>&gt; 6"</option></select></div>
+          </div>
+          <div class="row3">
+            <div class="field"><label>Location factor</label><select><option>Low (1-2 at risk/remote)</option><option>Medium</option><option>High (manned area)</option></select></div>
+            <div class="field"><label>Release factor</label><select><option>Low</option><option>Medium</option><option>High</option></select></div>
+            <div class="field"><label>Justification if lower</label><input type="text" placeholder="RA ref + exposure…"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+            <span style="font-size:12px;color:var(--muted)">Outcome factor: <b style="color:var(--ink)">C</b></span>
+            <span class="std-badge std-2" style="font-size:11px;font-weight:700;padding:5px 11px;border-radius:10px;background:var(--ok-bg);color:#0F6B4F">Isolation standard: II — Proved isolation</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Reason for isolation <span class="hint">— why this isolation is required</span></label>
+          <textarea>Isolation to facilitate the installation of LBC-PSV-6700-B following recertification</textarea>
+        </div>
+
+        <div class="field">
+          <label>SIRP compliance <span class="hint">— is this Isolation Certificate SIRP compliant?</span></label>
+          <div class="yn">
+            <div class="yn-chip on-yes" id="sirpY" onclick="setSirp('y')">Yes — SIRP compliant</div>
+            <div class="yn-chip" id="sirpN" onclick="setSirp('n')">No — non-compliant</div>
+          </div>
+          <div class="cond" id="sirpJust">
+            <div class="sirp-warn">⚠ <div><b>Non-SIRP compliant isolation.</b> A written justification is mandatory and will head the reason for isolation.</div></div>
+            <textarea style="margin-top:10px" placeholder="Justification for non-SIRP compliant isolation…"></textarea>
+          </div>
+        </div>
+
+        <div class="row3">
+          <div class="field"><label>Start on</label><input type="text" value="27-Aug-2026 · 09:55"></div>
+          <div class="field"><label>Installation <span class="hint">— site</span></label><input type="text" value="Thames"></div>
+          <div class="field"><label>System</label><input type="text" placeholder="Free text"></div>
+        </div>
+
+        <div class="field">
+          <label>Permit linked <span class="bridge-tag bridge-permit">🔗 ISO</span> <span class="hint">— search existing</span> <span class="field-hint-r">Can be multiple permits</span></label>
+          <div class="search-field"><input type="text" placeholder="Search a permit…"><span class="si">🔍</span></div>
+          <div class="chip-list">
+            <div class="chip-row"><span class="cr-id">27B-CW-02484</span><span class="cr-meta">Confirmed</span><button class="cr-x">✕</button></div>
+            <div class="chip-row"><span class="cr-id">PeW-12340-02a</span><span class="cr-meta">Submitted</span><button class="cr-x">✕</button></div>
+            <div class="chip-row"><span class="cr-id">PeW-12340-02b</span><span class="cr-meta">Issued</span><button class="cr-x">✕</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 — AREA & EQUIPMENT -->
+    <section class="sec" id="sec-area">
+      <div class="sec-h"><span class="sh-num">2</span><h2>Area &amp; Equipment</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="field">
+          <label>Add area <span class="hint">— georef (Location / Level / Room)</span> <span class="field-hint-r">Can be multiple locations</span></label>
+          <div class="search-field"><input type="text" placeholder="Search and add area…"><span class="si">🔍</span></div>
+          <div class="chip-list">
+            <div class="chip-row"><span class="cr-id">27B · Leg well South · V-6700</span><span class="cr-meta">Open drains tank</span><button class="cr-x">✕</button></div>
+            <div class="chip-row"><span class="cr-id">30C · Leg well South · V-6700</span><span class="cr-meta">BC Main Deck</span><button class="cr-x">✕</button></div>
+          </div>
+          <div class="geo-result" style="margin-top:10px">
+            <div><div class="gr-id">Combined area context</div><div class="gr-meta">2 locations linked to this isolation</div></div>
+            <div class="gr-counts"><span class="gr-chip gr-haz">🚩 14 hazards</span><span class="gr-chip gr-link">⚡ 3 permits linked</span></div>
+          </div>
+        </div>
+
+        <div class="field"><label>Area details</label><textarea>BC Main Deck, southern leg well on top of open drains tank</textarea></div>
+
+        <div class="row2">
+          <div class="field"><label>Maximo number <span class="bridge-tag bridge-max">🔗 MAX</span> <span class="hint">— V2: list</span></label><input type="text" value="10203040"></div>
+          <div class="field"><label>MOC number <span class="hint">— link to a source</span></label><input type="text" placeholder="—"></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label>Equipment number <span class="hint">— V2: systemref</span></label><input type="text" value="LF-1"></div>
+          <div class="field"><label>Equipment description</label><input type="text" value="Open drains tank pump B protection PSV"></div>
+          <div class="field"><label>Project <span class="hint">— link existing</span></label><input type="text" placeholder="— none —"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SECTION 2 — ISOLATION POINTS (compact table + drawer) -->
+    <section class="sec" id="sec-points">
+      <div class="sec-h"><span class="sh-num">3</span><h2>Isolation points</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="ip-note">🔒 <div>Click a row to open its detail drawer. <b>Drag</b> ⣿ to reorder the isolating sequence. Selecting a <b>Method</b> auto-fills the isolated / de-isolated states per discipline.</div></div>
+
+        <table class="ipc-tbl">
+          <thead><tr><th class="c-drag"></th><th class="c-ord">#</th><th>Tag</th><th>Description</th><th>Type</th><th>Isolated → De-isolated</th><th>Status</th><th></th></tr></thead>
+          <tbody id="ipRows"></tbody>
+        </table>
+
+        <div class="tbl-foot">
+          <button class="add-ip-btn" onclick="openDw('new')">+ Add isolation point</button>
+          <button class="ip-linkbtn" onclick="alert('Modify points order')">↕ Reorder</button>
+          <button class="ip-linkbtn" onclick="alert('Link to another isolation (dependency)')">🔗 Link to another isolation</button>
+          <span class="ip-sum" id="ipSum" style="margin-left:auto"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 — ADDITIONAL DETAILS -->
+    <section class="sec" id="sec-additional">
+      <div class="sec-h"><span class="sh-num">4</span><h2>Additional details</h2><span class="opt">Contingency, RA status</span></div>
+      <div class="sec-b">
+        <div class="type-note">📄 <div>Separate certificate tab in P2W — installation, referenced drawings, contingency and RA status.</div></div>
+        <div class="field"><label>RA exists?</label>
+          <div class="yn">
+            <div class="yn-chip on-yes" onclick="this.parentNode.querySelectorAll('.yn-chip').forEach(c=>c.classList.remove('on-yes','on-no'));this.classList.add('on-yes')">Yes</div>
+            <div class="yn-chip" onclick="this.parentNode.querySelectorAll('.yn-chip').forEach(c=>c.classList.remove('on-yes','on-no'));this.classList.add('on-no')">No</div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0"><label>Contingency plan <span style="color:var(--danger)">*</span></label><textarea placeholder="Contingency plan in case of deviation…"></textarea></div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 — RISK ASSESSMENT -->
+    <section class="sec" id="sec-ra">
+      <div class="sec-h"><span class="sh-num">5</span><h2>Risk assessment</h2><span class="opt">Matrix / compliance</span></div>
+      <div class="sec-b">
+        <div id="risk-assessment" data-ra-title=""></div>
+
+        <div class="field" style="margin-top:18px">
+          <label>ORA link <span class="bridge-tag bridge-ora">🔗 ORA</span></label><input type="text" placeholder="Search or link an ORA…">
+        </div>
+
+        <div class="field">
+          <label>Compliance?</label>
+          <div class="yn">
+            <div class="yn-chip on-yes" onclick="this.parentNode.querySelectorAll('.yn-chip').forEach(c=>c.classList.remove('on-yes','on-no'));this.classList.add('on-yes')">Yes</div>
+            <div class="yn-chip" onclick="this.parentNode.querySelectorAll('.yn-chip').forEach(c=>c.classList.remove('on-yes','on-no'));this.classList.add('on-no')">No</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 — DOCUMENTS -->
+    <section class="sec" id="sec-doc">
+      <div class="sec-h"><span class="sh-num">6</span><h2>Documents</h2><span class="opt">Optional</span></div>
+      <div class="sec-b">
+        <div class="type-note">📎 <div>Attach schematics, P&amp;IDs or supporting documents.</div></div>
+        <div id="documents" data-docs="ISO-6700-A schematic.pdf"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="sec-testplan">
+      <div class="sec-h"><span class="sh-num">7</span><h2>Test Plan</h2><span class="opt" style="background:var(--c-stt-bg);color:var(--c-stt-ink)">Live when STT requested</span></div>
+      <div class="sec-b">
+        <div class="type-note" style="background:var(--c-stt-bg);border-color:#D9C4EC"><span style="color:var(--c-stt-ink)">🧪</span> <div>This module becomes active when a <b>Sanction to Test</b> is requested on this isolation. The test plan can be updated as required at each step of the STT workflow.</div></div>
+        <div class="field"><label>Reason for test</label><input type="text" placeholder="Why the test is needed…"></div>
+        <div class="field"><label>Type of test</label>
+          <select><option>Leak test</option><option>Function test</option><option>Pressure test</option><option>Continuity / electrical test</option><option>Other</option></select>
+        </div>
+        <div class="field" style="margin-bottom:0"><label>Contingency</label><textarea placeholder="Contingency in case the test fails or deviates…"></textarea></div>
+      </div>
+    </section>
+
+    <button class="btn-validate" onclick="location.href='11b_raise_isolation_review.html'">Validate</button>
+  </div>
+</div></div></div>
+
+<script>
+  function setSirp(v){
+    document.getElementById('sirpY').classList.toggle('on-yes',v==='y');
+    document.getElementById('sirpN').classList.toggle('on-no',v==='n');
+    document.getElementById('sirpJust').classList.toggle('show',v==='n');
+  }
+  // Isolation type = Process → show certificate-level Isolation Selection Tool (provisional, to confirm)
+  function onIsoType(v){
+    document.getElementById('istCert').classList.toggle('show',v==='Process');
+  }
+  // Risk assessment L1/L2 → matrix visible only on L2
+  // ---- Isolation points: compact table + drawer ----
+  // Method → Isolated / De-isolated state, by discipline (ref: Isolation Point - Method and State)
+  const METHODS={
+    Electrical:{
+      'Cubicle Withdrawn':['Withdrawn','Installed'],
+      'Disconnected':['Disconnected','Reconnected'],
+      'Earthed':['Open','Closed'],
+      'Fuse Removed':['Removed','In-Place'],
+      'Isolator Opened':['Open','Closed'],
+      'Push Button Immobilised':['Locked','Unlocked']
+    },
+    Mechanical:{
+      'Blind':['Fitted','Removed'],
+      'Disconnected':['Disconnected','Reconnected'],
+      'Spade':['Inserted','Removed'],
+      'Safety Device Fitted':['Fitted','Removed']
+    },
+    Instrumentation:{
+      'Inhibit':['Applied','Removed'],
+      'Disconnected':['Disconnected','Reconnected'],
+      'Fuse Removed':['Removed','In-Place'],
+      'Knives Pulled':['Open','Closed'],
+      'Isolator Opened <110vDC':['Open','Closed'],
+      'Isolator Opened <240vAC':['Open','Closed']
+    },
+    Process:{
+      'Blind':['Fitted','Removed'],
+      'Disconnected':['Disconnected','Reconnected'],
+      'Process Bleed':['Labelled','Label Removed'],
+      'Spade':['Inserted','Removed'],
+      'Valve':['Open','Closed'],
+      'Valve 45':['45 degrees','Closed'],
+      'Valve (C/C)':['Closed','Closed'],
+      'Valve (O/O)':['Open','Open']
+    }
+  };
+  // Type label used in table (Instruments) maps to METHODS key (Instrumentation)
+  function methodKey(t){return t==='Instruments'?'Instrumentation':t;}
+
+  const PTS=[
+    {ord:1,tag:'P200AEM',desc:'P200A KO Drum Pump Motor SWBD100 A10.6',type:'Electrical',method:'Fuse Removed',iso:'Removed',deiso:'In-Place',lolc:'----',comment:''},
+    {ord:2,tag:'LBC-V-201',desc:'Open drains inlet isolation valve',type:'Process',method:'Valve (C/C)',iso:'Closed',deiso:'Closed',lolc:'LC',comment:''},
+    {ord:3,tag:'LBC-V-450',desc:'HP condensate transfer isolation valve',type:'Process',method:'',iso:'',deiso:'',lolc:'LC',comment:''}
+  ];
+  (function(){
+    var types=['Electrical','Process','Mechanical','Instruments'];
+    for(var k=4;k<=22;k++){ var t=types[k%4];
+      PTS.push({ord:k,tag:(t==='Process'?'LBC-V-':'PT-')+(500+k),desc:t+' isolation point #'+k,type:t,method:'',iso:'',deiso:'',lolc:'--',comment:''}); }
+  })();
+  let cur=0;
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+  function sel(o){return t=>'<option'+(t===o?' selected':'')+'>'+t+'</option>';}
+  function statusCell(p){
+    return (p.tag&&p.method)?'<span class="c-status cs-ok">Complete</span>':'<span class="c-status cs-todo">Incomplete</span>';
+  }
+  function typePill(t){const m={Electrical:'tp-elec',Mechanical:'tp-mech',Instruments:'tp-inst',Process:'tp-proc'};return '<span class="type-pill '+(m[t]||'')+'">'+t+'</span>';}
+  function applyIpExpand(){
+    var trs=document.querySelectorAll('#ipRows tr');
+    trs.forEach(function(tr,i){ tr.style.display=(i<IP_LIMIT||ipExpanded)?'':'none'; });
+    var host=document.getElementById('ipFormExpandHost');
+    if(!host){ host=document.createElement('div'); host.id='ipFormExpandHost';
+      var tbl=document.getElementById('ipRows').closest('table');
+      if(tbl&&tbl.parentNode){ tbl.parentNode.parentNode.insertBefore(host, tbl.parentNode.nextSibling); } }
+    var hidden=Math.max(0,trs.length-IP_LIMIT);
+    if(host){ host.innerHTML = (hidden>0||ipExpanded) ? '<button class="ip-expand-btn" onclick="toggleIpExpandForm()">'+(ipExpanded?'▲ Show less':('▾ Show all '+trs.length+' points ('+hidden+' more)'))+'</button>' : ''; }
+  }
+  function toggleIpExpandForm(){ ipExpanded=!ipExpanded; applyIpExpand(); }
+
+  var IP_LIMIT=15, ipExpanded=false;
+  function renderRows(){
+    const tb=document.getElementById('ipRows');
+    tb.innerHTML=PTS.map((p,i)=>'<tr draggable="true" data-i="'+i+'" onclick="rowClick(event,'+i+')"><td class="c-drag" title="Drag to reorder">⣿</td><td class="c-ord">'+p.ord+'</td><td class="c-tag">'+esc(p.tag)+'</td><td class="c-desc">'+esc(p.desc)+'</td><td>'+typePill(p.type)+'</td><td>'+(p.iso?esc(p.iso)+' → '+esc(p.deiso):'<span class="row-muted">—</span>')+'</td><td>'+statusCell(p)+'</td><td class="c-open">Open →</td></tr>').join('');
+    applyIpExpand();
+    const proc=PTS.filter(p=>p.type==='Process').length;
+    document.getElementById('ipSum').innerHTML='<b>'+PTS.length+'</b> points · <b>'+proc+'</b> process';
+    bindDnD();
+  }
+  function rowClick(e,i){ if(e.target.classList.contains('c-drag'))return; openDw(i); }
+  let dragFrom=null;
+  function bindDnD(){
+    const rows=[...document.querySelectorAll('#ipRows tr')];
+    rows.forEach(tr=>{
+      tr.addEventListener('dragstart',e=>{dragFrom=+tr.dataset.i;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+      tr.addEventListener('dragend',()=>{tr.classList.remove('dragging');rows.forEach(r=>r.classList.remove('drop-above','drop-below'));});
+      tr.addEventListener('dragover',e=>{e.preventDefault();const b=tr.getBoundingClientRect();const below=(e.clientY-b.top)/b.height>0.5;rows.forEach(r=>r.classList.remove('drop-above','drop-below'));tr.classList.add(below?'drop-below':'drop-above');});
+      tr.addEventListener('drop',e=>{
+        e.preventDefault();
+        let to=+tr.dataset.i;
+        const b=tr.getBoundingClientRect();const below=(e.clientY-b.top)/b.height>0.5;
+        if(below)to++;
+        if(dragFrom<to)to--;
+        const moved=PTS.splice(dragFrom,1)[0];
+        PTS.splice(to,0,moved);
+        PTS.forEach((p,idx)=>p.ord=idx+1);   // renumber isolating order
+        renderRows();
+      });
+    });
+  }
+  function drawerBody(p){
+    const mk=methodKey(p.type);
+    const methods=Object.keys(METHODS[mk]||{});
+    const methodOpts='<option value="">Select method…</option>'+methods.map(sel(p.method)).join('');
+    return '<div class="dw-block"><div class="dw-block-h">Point details</div>'+
+      '<div class="dwgrid g3"><div class="dwf"><label>Iso #</label><input value="'+p.ord+'"></div><div class="dwf"><label>De-iso #</label><input value="'+p.ord+'"></div><div class="dwf"><label>Type</label><select onchange="setType(this.value)">'+['Electrical','Instruments','Mechanical','Process'].map(sel(p.type)).join('')+'</select></div></div>'+
+      '<div class="dwf"><label>Tag no.</label><input value="'+esc(p.tag)+'" placeholder="Tag no." oninput="PTS[cur].tag=this.value;renderRows()"></div>'+
+      '<div class="dwf"><label>Description</label><input value="'+esc(p.desc)+'" placeholder="Description" oninput="PTS[cur].desc=this.value;renderRows()"></div>'+
+      '<div class="dwf"><label>Method <span class="hint" style="font-weight:400;color:var(--muted)">— sets isolated / de-isolated state</span></label><select onchange="setMethod(this.value)">'+methodOpts+'</select></div>'+
+      '<div class="dwgrid g3"><div class="dwf"><label>Isolated state <span class="hint" style="font-weight:400;color:var(--muted)">auto</span></label><input value="'+esc(p.iso)+'" readonly style="background:#F1F3F5;color:var(--muted)"></div><div class="dwf"><label>De-isolated state <span class="hint" style="font-weight:400;color:var(--muted)">auto</span></label><input value="'+esc(p.deiso)+'" readonly style="background:#F1F3F5;color:var(--muted)"></div><div class="dwf"><label>Normal LO/LC</label><select>'+['----','LO','LC'].map(sel(p.lolc)).join('')+'</select></div></div>'+
+      '<div class="dwf"><label>Comment</label><input placeholder="—" value="'+esc(p.comment)+'" oninput="PTS[cur].comment=this.value"></div>'+
+      '</div>';
+  }
+  function setType(v){
+    PTS[cur].type=v;
+    // reset method/state when discipline changes (method list differs)
+    PTS[cur].method='';PTS[cur].iso='';PTS[cur].deiso='';
+    paint();renderRows();
+  }
+  function setMethod(m){
+    const p=PTS[cur];p.method=m;
+    const map=METHODS[methodKey(p.type)]||{};
+    if(map[m]){p.iso=map[m][0];p.deiso=map[m][1];}else{p.iso='';p.deiso='';}
+    paint();renderRows();
+  }
+  function paint(){
+    const p=PTS[cur];
+    document.getElementById('dwOrd').textContent=p.ord;
+    document.getElementById('dwTitle').textContent=p.tag||'New point';
+    document.getElementById('dwSub').textContent=p.type;
+    document.getElementById('dwBody').innerHTML=drawerBody(p);
+    [...document.querySelectorAll('#ipRows tr')].forEach((tr,i)=>tr.classList.toggle('sel',i===cur));
+  }
+  function openDw(id){
+    if(id==='new'){PTS.push({ord:PTS.length+1,tag:'',desc:'',type:'Electrical',method:'',iso:'',deiso:'',lolc:'----',comment:''});renderRows();cur=PTS.length-1;}
+    else cur=id;
+    paint();
+    document.getElementById('scrim').classList.add('on');
+    document.getElementById('drawer').classList.add('on');
+  }
+  function closeDw(){renderRows();document.getElementById('scrim').classList.remove('on');document.getElementById('drawer').classList.remove('on');}
+  function stepDw(d){cur=Math.min(PTS.length-1,Math.max(0,cur+d));paint();}
+  renderRows();
+  // rail active on scroll
+  const secs=[...document.querySelectorAll('.sec')],ri=[...document.querySelectorAll('.rail-item')];
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);ri.forEach(r=>r.classList.remove('active'));if(ri[i])ri[i].classList.add('active');}})},{rootMargin:'-20% 0px -70% 0px'});
+  secs.forEach(s=>io.observe(s));
+</script>
+
+<!-- Isolation point detail drawer -->
+<div class="scrim" id="scrim" onclick="closeDw()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dw-head">
+    <span class="dw-ord" id="dwOrd">2</span>
+    <div class="dw-title-wrap">
+      <div class="dw-title" id="dwTitle">LBC-V-201</div>
+      <div class="dw-sub" id="dwSub">Process · isolation standard required</div>
+    </div>
+    <div class="dw-nav"><button onclick="stepDw(-1)" title="Previous point">↑</button><button onclick="stepDw(1)" title="Next point">↓</button></div>
+    <button class="dw-close" onclick="closeDw()">✕</button>
+  </div>
+  <div class="dw-body" id="dwBody"></div>
+  <div class="dw-foot">
+    <button class="del" onclick="closeDw()" title="Remove point">🗑</button>
+    <button class="savenext" onclick="stepDw(1)">Save &amp; next ↓</button>
+    <button class="save" onclick="closeDw()">Save point</button>
+  </div>
+</aside>
+<script src="riskassessment.js"></script>
+<script src="documents.js"></script>
+</body></html>

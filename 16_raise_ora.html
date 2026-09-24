@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Raise a new ORA</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-ora); --module-bg:var(--c-ora-bg)}
+  html{scroll-behavior:smooth}
+  .focus-title .ft-t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .focus-title .ft-ref{font-variant-numeric:tabular-nums;font-size:12px;color:var(--brand-ink);background:var(--brand-soft);border-radius:4px;padding:1px 7px;font-weight:700}
+  .focus-title .ft-s{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .focus-title .ft-s .dot{width:8px;height:8px;border-radius:50%;background:var(--c-ora);display:inline-block}
+  .rail-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;padding-left:4px}
+  .rail-item.active .rk{background:var(--c-ora);border-color:var(--c-ora);color:#fff}
+  .rail-item.sub{padding-left:20px}
+  .rail-item.sub .rk{width:16px;height:16px;font-size:9px}
+  .rail-item .ri-t{font-size:13px;font-weight:600}
+  .rail-item.sub .ri-t{font-size:12px;font-weight:500}
+  .rail-item .ri-s{font-size:11px;color:var(--muted)}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;color:var(--muted)}
+  .rail-btn.disabled{color:#AAB4BD;cursor:default;display:block}
+  .rail-btn.active{background:#3B4657;color:#fff;border-color:#3B4657}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-save{color:var(--muted)}
+  .rail-progress .rp-fill{width:45%}
+  /* Cumulative risk banner */
+  .crr{display:flex;gap:16px;align-items:flex-start;background:linear-gradient(180deg,var(--c-ora-bg),#fff);border:1px solid #E9B9C1;border-radius:10px;padding:16px 18px;margin-bottom:18px}
+  .crr .crr-ico{font-size:22px}
+  .crr .crr-t{font-size:13.5px;font-weight:700;color:#9A2F41}
+  .crr .crr-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .crr .crr-list{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .crr-chip{font-size:11px;font-weight:600;background:#fff;border:1px solid #E9B9C1;color:#9A2F41;padding:4px 10px;border-radius:12px}
+  .crr .crr-right{margin-left:auto;text-align:right}
+  .sec-h .sh-sub{width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--c-ora);color:var(--c-ora);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+  .sec-h h2.sub{font-size:14px}
+  .sec-h .req{font-size:11px;color:var(--danger);font-weight:600}
+  .sec-h .opt{font-size:11px;color:var(--muted);font-weight:600}
+  .sec-h .tovalidate{font-size:10px;font-weight:700;letter-spacing:.4px;color:#9A6212;background:var(--warn-bg);border:1px dashed var(--warn);border-radius:4px;padding:2px 7px}
+  .grp-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--c-ora);font-weight:700;margin:2px 0 0}
+  .field:last-child{margin-bottom:0}
+  .field .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .bridge-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
+  .bridge-max{background:#EAF1F7;color:#12507A}
+  .bridge-sece{background:#F3ECF7;color:#730FC3}
+  .v2tag{font-size:10px;font-weight:700;color:#2C8BD6;background:#E4F1FB;border-radius:4px;padding:1px 6px;margin-left:5px}
+  .ps-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:8px}
+  .ps-add{display:flex;gap:10px;align-items:flex-end;margin-bottom:14px}
+  .ps-add .field{flex:1;margin-bottom:0}
+  .ps-added{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+  .ps-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--line-soft)}
+  .ps-item:last-child{border-bottom:0}
+  .ps-item .ps-code{font-weight:700;color:var(--brand-ink);font-size:13px;white-space:nowrap;min-width:74px}
+  .ps-item .ps-body{flex:1}
+  .ps-item .ps-title{font-size:13px;font-weight:600}
+  .ps-item .ps-haz{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .ps-item .ps-orae{font-size:11.5px;font-weight:600;color:#730FC3;background:#F3ECF7;padding:3px 10px;border-radius:10px;white-space:nowrap}
+  .ps-item .ps-remove{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px}
+  .ps-item .ps-remove:hover{color:var(--danger)}
+  .ps-empty{padding:20px;text-align:center;color:var(--muted);font-size:12.5px;border:1px dashed var(--line);border-radius:var(--radius);margin-bottom:12px}
+  .ps-name{flex:1;font-size:13px}
+  .ps-name b{color:var(--brand-ink)}
+  .ps-owner{font-size:11px;color:var(--muted)}
+  .yn{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .yn button{border:0;background:#fff;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted)}
+  .yn button.on-y{background:var(--danger);color:#fff}
+  .yn button.on-n{background:var(--ok);color:#fff}
+  .note-box{background:var(--c-ora-bg);border:1px solid #E9B9C1;border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#9A2F41;margin-top:14px}
+  .note-box b{color:#9A2F41}
+  .note-warn{background:var(--warn-bg);border:1px solid #EAD3A6;color:#8A5A12}
+  .note-warn b{color:var(--warn)}
+  .mit-actions{display:flex;gap:8px;margin-bottom:12px}
+  .mit-below{display:flex;gap:8px;margin-top:12px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .mit-below .hint-inline{font-size:11.5px;color:var(--muted);align-self:center;margin-left:auto}
+  .rowact,.mcard-act{display:flex;gap:6px;justify-content:flex-end}
+  .rowact button,.mcard-act button,.mm-act .track,.mm-act .esc{border:1px solid var(--line);background:#fff;border-radius:4px;padding:4px 9px;font-size:11px;cursor:pointer;color:var(--muted);font-family:inherit;font-weight:600}
+  .rowact button.track:hover,.mcard-act button.track:hover,.mm-act .track:hover{border-color:var(--ok);color:var(--ok)}
+  .rowact button.esc:hover,.mcard-act button.esc:hover,.mm-act .esc:hover{border-color:var(--danger);color:var(--danger)}
+  /* modals */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+  .modal.wide{max-width:640px}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .modal-h h3{font-size:15px;font-weight:600;flex:1}
+  .modal-h .x{cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none}
+  .modal-b{padding:20px}
+  .modal-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;justify-content:flex-end;gap:10px}
+  .btn-ora{background:var(--c-ora);border:1px solid var(--c-ora);color:#fff;font-weight:600;padding:9px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-ora:hover{background:#a83848}
+  .hyp-banner{background:var(--warn-bg);border:1px dashed var(--warn);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:#8A5A12;margin-bottom:16px}
+  .hyp-banner b{color:var(--warn)}
+  .mm-ref{background:#F7F9FB;border:1px solid var(--line-soft);border-radius:var(--radius);padding:11px 14px;font-size:12.5px;margin-bottom:16px}
+  .mm-ref .mr-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:700}
+  .mm-ref .mr-v{font-weight:600;color:var(--ink);margin-top:2px}
+  /* track history */
+  .track-log{border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+  .track-item{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line-soft);align-items:flex-start}
+  .track-item:last-child{border-bottom:0}
+  .track-item .ti-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .ti-ok{background:var(--ok-bg);color:var(--ok)}
+  .ti-no{background:var(--danger-bg);color:var(--danger)}
+  .track-item .ti-b{flex:1}
+  .track-item .ti-t{font-size:12.5px;font-weight:600}
+  .track-item .ti-m{font-size:11.5px;color:var(--muted)}
+  .track-item .ti-when{font-size:11px;color:var(--muted);white-space:nowrap}
+  .result-toggle{display:flex;gap:8px;margin-bottom:14px}
+  .result-toggle button{flex:1;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted)}
+  .result-toggle button.on-done{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+  .result-toggle button.on-fail{border-color:var(--danger);background:var(--danger-bg);color:var(--danger)}
+  /* escalate */
+  .esc-target{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .esc-opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;cursor:pointer}
+  .esc-opt input{margin-top:2px}
+  .esc-opt .eo-t{font-size:13px;font-weight:600}
+  .esc-opt .eo-d{font-size:11.5px;color:var(--muted)}
+  .esc-opt.sel{border-color:var(--danger);background:var(--danger-bg)}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:var(--radius);font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:600}
+  .btn:hover{border-color:var(--c-ora);color:var(--c-ora)}
+  .mit-cards{display:flex;flex-direction:column;gap:8px}
+  .mmeas{border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .mm-row{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;user-select:none}
+  .mm-row:hover{background:#F7F9FB}
+  .mm-chev{font-size:10px;color:var(--muted);transition:transform .15s;flex-shrink:0}
+  .mmeas.open .mm-chev{transform:rotate(90deg)}
+  .mm-type{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;flex-shrink:0}
+  .mm-desc{font-size:12.5px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mm-freq{font-size:11.5px;flex-shrink:0}
+  .mm-act{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .mm-act .ic{border:1px solid transparent;background:none;border-radius:4px;padding:3px 6px;font-size:12px;cursor:pointer;color:var(--muted);line-height:1}
+  .mm-act .ic:hover{background:#EDEFF3;color:var(--ink)}
+  .mm-act .ic-del:hover{background:var(--danger-bg);color:var(--danger)}
+  .mm-sep{width:1px;height:18px;background:var(--line);margin:0 2px}
+  .mm-detail{display:none;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border-top:1px solid var(--line-soft)}
+  .mmeas.open .mm-detail{display:grid}
+  .mf{padding:9px 12px;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);min-width:0}
+  .mf-l{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);margin-bottom:3px}
+  .mf-v{display:block;font-size:12.5px;color:var(--ink);line-height:1.4}
+  .freq{font-weight:700;color:var(--c-ora)}
+  .mit-foot{padding:14px 16px;background:#FBFCFD;border-top:1px solid var(--line-soft)}
+  .tol-q{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .tol-q label{font-size:13px;font-weight:600;flex:1}
+  .remedial{border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
+  .risk-field{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .risk-field label{margin-bottom:0;flex:1}
+  .risk-badge{font-size:12px;font-weight:700;padding:6px 14px;border-radius:12px}
+  .risk-amber{background:var(--warn-bg);color:var(--warn)}
+  .risk-green{background:var(--ok-bg);color:var(--ok)}
+  .risk-red{background:var(--danger-bg);color:var(--danger)}
+  .drop{border:1.5px dashed var(--line);border-radius:8px;padding:22px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer}
+  .drop:hover{border-color:var(--c-ora);color:var(--c-ora)}
+  .drop b{color:var(--ink)}
+  .btn-validate{width:100%;background:var(--c-ora);color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:16px}
+  .btn-validate:hover{filter:brightness(.92)}
+  .clock-badge{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:12px;padding:1px 9px;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .clock-badge.disabled{color:#9aa4ad;background:#fff;border-color:var(--line)}
+</style></head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit focus-exit--danger" href="02_permits.html"><span class="x">✕</span> Exit</a>
+  <div class="focus-sep"></div>
+  <div class="focus-title">
+    <div class="ft-t">ORA › <b>Raise a new ORA</b> <span class="ft-ref">DRAFT · Thames-ORA-00347</span></div>
+    <div class="ft-s"><span class="dot"></span>Draft — auto-saving · Step 1 of 3 <span class="clock-badge disabled">⏱ 72:00 — clock starts at Step 2</span></div>
+  </div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="02_permits.html">Cancel</a>
+    <a class="btn-outline" href="02_permits.html">Save &amp; exit (draft)</a>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-title">Step 1: ORA sections</div>
+    <a href="#sec-details" class="rail-item active"><span class="rk">1</span><div><div class="ri-t">Details</div><div class="ri-s">Header &amp; equipment</div></div></a>
+    <a href="#sec-sece" class="rail-item"><span class="rk">2</span><div><div class="ri-t">ORA Information</div><div class="ri-s">SECE, response, barrier</div></div></a>
+    <a href="#sec-sece" class="rail-item sub"><span class="rk">a</span><div><div class="ri-t">SECE impairment</div></div></a>
+    <a href="#sec-resp" class="rail-item sub"><span class="rk">b</span><div><div class="ri-t">Initial response</div></div></a>
+    <a href="#sec-barrier" class="rail-item sub"><span class="rk">c</span><div><div class="ri-t">Barrier / SECE impacted</div></div></a>
+    <a href="#sec-doc" class="rail-item"><span class="rk">3</span><div><div class="ri-t">Document section</div><div class="ri-s">Upload &amp; templates</div></div></a>
+    <div class="rail-title" style="margin-top:16px">Step 2: Review</div>
+    <a href="16b_raise_ora_review.html" class="rail-btn">4&nbsp;&nbsp;Review</a>
+    <span class="rail-btn disabled" aria-disabled="true">5&nbsp;&nbsp;Submit</span>
+    <div class="rail-progress"><div class="rp-top"><span>Completion</span><span class="rp-save">Auto-save: 09:12</span></div><div class="rp-bar"><div class="rp-fill" style="width:55%"></div></div></div>
+  </aside>
+  <div>
+    <!-- Cumulative Risk banner -->
+    <div class="crr">
+      <span class="crr-ico">📊</span>
+      <div>
+        <div class="crr-t">Cumulative risk — 27B / BC deck</div>
+        <div class="crr-sub">Copied from <b>27B-ORA-20461-REV-002</b> · other ORAs issued on this area at time of creation:</div>
+        <div class="crr-list"><span class="crr-chip">27B-ORA-19770 · diesel gen</span><span class="crr-chip">27B-ORA-20227 · jacket insp.</span><span class="crr-chip">1 cumulative view / location</span></div>
+      </div>
+      <div class="crr-right"><div style="font-size:11px;color:var(--muted)">Snapshot at creation</div></div>
+    </div>
+
+    <!-- 1 · DETAILS -->
+    <section class="sec" id="sec-details">
+      <div class="sec-h"><span class="sh-num">1</span><h2>Details</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="field"><label>Description <span class="hint">what is impaired — clear description of impairment &amp; its function</span></label><textarea placeholder="Describe the impairment…"></textarea></div>
+        <div class="field"><label>Purpose <span class="hint">impact: what effect will the impairment have?</span></label><textarea placeholder="Impact &amp; purpose…"></textarea></div>
+        <div class="row2"><div class="field"><label>Start on</label><input type="text" value="24 Jul 2026 09:00"></div><div class="field"><label>Finish on</label><input type="text" value="—"></div></div>
+        <div class="row2"><div class="field"><label>Type of isolation <span class="hint">None = optional isolation link</span></label><select><option>None</option><option>Full</option></select></div><div class="field"><label>Area(s) <span class="v2tag">V2: GeoRef</span></label><input type="text" value="27B / BC deck"></div></div>
+        <div class="row2"><div class="field"><label>ORA Team Leader</label><select><option>C. Boyd (OIM/SC)</option><option>A. Denton (AA)</option></select></div><div class="field"><label>Project</label><select><option>— none —</option><option>2025 Shutdown</option></select></div></div>
+        <div class="field" style="margin-bottom:0"><label>Equipment <span class="bridge-tag bridge-max">🔗 MAXIMO</span></label>
+          <div class="row3"><div><label style="font-weight:400;font-size:12px">Maximo Number</label><input type="text" value="10203040"></div><div><label style="font-weight:400;font-size:12px">Equip. Number <span class="v2tag">V2: SystemRef</span></label><input type="text" value="FG-12"></div><div><label style="font-weight:400;font-size:12px">Equip. description</label><input type="text" value="F&amp;G loop 12"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · ORA INFORMATION — grouped label -->
+    <div class="grp-label" style="margin:24px 0 10px">2 · ORA Information</div>
+
+    <!-- 2a SECE impairment -->
+    <section class="sec" id="sec-sece">
+      <div class="sec-h"><span class="sh-sub">a</span><h2 class="sub">SECE impairment</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="field"><label>SECE description <span class="hint">incident or failure description</span></label><textarea placeholder="Describe the SECE impairment…"></textarea></div>
+        <div class="field"><label>Equipment code</label><input type="text" value="FG-12"></div>
+        <div class="field" style="margin-bottom:0"><label>MAH scenarios affected <span class="bridge-tag bridge-sece">🔗 Snowflake</span> <span class="hint">site-specific list</span></label><select><option>Select MAH scenario…</option><option>Gas release — process area</option><option>Fire — BC deck</option><option>Explosion — enclosed module</option></select></div>
+      </div>
+    </section>
+
+    <!-- 2b Initial response -->
+    <section class="sec" id="sec-resp">
+      <div class="sec-h"><span class="sh-sub">b</span><h2 class="sub">Initial response &amp; assessment</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="field"><label>Type of response <span class="hint">dropdown</span></label><select><option>Continue operations</option><option>Limit operations</option><option>Stop operations</option></select></div>
+        <div class="field" style="margin-bottom:0"><label>Justification <span class="hint">free text</span></label><textarea placeholder="Why this initial response…"></textarea></div>
+      </div>
+    </section>
+
+    <section class="sec" id="sec-barrier">
+      <div class="sec-h"><span class="sh-sub">c</span><h2 class="sub">Barrier / SECE impacted</h2><span class="req">Required</span></div>
+      <div class="sec-b">
+        <div class="ps-add">
+          <div class="field"><label>Performance Standard affected <span class="bridge-tag bridge-sece">🔗 Snowflake</span> <span class="hint">select the affected barrier — hazards &amp; ORAE come with it</span></label>
+            <select id="psSelect"><option value="">Select a Performance Standard…</option><option>001 / HYC — Hydrocarbon containment</option><option>005 / F&amp;G — Fire &amp; Gas detection</option><option>011 / FEP — Fire &amp; Explosion protection</option><option>014 / EER — Escape, Evacuation &amp; Rescue</option></select>
+          </div>
+          <button class="btn" onclick="addPs()">＋ Add</button>
+        </div>
+
+        <div class="ps-added" id="psList">
+          <div class="ps-item">
+            <span class="ps-code">001 / HYC</span>
+            <div class="ps-body"><div class="ps-title">Hydrocarbon containment</div><div class="ps-haz">Hazards: loss of containment · gas release · liquid spill</div></div>
+            <span class="ps-orae">ORAE: R. Price</span>
+            <button class="ps-remove" title="Remove">×</button>
+          </div>
+          <div class="ps-item">
+            <span class="ps-code">005 / F&amp;G</span>
+            <div class="ps-body"><div class="ps-title">Fire &amp; Gas detection</div><div class="ps-haz">Hazards: undetected gas · delayed alarm · detection gap</div></div>
+            <span class="ps-orae">ORAE: J. Stern</span>
+            <button class="ps-remove" title="Remove">×</button>
+          </div>
+        </div>
+
+        <div class="note-box">⚠️ <b>Double validation:</b> 2 Performance Standards selected (HYC + F&amp;G) → each PS brings its own ORAE, so authorisation will require <b>both PS Owners</b> to validate.</div>
+      </div>
+    </section>
+
+    <section class="sec" id="sec-doc">
+      <div class="sec-h"><span class="sh-num">3</span><h2>Document section</h2></div>
+      <div class="sec-b">
+        <div class="field" style="margin-bottom:8px;font-size:12.5px;color:var(--muted)">Testimonies, pictures of damages, investigation report…</div>
+        <div id="documents" data-docs="Barrier impairment note.pdf"></div>
+        <div class="field" style="margin-bottom:0;margin-top:14px"><label>Templates</label><div style="border:1px solid var(--line);border-radius:20px;padding:10px 16px;font-size:13px;color:var(--muted)">URL Link</div></div>
+      </div>
+    </section>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+      <button class="btn-validate" style="width:auto;padding:13px 28px" onclick="location.href='16b_raise_ora_review.html'">Validate Step 1 → Review</button>
+    </div>
+  </div>
+</div></div></div>
+<!-- ===== MODAL : Add custom mitigation ===== -->
+<div class="modal-bg" id="mAdd">
+  <div class="modal wide">
+    <div class="modal-h"><h3>Add custom mitigation</h3><button class="x" onclick="closeModal('mAdd')">×</button></div>
+    <div class="modal-b">
+      <div class="row2">
+        <div class="field"><label>Control category</label><select><option>People — Competence</option><option>People — Communication</option><option>Risk mgmt — Control</option><option>Risk mgmt — Review</option></select></div>
+        <div class="field"><label>Confirmation frequency</label><select><option>One-off</option><option>Every 24h</option><option>Every 7 days</option></select></div>
+      </div>
+      <div class="field"><label>Description</label><textarea placeholder="What the control is…"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Action required</label><input type="text" placeholder="What must be done…"></div>
+        <div class="field"><label>Expected results</label><input type="text" placeholder="Desired outcome…"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Action on non-conformance</label><input type="text" placeholder="If control fails…"></div>
+        <div class="field"><label>Who to contact / alert on failure</label><select><option>C. Boyd (OIM)</option><option>A. Denton (AA)</option><option>R. Price (ORAE)</option><option>H. Shaw (IA)</option></select></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="btn" onclick="closeModal('mAdd')">Cancel</button><button class="btn-ora" onclick="closeModal('mAdd')">Add mitigation</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL : Track result ===== -->
+<div class="modal-bg" id="mTrack">
+  <div class="modal">
+    <div class="modal-h"><h3>Track result</h3><button class="x" onclick="closeModal('mTrack')">×</button></div>
+    <div class="modal-b">
+      <div class="hyp-banner">🔍 <b>Hypothèse à valider :</b> « Track result » = enregistrer le résultat d'un contrôle à échéance (action tracking). Chaque mesure est suivie dans le temps selon sa fréquence.</div>
+      <div class="mm-ref"><div class="mr-l">Measure</div><div class="mr-v">People — Competence · Trained fire watch on station</div><div style="margin-top:6px;font-size:11.5px;color:var(--muted)">Frequency: <b style="color:var(--c-ora)">Every 24h</b> · next due today 18:00</div></div>
+
+      <label style="font-size:12.5px;font-weight:600;display:block;margin-bottom:8px">Record a new result</label>
+      <div class="result-toggle">
+        <button class="on-done" onclick="this.classList.add('on-done');this.nextElementSibling.classList.remove('on-fail')">✓ Done / conform</button>
+        <button onclick="this.classList.add('on-fail');this.previousElementSibling.classList.remove('on-done')">✕ Not done / non-conform</button>
+      </div>
+      <div class="field"><label>Comment</label><textarea placeholder="Observation for the record…"></textarea></div>
+      <div class="row2">
+        <div class="field" style="margin-bottom:0"><label>Checked on</label><input type="text" value="24 Jul 2026 · 14:30"></div>
+        <div class="field" style="margin-bottom:0"><label>Checked by</label><input type="text" value="C. Boyd (OIM)"></div>
+      </div>
+
+      <label style="font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;display:block;margin:18px 0 8px">Previous results</label>
+      <div class="track-log">
+        <div class="track-item"><div class="ti-dot ti-ok">✓</div><div class="ti-b"><div class="ti-t">Conform · fire watch present</div><div class="ti-m">by C. Boyd (OIM)</div></div><span class="ti-when">23 Jul 18:00</span></div>
+        <div class="track-item"><div class="ti-dot ti-ok">✓</div><div class="ti-b"><div class="ti-t">Conform</div><div class="ti-m">by Y. Carter (PA)</div></div><span class="ti-when">23 Jul 06:00</span></div>
+        <div class="track-item"><div class="ti-dot ti-no">✕</div><div class="ti-b"><div class="ti-t">Non-conform · watch relieved late</div><div class="ti-m">by C. Boyd (OIM) · escalated</div></div><span class="ti-when">22 Jul 18:00</span></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="btn" onclick="closeModal('mTrack')">Cancel</button><button class="btn-ora" onclick="closeModal('mTrack')">Save result</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL : Escalate ===== -->
+<div class="modal-bg" id="mEsc">
+  <div class="modal">
+    <div class="modal-h"><h3>Escalate</h3><button class="x" onclick="closeModal('mEsc')">×</button></div>
+    <div class="modal-b">
+      <div class="hyp-banner">🔍 <b>Hypothèse à valider :</b> « Escalate » = remonter un contrôle défaillant ou un risque qui dérive — soit alerter le responsable, soit déclencher une révision d'ORA (lien avec « Revise ORA » du workflow).</div>
+      <div class="mm-ref"><div class="mr-l">Measure</div><div class="mr-v">People — Competence · Trained fire watch on station</div><div style="margin-top:6px;font-size:11.5px;color:var(--muted)">Action on non-conformance: <b>Stop work, escalate to OIM</b></div></div>
+
+      <label style="font-size:12.5px;font-weight:600;display:block;margin-bottom:8px">Escalation action</label>
+      <div class="esc-target">
+        <label class="esc-opt sel"><input type="radio" name="esc" checked><span><span class="eo-t">Notify contact</span><span class="eo-d">Alert C. Boyd (OIM) — the person to alert on failure</span></span></label>
+        <label class="esc-opt"><input type="radio" name="esc"><span><span class="eo-t">Require ORA revision</span><span class="eo-d">Trigger « Revise ORA » — new revision, full re-review cycle</span></span></label>
+        <label class="esc-opt"><input type="radio" name="esc"><span><span class="eo-t">Stop operations</span><span class="eo-d">Escalate to stop — initial response changes to « Stop »</span></span></label>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Reason for escalation <span style="color:var(--danger)">*</span></label><textarea placeholder="Why this control is being escalated…"></textarea></div>
+    </div>
+    <div class="modal-f"><button class="btn" onclick="closeModal('mEsc')">Cancel</button><button class="btn-ora" onclick="closeModal('mEsc')">Escalate</button></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.yn').forEach(g=>g.querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',()=>{g.querySelectorAll('button').forEach(x=>x.classList.remove('on-y','on-n'));b.classList.add(i===0?'on-y':'on-n');})));
+  const secs=[...document.querySelectorAll('.sec')],rails=[...document.querySelectorAll('.rail-item')];
+  // map section id -> rail item (handle sub duplicates: sec-sece appears twice, take first)
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+    rails.forEach(r=>r.classList.remove('active'));
+    const id='#'+e.target.id;const r=rails.find(x=>x.getAttribute('href')===id);if(r)r.classList.add('active');
+  }})},{rootMargin:'-25% 0px -65% 0px'});
+  secs.forEach(s=>io.observe(s));
+  // modals
+  function openModal(id){document.getElementById(id).classList.add('on');}
+  function mmToggle(id){var el=document.getElementById(id);if(el)el.classList.toggle('open');}
+  function mmDelete(id){
+    var el=document.getElementById(id);if(!el)return;
+    var name=el.querySelector('.mm-type');
+    if(confirm('Delete this mitigation measure'+(name?' ("'+name.textContent+'")':'')+'?')){el.remove();}
+  }
+  function closeModal(id){document.getElementById(id).classList.remove('on');}
+  document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
+  // escalate radio selection
+  document.querySelectorAll('.esc-opt').forEach(o=>o.addEventListener('click',function(){
+    this.parentNode.querySelectorAll('.esc-opt').forEach(x=>x.classList.remove('sel'));this.classList.add('sel');
+  }));
+  // Barrier/SECE — add PS with linked hazards + ORAE
+  const psMeta={
+    '001 / HYC — Hydrocarbon containment':{code:'001 / HYC',title:'Hydrocarbon containment',haz:'loss of containment · gas release · liquid spill',orae:'R. Price'},
+    '005 / F&G — Fire & Gas detection':{code:'005 / F&G',title:'Fire & Gas detection',haz:'undetected gas · delayed alarm · detection gap',orae:'J. Stern'},
+    '011 / FEP — Fire & Explosion protection':{code:'011 / FEP',title:'Fire & Explosion protection',haz:'active protection failure · passive barrier breach',orae:'M. Lowe'},
+    '014 / EER — Escape, Evacuation & Rescue':{code:'014 / EER',title:'Escape, Evacuation & Rescue',haz:'blocked route · muster failure · TR integrity',orae:'D. Holt'}
+  };
+  function addPs(){
+    const sel=document.getElementById('psSelect');const v=sel.value;if(!v||!psMeta[v])return;
+    const m=psMeta[v];const list=document.getElementById('psList');
+    const row=document.createElement('div');row.className='ps-item';
+    row.innerHTML=`<span class="ps-code">${m.code}</span><div class="ps-body"><div class="ps-title">${m.title}</div><div class="ps-haz">Hazards: ${m.haz}</div></div><span class="ps-orae">ORAE: ${m.orae}</span><button class="ps-remove" title="Remove">×</button>`;
+    row.querySelector('.ps-remove').addEventListener('click',()=>row.remove());
+    list.appendChild(row);sel.value='';
+  }
+  document.querySelectorAll('#psList .ps-remove').forEach(b=>b.addEventListener('click',function(){this.closest('.ps-item').remove();}));
+</script>
+<script src="documents.js"></script>
+</body></html>

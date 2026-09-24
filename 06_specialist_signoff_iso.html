@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Specialist sign-off (iso)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  .trigger{display:flex;gap:14px;align-items:flex-start;border-radius:8px;padding:16px 18px;margin-bottom:18px}
+  .trigger .t-ico{font-size:22px}
+  .trigger .t-t{font-size:14px;font-weight:700}
+  .trigger .t-d{font-size:12.5px;margin-top:3px}
+  .trigger.permit{background:var(--c-permit-bg);border:1px solid #C9C4F7}
+  .trigger.permit .t-t{color:#3F36B0}
+  .trigger.iso{background:var(--c-iso-bg);border:1px solid #EBCB93}
+  .trigger.iso .t-t{color:#9A6212}
+
+  .review-sec{border:1px solid var(--line);border-radius:8px;margin-bottom:14px;background:#fff}
+  .rs-h{display:flex;align-items:center;padding:13px 18px;background:#F7F9FB;border-bottom:1px solid var(--line-soft);border-radius:8px 8px 0 0}
+  .rs-h h3{font-size:13.5px;font-weight:600;flex:1}
+  .rs-h .ro{font-size:11px;color:var(--muted);background:var(--line-soft);padding:3px 9px;border-radius:10px}
+  .rs-b{padding:16px 18px}
+  .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .kv .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:2px}
+  .kv .v{font-size:13px}
+
+  .hz{border:1px solid var(--line-soft);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px}
+  .hz:last-child{margin-bottom:0}
+  .hz-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .hz-name{font-size:13px;font-weight:600;flex:1}
+  .risk-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px}
+  .risk-hi{background:var(--danger-bg);color:var(--danger)}.risk-med{background:var(--warn-bg);color:var(--warn)}.risk-lo{background:var(--ok-bg);color:var(--ok)}
+  .hz-ctrl{font-size:12.5px;color:var(--muted)}
+  .hz-ctrl b{color:var(--ink);font-weight:600}
+  .flag-me{display:inline-block;font-size:10px;font-weight:700;background:var(--c-permit-bg);color:#3F36B0;padding:2px 7px;border-radius:4px;margin-left:6px}
+  .matrix-mini{display:inline-flex;gap:2px;margin-top:8px}
+  .mm-cell{width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+  .mm-hi{background:var(--danger)}.mm-med{background:var(--warn)}.mm-lo{background:var(--ok)}
+  .mm-arrow{align-self:center;color:var(--muted);margin:0 6px;font-size:12px}
+  .doc-row{display:flex;gap:10px;flex-wrap:wrap}
+  .doc{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:var(--radius);padding:9px 14px;font-size:12.5px;cursor:pointer}
+  .doc:hover{border-color:var(--brand);color:var(--brand)}
+
+  /* ===== Sign-off bar (horizontal, bottom) ===== */
+  .signbar{border:2px solid var(--brand-soft);border-radius:10px;background:#fff;margin-top:8px;overflow:hidden}
+  .signbar-h{padding:14px 20px;background:var(--brand-soft);display:flex;align-items:center;gap:10px}
+  .signbar-h h3{font-size:14px;font-weight:700;color:var(--brand-ink)}
+  .signbar-b{padding:20px;display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start}
+  .team-block h4{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:12px}
+  .team-avatars{display:flex;gap:14px}
+  .team-member{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px}
+  .tm-av{width:44px;height:44px;border-radius:50%;background:var(--brand-soft);color:var(--brand-ink);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;position:relative}
+  .tm-av.you{background:var(--c-permit);color:#fff}
+  .tm-av .tick{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--ok);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+  .tm-name{font-size:11.5px;font-weight:600;text-align:center}
+  .tm-role{font-size:10.5px;color:var(--muted)}
+  .tm-state{font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px}
+  .ts-signed{background:var(--ok-bg);color:var(--ok)}.ts-pending{background:var(--warn-bg);color:var(--warn)}.ts-you{background:var(--c-permit-bg);color:#3F36B0}
+
+  .decision-block .req-star{color:var(--danger)}
+  .dec-q{font-size:13px;font-weight:600;margin-bottom:10px}
+  .radioset{display:flex;gap:10px;margin-bottom:16px}
+  .rd{flex:1;display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;cursor:pointer}
+  .rd input{margin-top:2px}
+  .rd .rd-t{font-size:13px;font-weight:600}
+  .rd .rd-d{font-size:11px;color:var(--muted)}
+  .rd.sel-sign{border-color:var(--ok);background:var(--ok-bg)}
+  .rd.sel-reject{border-color:var(--danger);background:var(--danger-bg)}
+  .cmt label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+  .cmt textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:10px;font-size:13px;font-family:inherit;min-height:64px;resize:vertical}
+  .cmt.empty textarea{border-color:var(--danger)}
+  .cmt .err{font-size:11px;color:var(--danger);margin-top:4px;display:none}
+  .cmt.empty .err{display:block}
+  .sign-foot{display:flex;align-items:center;gap:14px;padding:14px 20px;border-top:1px solid var(--line-soft);background:#F7F9FB}
+  .pw-inline{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .pw-inline input{border:1px solid var(--line);border-radius:var(--radius);padding:8px 10px;font-size:13px;font-family:inherit;width:130px}
+  .sign-foot .spacer{flex:1}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px 22px;border-radius:var(--radius);font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:600}
+  .btn-ghost{border-color:transparent;color:var(--muted)}
+  .btn-submit{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn-submit:hover{background:#178266}
+  .btn-submit.reject{background:var(--danger);border-color:var(--danger)}
+  .btn-submit.reject:hover{background:#a83143}
+</style>
+</head>
+<body data-active="isolations">
+<div class="wire-note">WIREFRAME mid-fi · <b>Specialist sign-off — eIsolation</b> · vue spécialiste · cartes récap + sign-off en bas · commentaire obligatoire</div>
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">＋</span> Permit</a>
+    <a class="cta cta-npa" href="#"><span class="plus">＋</span> Non Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">＋</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">＋</span> ORA</a>
+  </div>
+  <div class="hd-tools"><div class="hd-search">🔍</div><div class="hd-lang">En ⇅</div></div>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="subbar"><span class="crumb"><a href="07_tasks_to_do.html" style="color:var(--muted);text-decoration:none">Actions to do</a> › <b>Specialist sign-off</b></span><span class="site-pill">Site: Thames ▾</span></div>
+    <div class="content">
+      <div class="page-head"><div><h1>Specialist sign-off</h1><div class="sub">You have been requested to sign off as <b>HSEA specialist</b></div><a class="btn" href="07_tasks_to_do.html" style="margin-left:auto">← Back to actions</a></div></div>
+
+      <div class="trigger iso">
+        <span class="t-ico">⚙️</span>
+        <div><div class="t-t">Specialist sign-off required</div><div class="t-d">Rule triggered: <b>Process isolation on a SECE-tagged line</b> (export scrubber A). A specialist must sign off this isolation before it can be authorised.</div></div>
+      </div>
+
+      <!-- REVIEW CARDS (read only) -->
+      <div class="review-sec">
+        <div class="rs-h"><h3>1 · Details</h3><span class="ro">Read only</span></div>
+        <div class="rs-b"><div class="kv-grid">
+          <div class="kv"><span class="k">Reference</span><span class="v pid">27B-ICC-02484</span></div>
+          <div class="kv"><span class="k">Description</span><span class="v">Isolation of export scrubber A trace heating</span></div>
+          <div class="kv"><span class="k">Person in charge</span><span class="v">A. Denton (IA)</span></div>
+          <div class="kv"><span class="k">Location</span><span class="v">Thames / 27B</span></div>
+        </div></div>
+      </div>
+
+      <div class="review-sec">
+        <div class="rs-h"><h3>2 · Isolation points</h3><span class="ro">Read only</span></div>
+        <div class="rs-b"><div class="kv-grid">
+                <div class="kv"><span class="k">Isolation points</span><span class="v">6 points</span></div>
+                <div class="kv"><span class="k">Linked permit</span><span class="v pid">27B-HWSP-20351</span></div>
+                <div class="kv"><span class="k">Method</span><span class="v">Positive isolation</span></div>
+                <div class="kv"><span class="k">Area details</span><span class="v">BC Main Deck, southern leg</span></div>
+              </div></div>
+      </div>
+
+      <div class="review-sec">
+        <div class="rs-h"><h3>3 · Isolation risk (Level 2)</h3><span class="ro">Read only</span></div>
+        <div class="rs-b">
+          <div class="hz">
+            <div class="hz-top"><span class="hz-name">Export scrubber A trace heating — SECE line <span class="flag-me">Your review</span></span></div>
+            <div class="hz-ctrl"><b>Method:</b> Positive isolation · lock &amp; tag 24-IV-06 / 24-IV-07 · bleed to drain</div>
+            <div class="matrix-mini"><span class="mm-cell mm-hi">H</span><span class="mm-arrow">→ after controls →</span><span class="mm-cell mm-med">M</span></div>
+          </div>
+          <div class="hz">
+            <div class="hz-top"><span class="hz-name">Drain routing verification</span></div>
+            <div class="hz-ctrl"><b>Control:</b> Confirm no cross-connection to live process before de-isolation</div>
+            <div class="matrix-mini"><span class="mm-cell mm-med">M</span><span class="mm-arrow">→ after controls →</span><span class="mm-cell mm-lo">L</span></div>
+          </div></div>
+      </div>
+
+      <div class="review-sec">
+        <div class="rs-h"><h3>4 · Documents</h3><span class="ro">Read only</span></div>
+        <div class="rs-b"><div class="doc-row">
+          <span class="doc">📄 Method statement.pdf</span>
+          <span class="doc">📄 Toolbox talk.pdf</span>
+          <span class="doc">📄 Site plan.jpg</span>
+        </div></div>
+      </div>
+
+      <!-- SIGN-OFF BAR (bottom, horizontal) -->
+      <div class="signbar">
+        <div class="signbar-h">🖊️ <h3>TRA team sign-off</h3></div>
+        <div class="signbar-b">
+          <div class="team-block">
+            <h4>Signatures required</h4>
+            <div class="team-avatars">
+              <div class="team-member"><div class="tm-av you">JS</div><div class="tm-name">J. Stern</div><div class="tm-role">HSEA — you</div><span class="tm-state ts-you">Your turn</span></div>
+              <div class="team-member"><div class="tm-av">DH<span class="tick">✓</span></div><div class="tm-name">D. Holt</div><div class="tm-role">Deck</div><span class="tm-state ts-signed">Signed</span></div>
+              <div class="team-member"><div class="tm-av">RP</div><div class="tm-name">R. Price</div><div class="tm-role">REP</div><span class="tm-state ts-pending">Pending</span></div>
+            </div>
+          </div>
+          <div class="decision-block">
+            <div class="dec-q">Do you approve this isolation? <span class="req-star">*</span></div>
+            <div class="radioset">
+              <label class="rd sel-sign" id="rdSign"><input type="radio" name="dec" checked onchange="pick('sign')"><span><span class="rd-t">Sign off</span><span class="rd-d">Controls adequate</span></span></label>
+              <label class="rd" id="rdReject"><input type="radio" name="dec" onchange="pick('reject')"><span><span class="rd-t">Reject</span><span class="rd-d">Send back with changes</span></span></label>
+            </div>
+            <div class="cmt" id="cmt">
+              <label>Explain the reason why <span class="req-star">*</span></label>
+              <textarea id="cmtText" placeholder="Comment details…" oninput="checkCmt()"></textarea>
+              <div class="err">A comment is required.</div>
+            </div>
+          </div>
+        </div>
+        <div class="sign-foot">
+          <div class="pw-inline">Password co-signature <input type="password" value="••••••••"></div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-submit" id="submitBtn">Submit sign-off</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function pick(d){
+    const rS=document.getElementById('rdSign'),rR=document.getElementById('rdReject'),btn=document.getElementById('submitBtn');
+    if(d==='reject'){rS.classList.remove('sel-sign');rR.classList.add('sel-reject');btn.textContent='Submit rejection';btn.classList.add('reject');}
+    else{rR.classList.remove('sel-reject');rS.classList.add('sel-sign');btn.textContent='Submit sign-off';btn.classList.remove('reject');}
+  }
+  function checkCmt(){
+    const c=document.getElementById('cmt'),t=document.getElementById('cmtText');
+    c.classList.toggle('empty', t.value.trim()==='');
+  }
+  document.getElementById('submitBtn').addEventListener('click',function(){
+    const c=document.getElementById('cmt'),t=document.getElementById('cmtText');
+    if(t.value.trim()===''){c.classList.add('empty');t.focus();}
+  });
+</script>
+<script src="sidebar.js"></script>
+</body>
+</html>

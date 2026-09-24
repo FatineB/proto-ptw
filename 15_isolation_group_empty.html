@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Isolation group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  .grp-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:12px;background:var(--c-iso-bg);color:var(--c-iso)}
+  .btn-iso{background:var(--c-iso);border:1px solid var(--c-iso);color:#fff;font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-iso:hover{background:#c9791f}
+  .btn-ghost{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:var(--radius);padding:9px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+  .content{padding:24px;max-width:1080px;margin:0 auto}
+  .grp-head{display:flex;gap:20px;align-items:flex-start;margin-bottom:22px}
+  .grp-title h1{font-size:22px;font-weight:600}
+  .grp-title .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .agg{margin-left:auto;display:flex;gap:10px}
+  .agg-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 16px;text-align:center;min-width:96px}
+  .agg-card .n{font-size:20px;font-weight:700}
+  .agg-card .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+  .agg-card.done .n{color:var(--ok)}
+  .agg-card.live .n{color:var(--st-issued)}
+  .agg-card.wip .n{color:var(--warn)}
+  .cols{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start}
+  .shared{background:#fff;border:1px solid var(--line);border-radius:8px;position:sticky;top:88px}
+  .shared-h{padding:14px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:8px}
+  .shared-h h2{font-size:13px;font-weight:600;flex:1}
+  .shared-h .edit{font-size:12px;color:var(--c-iso);font-weight:600;cursor:pointer;text-decoration:none}
+  .shared-b{padding:16px}
+  .sf{margin-bottom:14px}
+  .sf:last-child{margin-bottom:0}
+  .sf label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:3px}
+  .sf .v{font-size:13px;color:var(--ink)}
+  .shared-note{font-size:11.5px;color:var(--muted);background:var(--c-iso-bg);border-top:1px solid #EAD3AE;padding:11px 16px;border-radius:0 0 8px 8px}
+  .children{background:#fff;border:1px solid var(--line);border-radius:8px}
+  .children-h{padding:14px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .children-h h2{font-size:14px;font-weight:600;flex:1}
+  .children-h .cnt{font-size:12px;background:var(--st-created-bg);color:var(--muted);padding:2px 9px;border-radius:10px;font-weight:600}
+  .child{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line-soft);cursor:pointer;text-decoration:none;color:var(--ink)}
+  .child:last-child{border-bottom:0}
+  .child:hover{background:#F7F9FB}
+  .child .ord{width:26px;height:26px;border-radius:7px;background:var(--c-iso-bg);color:var(--c-iso);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+  .child .info{flex:1;min-width:0}
+  .child .cid{font-weight:600;font-variant-numeric:tabular-nums;font-size:13.5px;color:var(--brand-ink)}
+  .child .cdesc{font-size:12px;color:var(--muted);margin-top:2px}
+  .child .over{font-size:10.5px;font-weight:700;color:var(--c-iso);background:var(--c-iso-bg);padding:1px 7px;border-radius:8px;margin-left:6px}
+  .child .pts{font-size:12px;color:var(--muted);white-space:nowrap}
+
+  .s-inplace{background:var(--st-issued-bg);color:var(--st-issued)}
+  .s-inplace::before{background:var(--st-issued)}
+  .s-isolating{background:var(--st-inspect-bg);color:var(--st-inspect)}
+  .s-isolating::before{background:var(--st-inspect)}
+  .s-submitted{background:var(--st-submit-bg);color:var(--st-submit)}
+  .s-submitted::before{background:var(--st-submit)}
+  .s-raised{background:var(--st-created-bg);color:var(--st-created)}
+  .s-raised::before{background:var(--st-created)}
+
+  .add-child{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;color:var(--c-iso);font-weight:700;font-size:13px;cursor:pointer;border-top:1px dashed var(--line)}
+  .add-child:hover{background:var(--c-iso-bg)}
+</style>
+</head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit" href="02_isolations.html"><span class="x">✕</span> Back to isolations</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">Isolation group <span class="ft-ref">27B-ICG-00043</span> <span class="grp-pill">🗂 GROUP · new</span></div>
+  </div>
+  <div class="focus-actions">
+    <button class="btn-ghost" onclick="alert('Edit shared context')">Edit group</button>
+    <button class="btn-iso" onclick="location.href='11_raise_isolation.html'">+ Add child isolation</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="grp-head">
+    <div class="grp-title">
+      <h1>Compressor train C — major overhaul</h1>
+      <div class="sub">Parent group · just created by L. Bailey (AA) · no children yet</div>
+    </div>
+    <div class="agg">
+      <div class="agg-card"><div class="n">0</div><div class="l">Children</div></div>
+      <div class="agg-card live"><div class="n">0</div><div class="l">In place</div></div>
+      <div class="agg-card wip"><div class="n">0</div><div class="l">In progress</div></div>
+      <div class="agg-card done"><div class="n">0</div><div class="l">Closed</div></div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <!-- shared context -->
+    <aside class="shared">
+      <div class="shared-h"><h2>Shared context</h2><a class="edit">Edit</a></div>
+      <div class="shared-b">
+        <div class="sf"><label>Area</label><div class="v">27B · Compressor deck · C-train</div></div>
+        <div class="sf"><label>Installation</label><div class="v">Thames</div></div>
+        <div class="sf"><label>System</label><div class="v">Gas compression — train C</div></div>
+        <div class="sf"><label>Permit linked 🔗</label><div class="v">27B-CW-01920</div></div>
+        <div class="sf"><label>Maximo</label><div class="v">10204512</div></div>
+      </div>
+      <div class="shared-note">↓ These values pre-fill each new child isolation. A child can override any of them.</div>
+    </aside>
+
+    <!-- children (empty) -->
+    <div class="children">
+      <div class="children-h"><h2>Child isolations</h2><span class="cnt">0</span></div>
+      <div style="padding:48px 24px;text-align:center">
+        <div style="font-size:34px;margin-bottom:12px">🗂</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">No isolations in this group yet</div>
+        <div style="font-size:13px;color:var(--muted);max-width:380px;margin:0 auto 20px;line-height:1.5">Add your first child isolation. It will be pre-filled with the shared context above — you can override anything.</div>
+        <button class="btn-iso" onclick="location.href='11_raise_isolation.html'">+ Add first isolation</button>
+        <div style="margin-top:16px;font-size:12px;color:var(--muted)">Prototype: <a href="15_isolation_group.html" style="color:var(--c-iso);font-weight:600">see the group once populated →</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

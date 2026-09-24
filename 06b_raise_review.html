@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Review before submit</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-permit); --module-bg:var(--c-permit-bg)}
+  .rail-step-label{font-size:12px;font-weight:700;margin:0 0 8px}
+  .rail-step-label.s2{margin-top:18px}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit}
+  .rail-btn.done{color:var(--ok);border-color:#B4E0CE}
+  .rail-btn.active{background:#3B4657;color:#fff;border-color:#3B4657}
+  .rail-btn.outline{color:var(--c-permit)}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-save{color:var(--muted)}
+  .rail-progress .rp-fill{width:100%}
+  .review-head{text-align:center;margin-bottom:22px}
+  .review-head h1{font-size:24px;font-weight:600}
+  .review-head p{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:22px 26px;margin-bottom:18px;position:relative}
+  .rcard h3{text-align:center;font-size:15px;font-weight:700;margin-bottom:18px}
+  .rcard .edit{position:absolute;top:20px;right:24px;color:var(--c-permit);font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+  .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;text-align:center}
+  .rf label{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px}
+  .rf .v{font-size:13.5px;color:var(--ink)}
+  .ra-box{background:#F5F7FA;border-radius:8px;padding:20px 24px}
+  .ra-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px}
+  .view-map-btn{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:8px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;color:var(--warn);font-weight:600;position:absolute;top:18px;left:24px}
+  .ra-team-line{text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:13px}
+  .ra-team-line b{display:block;margin-bottom:4px}
+  .doc-chips{display:flex;gap:14px;justify-content:center}
+  .doc-chip{border:1px solid var(--line);border-radius:var(--radius);padding:12px 20px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .submit-box{background:#F5F7FA;border-radius:8px;padding:26px;text-align:center;margin-top:6px}
+  .submit-box h4{font-size:14px;font-weight:700;margin-bottom:16px}
+  .btn-submit{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn-submit:hover{background:#2C3542}
+  .isob{background:#C4CFD8;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12.5px;font-weight:600;color:#3B4657;padding:20px}
+  .hz-recap{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+  .hzr-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line-soft);border-radius:6px;font-size:12px}
+  .hzr-tag{width:20px;height:20px;border-radius:50%;background:var(--c-permit-bg);color:var(--c-permit-ink);display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex-shrink:0}
+  .hzr-h{flex:1}
+  .hzr-item .risk-badge{font-size:10px;padding:1px 7px}
+  .hz-expand-btn{display:block;width:100%;border:1px dashed var(--line);background:#fff;border-radius:var(--radius);padding:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--c-permit);margin-top:6px}
+  .hz-expand-btn:hover{background:var(--c-permit-bg);border-style:solid;border-color:var(--c-permit)}
+</style></head>
+<body>
+<div class="focus-bar">
+  <div class="ft-t">Permits › <b>Raise a new Permit</b></div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="02_permits.html">Cancel</a>
+    <a class="btn-outline" href="02_permits.html">Save &amp; exit</a>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-step-label">Step 1: Permit sections</div>
+    <a href="06_raise_permit.html" class="rail-btn done">✓ 1&nbsp;&nbsp;Details</a>
+    <a href="06_raise_permit.html" class="rail-btn done">✓ 2&nbsp;&nbsp;Equipment &amp; links</a>
+    <a href="06_raise_permit.html" class="rail-btn done">✓ 3&nbsp;&nbsp;Risk assessment</a>
+    <a href="06_raise_permit.html" class="rail-btn done">✓ 4&nbsp;&nbsp;Add documents</a>
+    <div class="rail-step-label s2">Step 2: Review</div>
+    <a class="rail-btn active">4&nbsp;&nbsp;Review</a>
+    <a class="rail-btn outline" onclick="document.getElementById('submitBox').scrollIntoView({behavior:'smooth'})">Sign &amp; submit permit</a>
+    <div class="rail-progress"><div class="rp-top"><span>Completion</span><span class="rp-save">Auto-save: 13:32</span></div><div class="rp-bar"><div class="rp-fill"></div></div></div>
+  </aside>
+  <div>
+    <div class="review-head"><h1>Review before submit</h1><p>Read-only summary of what you are about to submit. Use Edit to change a section.</p></div>
+
+    <div class="rcard">
+      <a class="edit" href="06_raise_permit.html">Edit</a>
+      <h3>1 · Details</h3>
+      <div class="rgrid">
+        <div class="rf"><label>Title</label><div class="v">Change light fitting</div></div>
+        <div class="rf"><label>Workflow / type</label><div class="v">Routine · Hot work</div></div>
+        <div class="rf"><label>Person in charge</label><div class="v">P. Nevitt (PA)</div></div>
+        <div class="rf"><label>Place</label><div class="v">Bacton / 27B / BC deck</div></div>
+        <div class="rf"><label>Purpose</label><div class="v">Light fitting has failed &amp; requires replacement</div></div>
+        <div class="rf"><label>Dates</label><div class="v">24 Jul → 31 Jul 2026 (auto +7d)</div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="06_raise_permit.html">Edit</a>
+      <h3>2 · Equipment &amp; links</h3>
+      <div class="rgrid">
+        <div class="rf"><label>Isolation linked</label><div class="v">27B-ICC-02484</div></div>
+        <div class="rf"><label>Maximo / equipment</label><div class="v">10203040 · LF-1 · Light fitting</div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Project</label><div class="v">— none —</div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <button class="view-map-btn" onclick="alert('Deck map — 2 conflicts')">⚠ View map - 2 conflicts 🗺</button>
+      <a class="edit" href="06_raise_permit.html">Edit</a>
+      <h3>3 · Risk assessment</h3>
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:18px">
+        <div class="ra-box"><div class="ra-grid">
+          <div class="rf" style="text-align:left;grid-column:1/-1"><label>Hazards</label>
+            <div class="hz-recap" id="hzRecap">
+              <div class="hzr-item"><span class="hzr-tag">1</span><span class="hzr-h">Fire / ignition — ignition near HC lines</span><span class="risk-badge risk-hi">High · 20</span><span class="risk-badge risk-med">Med · 6</span></div>
+              <div class="hzr-item"><span class="hzr-tag">2</span><span class="hzr-h">Working at height — dropped object</span><span class="risk-badge risk-med">Med · 12</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">3</span><span class="hzr-h">Confined space entry</span><span class="risk-badge risk-med">Med · 9</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">4</span><span class="hzr-h">Electrical — live parts</span><span class="risk-badge risk-med">Med · 10</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">5</span><span class="hzr-h">Pressure release</span><span class="risk-badge risk-med">Med · 11</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">6</span><span class="hzr-h">Chemical exposure</span><span class="risk-badge risk-med">Med · 12</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">7</span><span class="hzr-h">Manual handling</span><span class="risk-badge risk-med">Med · 13</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">8</span><span class="hzr-h">Noise > 85dB</span><span class="risk-badge risk-med">Med · 14</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">9</span><span class="hzr-h">Hot surfaces</span><span class="risk-badge risk-med">Med · 15</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">10</span><span class="hzr-h">Rotating machinery</span><span class="risk-badge risk-med">Med · 16</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">11</span><span class="hzr-h">Slips / trips</span><span class="risk-badge risk-med">Med · 17</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+              <div class="hzr-item"><span class="hzr-tag">12</span><span class="hzr-h">Gas detection failure</span><span class="risk-badge risk-med">Med · 18</span><span class="risk-badge" style="background:var(--ok-bg);color:var(--ok)">Low · 4</span></div>
+            </div>
+          </div>
+          <div class="rf" style="text-align:left"><label>Level</label><div class="v">Level 2 — full TRA</div></div>
+          <div class="rf" style="text-align:left"><label>Initial → residual risk</label><div class="v">High (5x4) → Medium (3x2)</div></div>
+          <div class="rf" style="text-align:left"><label>Controls</label><div class="v">1st: Fire watch posted</div></div>
+        </div></div>
+        <div class="isob">Isolation linked<br>27B-ICC-02484</div>
+      </div>
+      <div class="ra-team-line"><b>RA team (3 signers)</b>P. Nevitt (PA) · A. Denton (AA) · C. Boyd (OIM) — all awaiting signature</div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="06_raise_permit.html">Edit</a>
+      <h3>4 · Document section</h3>
+      <div class="doc-chips"><span class="doc-chip">🔗 Document #1.pdf</span><span class="doc-chip">🔗 Document #2.pdf</span><span class="doc-chip">🔗 Document #3.jpg</span></div>
+    </div>
+
+    <div class="submit-box" id="submitBox">
+      <h4>Submit your permit</h4>
+      <button class="btn-submit" onclick="alert('Permit submitted → status: Verify (AA)');location.href='02_permits.html'">Submit</button>
+    </div>
+  </div>
+</div></div></div>
+<script>
+  (function(){
+    var LIMIT=5, expanded=false;
+    var wrap=document.getElementById('hzRecap'); if(!wrap) return;
+    var items=[].slice.call(wrap.querySelectorAll('.hzr-item'));
+    var host=document.createElement('div');
+    wrap.parentNode.insertBefore(host, wrap.nextSibling);
+    function apply(){
+      items.forEach(function(it,i){ it.style.display=(i<LIMIT||expanded)?'':'none'; });
+      var hidden=Math.max(0,items.length-LIMIT);
+      host.innerHTML = hidden>0 ? '<button class="hz-expand-btn" onclick="__toggleHz()">'+(expanded?'▲ Show less':('▾ Show all '+items.length+' hazards ('+hidden+' more)'))+'</button>' : '';
+    }
+    window.__toggleHz=function(){ expanded=!expanded; apply(); };
+    apply();
+  })();
+</script>
+</body></html>

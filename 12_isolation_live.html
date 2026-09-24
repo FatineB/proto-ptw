@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Isolation (live)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  html{scroll-behavior:smooth}
+  .live-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:12px;background:var(--st-issued-bg);color:var(--st-issued)}
+  .live-pill .lp-dot{width:8px;height:8px;border-radius:50%;background:var(--st-issued);animation:pulse 1.6s infinite}
+  0%{box-shadow:0 0 0 0 rgba(28,158,122,.5)}
+  70%{box-shadow:0 0 0 6px rgba(28,158,122,0)}
+  100%{box-shadow:0 0 0 0 rgba(28,158,122,0)}
+  .ft-links{display:flex;gap:10px;align-items:center;margin-top:3px}
+  .ft-links a{font-size:12px;color:var(--brand);text-decoration:none;cursor:pointer}
+  .btn-stt{background:var(--c-iso);border:1px solid var(--c-iso);color:#fff;font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-stt:hover{background:#c9791f}
+  .btn-warn{background:#fff;border:1px solid var(--c-iso);color:var(--c-iso);font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-warn:hover{background:var(--c-iso-bg)}
+  .btn-danger{background:#fff;border:1px solid var(--danger);color:var(--danger);font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-danger:hover{background:var(--danger-bg)}
+  .more-menu{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(20,28,38,.18);padding:6px;display:none;min-width:200px;z-index:40}
+  .more-menu.on{display:block}
+  .more-menu button{display:flex;width:100%;align-items:center;gap:9px;border:0;background:none;padding:9px 12px;font-size:13px;cursor:pointer;border-radius:6px;font-family:inherit;text-align:left}
+  .more-menu button:hover{background:var(--line-soft)}
+  .ro-banner{background:var(--st-issued-bg);border-bottom:1px solid #B4E0CE;color:#0F6B4F;font-size:12.5px;padding:8px 24px;display:flex;align-items:center;gap:8px}
+  .rail-item .rk.pend{background:#C6CFD8}
+  .live-card{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+  .live-card .lc-l{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:6px}
+  .live-card .lc-time{font-size:13px;font-weight:600}
+  .live-card .lc-sub{font-size:11px;color:var(--muted);margin-top:4px}
+  .stt-card{margin-top:12px;background:var(--c-iso-bg);border:1px solid #EAD3AE;border-radius:var(--radius);padding:12px}
+  .stt-card .sc-l{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7A4E12;font-weight:700;margin-bottom:6px}
+  .stt-card .sc-t{font-size:12.5px;color:#7A4E12}
+  .stt-card button{margin-top:8px;width:100%;background:var(--c-iso);border:0;color:#fff;font-weight:600;padding:8px;border-radius:var(--radius);cursor:pointer;font-family:inherit;font-size:12.5px}
+  .sec-h .ro-tag{font-size:11px;color:var(--muted);background:var(--st-created-bg);padding:2px 9px;border-radius:10px;font-weight:600}
+  .sec-h .act-link{font-size:12px;color:var(--c-iso);font-weight:600;text-decoration:none;cursor:pointer}
+  .dl{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px}
+  .dl.full{grid-template-columns:1fr}
+  .dl .f label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:3px}
+  .dl .f .v{font-size:14px;color:var(--ink)}
+  .sirp-no{color:var(--danger);font-weight:700}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px}
+  .bridge-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}
+  .bridge-ora{background:var(--c-ora-bg);color:var(--c-ora-ink)}
+  .bridge-max{background:#EAF1F7;color:#12507A}
+  .gr-counts{display:flex;gap:8px;margin-top:6px}
+  .gr-chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px}
+  .gr-haz{background:var(--danger-bg);color:var(--danger)}
+  .gr-link{background:var(--c-iso-bg);color:var(--c-iso)}
+  /* points table */
+  .ip-mini{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ip-mini th{background:#F7F9FB;text-align:left;padding:9px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft)}
+  .ip-mini td{padding:9px 11px;border-bottom:1px solid var(--line-soft)}
+  .ip-mini tr:last-child td{border-bottom:0}
+  .lock{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12px}
+  .lock-on{color:var(--st-issued)}
+  .lock-off{color:var(--muted)}
+  .type-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .tp-elec{background:#FFF4DE;color:var(--c-iso-ink)}
+  .tp-proc{background:#E3F5EE;color:#1C9E7A}
+  .test-flag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--warn-bg);color:var(--warn)}
+  .std-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;background:var(--ok-bg);color:#0F6B4F}
+  /* workflow journal */
+  .wf{position:relative;padding-left:22px}
+  .wf::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+  .wf-row{position:relative;display:flex;gap:12px;align-items:baseline;padding:9px 0}
+  .wf-row::before{content:"";position:absolute;left:-19px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--ok);border:2px solid #fff}
+  .wf-row.pending::before{background:#C6CFD8}
+  .wf-act{font-weight:600;font-size:13px;width:150px;flex-shrink:0}
+  .wf-meta{font-size:12px;color:var(--muted);flex:1}
+  .wf-meta b{color:var(--ink);font-weight:600}
+  .wf-time{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .wf-row.pending .wf-act{color:var(--muted)}
+  .res-amber{background:var(--warn-bg);color:var(--warn);font-weight:700}
+</style>
+</head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit" href="02_permits.html"><span class="x">✕</span> Exit</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">Isolation <span class="ft-ref">27B-ICC-02540</span> <span class="live-pill"><span class="lp-dot"></span>ISOLATION-IN-PLACE</span></div>
+    <div class="ft-links"><a onclick="openWorkflow()">🗺 Workflow</a><a href="13_isolation_points.html">🔒 Isolation points</a><a href="#">🖨 Print recap</a><a href="#">☆ Favourite</a></div>
+  </div>
+  <div class="focus-actions">
+    <a class="btn-stt" href="20_stt_coordination.html" style="text-decoration:none">Request STT</a>
+    <button class="btn-warn" onclick="alert('Suspend (AA) — pause the live isolation → Suspended')">Suspend</button>
+    <button class="btn-warn" onclick="location.href='13_isolation_points.html'">Initiate De-Isolation</button>
+    <button class="btn-danger" onclick="alert('Abandon (AA) — soft-delete a live isolation')">Abandon</button>
+    <button class="btn" onclick="document.getElementById('moreMenu').classList.toggle('on')">⋯</button>
+    <div class="more-menu" id="moreMenu">
+      <button onclick="alert('Copy')">📄 Copy</button>
+      <button onclick="alert('Print isolation tags')">🏷 Print isolation tags</button>
+      <button onclick="alert('Comment')">💬 Comment</button>
+      <button onclick="alert('Record lesson learned')">📓 Record lesson learned</button>
+    </div>
+  </div>
+</div>
+<div class="ro-banner">🔒 This isolation is in place and read-only. Use <b>Request STT</b> for a controlled test, <b>Suspend</b> to pause, or <b>Initiate De-Isolation</b> to reinstate.</div>
+
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <a href="#s1" class="rail-item active"><span class="rk">✓</span>Details</a>
+    <a href="#s2" class="rail-item"><span class="rk">✓</span>Isolation points</a>
+    <a href="#s3" class="rail-item"><span class="rk">✓</span>Risk assessment</a>
+    <a href="#s4" class="rail-item"><span class="rk">✓</span>Workflow</a>
+    <div class="live-card">
+      <div class="lc-l">Isolation status</div>
+      <div class="lc-time">Isolation-in-Place</div>
+      <div class="lc-sub">Isolated 1 Sep · 07:22 by T. Bennett (AA)</div>
+      <div class="lc-sub">6 / 6 points locked</div>
+    </div>
+    <div class="stt-card">
+      <div class="sc-l">Sanction to Test</div>
+      <div class="sc-t">Partial de-isolation for testing, then re-isolate — without closing the certificate.</div>
+      <a href="20_stt_coordination.html" style="text-decoration:none"><button>Request STT</button></a>
+    </div>
+  </aside>
+  <div>
+    <section class="sec" id="s1">
+      <div class="sec-h"><span class="sh-num">1</span><h2>Details</h2><span class="ro-tag">Read-only</span></div>
+      <div class="sec-b">
+        <div class="dl full" style="margin-bottom:16px"><div class="f"><label>Description</label><div class="v">Isolation for LBC-PSV-6700-B</div></div></div>
+        <div class="dl">
+          <div class="f"><label>SIRP compliant</label><div class="v"><span class="sirp-no">No</span> — see reason</div></div>
+          <div class="f"><label>Person in charge</label><div class="v">G. Bramley (Mech Ops Tech)</div></div>
+          <div class="f" style="grid-column:1/-1"><label>Reason for isolation</label><div class="v">NON SIRP COMPLIANT ISOLATION — Isolation to facilitate the installation of LBC-PSV-6700-B following recertification</div></div>
+          <div class="f" style="grid-column:1/-1"><label>Area (georef)</label><div class="v">27B · 27BC · Leg well South · V-6700 Open drains tank
+            <div class="gr-counts"><span class="gr-chip gr-haz">🚩 14 hazards</span><span class="gr-chip gr-link">⚡ 3 linked</span></div></div></div>
+          <div class="f"><label>Equip. number</label><div class="v">LBC-PSV-6700-B</div></div>
+          <div class="f"><label>Started on</label><div class="v">26 Aug 2025 · 06:30</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="s2">
+      <div class="sec-h"><span class="sh-num">2</span><h2>Isolation points</h2><span class="count" style="background:var(--st-created-bg);color:var(--muted);font-size:12px;font-weight:600;padding:2px 8px;border-radius:12px">6</span><a class="act-link" href="13_isolation_points.html" style="margin-left:auto">Open execution view →</a></div>
+      <div class="sec-b" style="padding:0">
+        <table class="ip-mini">
+          <thead><tr><th>#</th><th>Tag</th><th>Description</th><th>Type</th><th>Lock</th><th>Status</th><th>In test</th><th>Std</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>P200AEM</td><td>P200A KO Drum Pump Motor</td><td><span class="type-pill tp-elec">Electrical</span></td><td>LK-2201</td><td><span class="lock lock-on">🔒 Withdrawn</span></td><td>—</td><td>—</td></tr>
+            <tr><td>2</td><td>LBC-V-201</td><td>Open drains inlet isolation valve</td><td><span class="type-pill tp-proc">Process</span></td><td>LK-2202</td><td><span class="lock lock-on">🔒 Closed</span></td><td><span class="test-flag">In test plan</span></td><td><span class="std-badge">II — Proved</span></td></tr>
+            <tr><td>3</td><td>LBC-V-202</td><td>Open drains outlet isolation valve</td><td><span class="type-pill tp-proc">Process</span></td><td>LK-2203</td><td><span class="lock lock-on">🔒 Closed</span></td><td><span class="test-flag">In test plan</span></td><td><span class="std-badge">II — Proved</span></td></tr>
+            <tr><td>4</td><td>P200BEM</td><td>P200B KO Drum Pump Motor</td><td><span class="type-pill tp-elec">Electrical</span></td><td>LK-2204</td><td><span class="lock lock-on">🔒 Withdrawn</span></td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec" id="s3">
+      <div class="sec-h"><span class="sh-num">3</span><h2>Risk assessment</h2><span class="ro-tag">Read-only</span></div>
+      <div class="sec-b"><div class="dl">
+        <div class="f"><label>TRA level</label><div class="v">Level 2 — full TRA</div></div>
+        <div class="f"><label>ORA link</label><div class="v"><a href="16_raise_ora.html" class="bridge-tag bridge-ora" style="text-decoration:none">🔗 27B-ORA-20461-REV-003</a> <span class="res res-amber" style="font-size:10.5px;padding:2px 8px;border-radius:10px">AMBER · Live</span></div></div>
+        <div class="f"><label>Permit linked</label><div class="v"><a href="10_permit_live.html" class="bridge-tag bridge-permit" style="text-decoration:none">🔗 27B-CW-01784</a> <span class="status s-issued" style="font-size:11px">Live</span></div></div>
+      </div></div>
+    </section>
+
+    <section class="sec" id="s4">
+      <div class="sec-h"><span class="sh-num">4</span><h2>Workflow</h2><span class="ro-tag">8 transitions</span><a class="act-link" onclick="openWorkflow()" style="margin-left:auto;cursor:pointer">See full workflow →</a></div>
+      <div class="sec-b"><div class="wf">
+        <div class="wf-row pending"><div class="wf-act">De-Isolation</div><div class="wf-meta">Awaiting <b>Removal Authorise</b> · Area Authority</div><div class="wf-time">—</div></div>
+        <div class="wf-row"><div class="wf-act">Confirm</div><div class="wf-meta"><b>T. Bennett</b> · Confirmation · AA · <i>ok</i></div><div class="wf-time">1 Sep · 07:23</div></div>
+        <div class="wf-row"><div class="wf-act">Isolate</div><div class="wf-meta"><b>T. Bennett</b> · Isolation · AA · <i>ok</i></div><div class="wf-time">1 Sep · 07:22</div></div>
+      </div>
+      <div style="text-align:center;padding:12px 0 0"><a onclick="openWorkflow()" style="font-size:12.5px;color:var(--c-iso);cursor:pointer;font-weight:600">+ 5 earlier transitions · open full workflow</a></div>
+      </div>
+    </section>
+    <section class="sec" id="s5">
+      <div class="sec-h"><span class="sh-num">5</span><h2>Documents</h2><span class="ro-tag" style="background:var(--ok-bg);color:var(--ok)">Can add during execution</span></div>
+      <div class="sec-b">
+        <div id="documents" data-docs="Isolation certificate.pdf|P&amp;ID marked-up.pdf"></div>
+      </div>
+    </section>
+  </div>
+</div></div></div>
+
+<script>
+  document.addEventListener('click',e=>{const m=document.getElementById('moreMenu');if(!e.target.closest('.focus-actions'))m.classList.remove('on');});
+  const secs=[...document.querySelectorAll('.sec')],ri=[...document.querySelectorAll('.rail-item')];
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);ri.forEach(r=>r.classList.remove('active'));if(ri[i])ri[i].classList.add('active');}})},{rootMargin:'-30% 0px -60% 0px'});
+  secs.forEach(s=>io.observe(s));
+</script>
+<script src="documents.js"></script>
+<template id="wf-template" data-wf-title="Isolation lifecycle" data-wf-sub="ICC · 27B-ICC-02484 · full workflow">
+<div class="card">
+        <div class="card-h"><h2>Next steps</h2><span class="muted">Actions available from <b style="color:var(--c-iso)">Isolation-in-Place</b></span></div>
+        <div class="card-b">
+          <div class="ctx-actions">
+            <button class="ca primary" onclick="alert('Request STT → Testing (controlled test, then re-isolate)')">🧪 Request STT<span class="role">Testing loop</span></button>
+            <button class="ca warn" onclick="alert('Suspend → Suspended')">⏸ Suspend<span class="role">AA</span></button>
+            <a class="ca warn" href="13_isolation_points.html">🔓 Initiate De-Isolation<span class="role">AA</span></a>
+            <button class="ca danger" onclick="alert('Abandon → Abandoned (soft delete)')">⊘ Abandon<span class="role">AA</span></button>
+            <button class="ca" onclick="alert('Counter-sign')">✍ Counter-sign</button>
+            <button class="ca" onclick="alert('Print / Update isolation points')">🏷 Print/update points</button>
+            <button class="ca" onclick="alert('Send email')">✉ Send email</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>Workflow history</h2><span class="muted">7 transitions</span></div>
+        <div class="card-b"><div class="wf">
+          <div class="wf-row pending">
+            <div class="wf-act">De-Isolation<span class="trans">Removal Authorise</span></div>
+            <div class="wf-who">Awaiting <b>Area Authority</b><span class="role">AA</span></div>
+            <div class="wf-time">—</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Confirm<span class="trans">Confirmation</span><span class="wf-badge now">Current</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:23</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Isolate<span class="trans">Isolation</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:22</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Verify<span class="trans">Authorisation</span></div>
+            <div class="wf-who"><b>Y. Smith</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">26 Aug 2025<br>14:31</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Counter-signed</div>
+            <div class="wf-who"><b>P. Wood</b></div>
+            <div class="wf-time">26 Aug 2025<br>14:25</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Submit</div>
+            <div class="wf-who"><b>Y. Smith</b></div>
+            <div class="wf-time">25 Aug 2025<br>16:55</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Created</div>
+            <div class="wf-who"><b>G. Bramley</b><span class="role">Mech Ops</span></div>
+            <div class="wf-time">25 Aug 2025<br>11:33</div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: state machine -->
+    <div class="sm-stack">
+      <div class="card">
+        <div class="card-h"><h2>Isolation state machine</h2></div>
+        <div class="card-b">
+          <div class="sm-note">Where this certificate sits in the ICC lifecycle. Branches (STT, Suspend, Snag, Abandon) shown as side transitions.</div>
+          <div class="sm-diagram">
+            <div class="sm-node done">Raised</div>
+            <div class="sm-arrow"><span class="lbl">Submit</span></div>
+            <div class="sm-node done">Submitted</div>
+            <div class="sm-arrow"><span class="lbl">Verify</span></div>
+            <div class="sm-node done">Authorised</div>
+            <div class="sm-arrow"><span class="lbl">Isolate</span></div>
+            <div class="sm-node done">Isolating</div>
+            <div class="sm-arrow"><span class="lbl">Confirm</span></div>
+            <div class="sm-node current">Isolation-in-Place</div>
+            <div class="sm-branch">
+              <span class="sm-chip stt">⇄ Request STT · Testing</span>
+              <span class="sm-chip">⏸ Suspend</span>
+              <span class="sm-chip">⊘ Abandon</span>
+            </div>
+            <div class="sm-arrow"><span class="lbl">De-Isolate</span></div>
+            <div class="sm-node future">De-isolating</div>
+            <div class="sm-branch"><span class="sm-chip">⚠ Snag</span></div>
+            <div class="sm-arrow"><span class="lbl">Close</span></div>
+            <div class="sm-node future">Closed</div>
+          </div>
+          <div class="sm-legend">
+            <span><span class="lg-dot lg-done"></span>Done</span>
+            <span><span class="lg-dot lg-cur"></span>Current</span>
+            <span><span class="lg-dot lg-fut"></span>Upcoming</span>
+          </div>
+        </div>
+      </div>
+</template>
+<script src="workflowdrawer.js"></script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Permit workflow</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-permit); --module-bg:var(--c-permit-bg)}
+  .ft-links{display:flex;gap:12px;align-items:center;margin-top:4px}
+  .ft-links a{font-size:12px;color:var(--brand);text-decoration:none;cursor:pointer}
+  .btn-permit{background:var(--c-permit);border:1px solid var(--c-permit);color:#fff;font-weight:600;padding:9px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-permit:hover{background:#4a43c4}
+  .btn-danger{background:#fff;border:1px solid var(--danger);color:var(--danger);font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-danger:hover{background:var(--danger-bg)}
+  .btn-warn{background:#fff;border:1px solid var(--c-iso);color:var(--c-iso);font-weight:600;padding:9px 16px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-warn:hover{background:var(--c-iso-bg)}
+  .btn-ok{background:var(--ok);border:1px solid var(--ok);color:#fff;font-weight:600;padding:9px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .more-menu{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(20,28,38,.18);padding:6px;display:none;min-width:180px;z-index:40}
+  .more-menu.on{display:block}
+  .more-menu button{display:flex;width:100%;align-items:center;gap:9px;border:0;background:none;padding:9px 12px;font-size:13px;color:var(--ink);cursor:pointer;border-radius:6px;font-family:inherit;text-align:left}
+  .more-menu button:hover{background:var(--line-soft)}
+  /* status switcher (demo) */
+  .status-switch{background:#2B333D;color:#C9D3DC;padding:8px 20px;display:flex;align-items:center;gap:10px;font-size:12px;flex-wrap:wrap}
+  .status-switch b{color:#fff}
+  .status-switch select{border:1px solid #4a5563;background:#3B4657;color:#fff;border-radius:5px;padding:4px 8px;font-family:inherit;font-size:12px}
+  .rail-item.active .rk{background:var(--c-permit);border-color:var(--c-permit);color:#fff}
+  .rail-note{margin-top:14px;font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+  .sec-h .tag{font-size:11px;padding:2px 9px;border-radius:10px;font-weight:600}
+  .tag-edit{color:var(--ok);background:var(--ok-bg)}
+  .tag-ro{color:var(--muted);background:var(--st-created-bg)}
+  .field:last-child{margin-bottom:0}
+  input[readonly]{background:#F1F3F5;color:var(--muted)}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .risk-badge{font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:10px}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;background:#F3ECF7;color:#730FC3}
+  /* modals */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:10px;max-width:560px;width:100%;overflow:hidden}
+  .modal.wide{max-width:780px}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .modal-h h3{font-size:15px;font-weight:600;flex:1}
+  .modal-h .x{cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none}
+  .modal-b{padding:20px}
+  .modal-b label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+  .modal-b .req{color:var(--danger)}
+  .modal-b .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .modal-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;gap:10px;justify-content:flex-end}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+  .wf-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .wf-step{font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:16px;border:1px solid var(--line);color:var(--muted);background:#fff}
+  .wf-step.done{background:var(--ok-bg);border-color:#B4E0CE;color:var(--ok)}
+  .wf-step.here{background:var(--st-submit-bg);border-color:#9BC0E4;color:var(--st-submit);box-shadow:0 0 0 3px #E5EEF7}
+  .wf-alt{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .wf-alt .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .wf-alt .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .wf-tag{font-size:11.5px;padding:4px 10px;border-radius:12px}
+  .wf-tag.y{background:var(--warn-bg);color:var(--warn)}
+  .wf-tag.r{background:var(--danger-bg);color:var(--danger)}
+  .wf-tag.o{background:var(--c-iso-bg);color:var(--c-iso-ink)}
+</style></head>
+<body>
+<div class="status-switch">
+  <span>DEMO — switch permit status to see the matching CTAs &amp; modals:</span>
+  <select id="statusSel" onchange="applyStatus(this.value)">
+    <option value="verify">Verify (AA)</option>
+    <option value="authorise">Authorise (SC)</option>
+    <option value="issue">Issue (AA)</option>
+    <option value="accept">Accept (PA)</option>
+    <option value="live">Live — work ongoing</option>
+    <option value="finish">Finish (PA)</option>
+  </select>
+  <span>· <b id="ss-desc">AA verifies the permit</b></span>
+</div>
+
+<div class="focus-bar">
+  <a class="focus-exit" href="02_permits.html"><span class="x">✕</span> Exit</a>
+  <div class="focus-sep"></div>
+  <div>
+    <div class="ft-t">Permit <span class="ft-ref">27B-CW-01784</span> <span class="status s-submit" id="statusPill">Verify (AA)</span></div>
+    <div class="ft-links"><a onclick="openWorkflow()">🗺 Workflow</a><a href="#">🗺 Deck map</a><a href="#">☆ Favourite</a></div>
+  </div>
+  <div class="focus-actions" id="ctaBar"></div>
+</div>
+
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <a href="#s1" class="rail-item active"><span class="rk">1</span>Details</a>
+    <a href="#s2" class="rail-item"><span class="rk">2</span>Equipment</a>
+    <a href="#s3" class="rail-item"><span class="rk">3</span>Risk assessment</a>
+    <a href="#s4" class="rail-item"><span class="rk">4</span>Signatures</a>
+    <div class="rail-note" id="railNote"></div>
+  </aside>
+  <div>
+    <section class="sec" id="s1"><div class="sec-h"><span class="sh-num">1</span><h2>Details</h2><span class="tag tag-edit" id="editTag1">Editable</span></div>
+      <div class="sec-b">
+        <div class="field"><label>Title</label><input type="text" value="Grating change out — 27B BC deck" data-ro></div>
+        <div class="row2"><div class="field"><label>Type of permit</label><input type="text" value="Hot work" data-ro></div><div class="field"><label>Person in charge</label><input type="text" value="P. Nevitt (PA)" data-ro></div></div>
+        <div class="row3"><div class="field"><label>Location</label><input type="text" value="Bacton" data-ro></div><div class="field"><label>Level</label><input type="text" value="27B" data-ro></div><div class="field"><label>Room</label><input type="text" value="BC deck" data-ro></div></div>
+        <div class="field" style="margin-bottom:0"><label>Purpose</label><textarea data-ro>Change out of corroded grating on BC deck walkway.</textarea></div>
+      </div>
+    </section>
+    <section class="sec" id="s2"><div class="sec-h"><span class="sh-num">2</span><h2>Equipment &amp; links</h2><span class="tag tag-edit editTag">Editable</span></div>
+      <div class="sec-b"><div class="field" style="margin-bottom:0"><label>Isolation linked <span class="bridge-tag">🔗 ISO</span></label><input type="text" value="27B-ICC-02484" data-ro></div></div>
+    </section>
+    <section class="sec" id="s3"><div class="sec-h"><span class="sh-num">3</span><h2>Risk assessment — Level 2</h2><span class="tag tag-edit editTag">Editable</span></div>
+      <div class="sec-b"><div id="risk-assessment" data-ra-title=""></div></div>
+    </section>
+    <section class="sec" id="s4"><div class="sec-h"><span class="sh-num">4</span><h2>Signatures</h2><span class="tag tag-ro">Read-only</span></div>
+      <div class="sec-b" style="font-size:13px;color:var(--muted)">P. Nevitt · Raised (PA) ✓ &nbsp;·&nbsp; A. Denton · Verified (AA) <span id="sigVerify">— pending</span></div>
+    </section>
+    <section class="sec" id="s5"><div class="sec-h"><span class="sh-num">5</span><h2>Documents</h2><span class="tag tag-edit editTag">Editable</span></div>
+      <div class="sec-b"><div id="documents" data-docs="Permit pack.pdf|Method statement.pdf"></div></div>
+    </section>
+  </div>
+</div></div></div>
+
+<!-- workflow modal -->
+<!-- comment modal (decline/reject) -->
+<div class="modal-bg" id="cmModal"><div class="modal">
+  <div class="modal-h"><h3 id="cmTitle">Decline permit</h3><button class="x" onclick="closeM('cmModal')">×</button></div>
+  <div class="modal-b">
+    <p id="cmIntro" style="font-size:13px;color:var(--muted);margin-bottom:14px"></p>
+    <label>Comment <span class="req">*</span> (mandatory)</label>
+    <textarea id="cmText" placeholder="Explain why…" oninput="cmValidate()"></textarea>
+    <div class="hint" id="cmHint" style="color:var(--danger);display:none">A comment is required to continue.</div>
+  </div>
+  <div class="modal-f"><button class="btn" onclick="closeM('cmModal')">Cancel</button><button class="btn-danger" id="cmConfirm" onclick="cmSubmit()" disabled>Confirm</button></div>
+</div></div>
+
+<!-- close modal (comment + lessons optional) -->
+<div class="modal-bg" id="closeModal"><div class="modal">
+  <div class="modal-h"><h3>Close permit</h3><button class="x" onclick="closeM('closeModal')">×</button></div>
+  <div class="modal-b">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Confirm closing this permit. Comment and lessons learned are optional.</p>
+    <label>Comment <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+    <textarea placeholder="Any closing note…"></textarea>
+    <div style="height:14px"></div>
+    <label>Lessons learned <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+    <textarea placeholder="What did we learn on this job…"></textarea>
+  </div>
+  <div class="modal-f"><button class="btn" onclick="closeM('closeModal')">Cancel</button><button class="btn-ok" onclick="alert('Permit closed');closeM('closeModal');location.href='02_permits.html'">Confirm close</button></div>
+</div></div>
+
+<!-- generic confirm modal (extend/suspend/abandon/verify/authorise/issue/accept) -->
+<div class="modal-bg" id="genModal"><div class="modal">
+  <div class="modal-h"><h3 id="genTitle">Confirm</h3><button class="x" onclick="closeM('genModal')">×</button></div>
+  <div class="modal-b"><p id="genBody" style="font-size:13.5px"></p><div id="genExtra"></div></div>
+  <div class="modal-f"><button class="btn" onclick="closeM('genModal')">Cancel</button><button class="btn-permit" id="genConfirm">Confirm</button></div>
+</div></div>
+
+<script>
+  function openM(id){document.getElementById(id).classList.add('on');}
+  function closeM(id){document.getElementById(id).classList.remove('on');}
+  ['cmModal','closeModal','genModal'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('click',function(e){if(e.target.id===id)closeM(id);});});
+  document.addEventListener('click',function(e){var m=document.getElementById('moreMenu');if(m&&!e.target.closest('.focus-actions'))m.classList.remove('on');});
+
+  // ---- status → CTA config (from user journey) ----
+  var CFG={
+    verify:{pill:'Verify (AA)',cls:'s-submit',desc:'AA verifies the permit',editable:true,
+      note:'AA verify: check the permit before verifying. Decline sends it back to the PA (mandatory comment). Reject soft-deletes it (mandatory comment).',
+      primary:{label:'Verify ✓',fn:"gen('Verify permit','Confirm you verify this permit. It will move to Authorise (SC).','Verified → Authorise (SC)')"},
+      negatives:[{label:'Decline',danger:true,fn:"cm('decline')"},{label:'Reject',danger:true,fn:"cm('reject')"}],
+      more:['Copy','Print','Comment','Do not copy']},
+    authorise:{pill:'Authorise (SC)',cls:'s-inspect',desc:'SC authorises the permit',editable:true,
+      note:'SC authorise: global review + conflicts (deck map). Extend possible if the permit approaches expiry. Edit all documents allowed.',
+      primary:{label:'Authorise ✓',fn:"gen('Authorise permit','Confirm authorisation. It will move to Issue (AA).','Authorised → Issue (AA)')"},
+      negatives:[{label:'Decline',danger:true,fn:"cm('decline')"},{label:'Reject',danger:true,fn:"cm('reject')"}],
+      extra:{label:'Extend',warn:true,fn:"gen('Request extension','Extend the permit validity by +7 days.','+7 days requested')"},
+      more:['Copy','Print','Comment','Do not copy']},
+    issue:{pill:'Issue (AA)',cls:'s-issued',desc:'AA issues the permit (final review)',editable:false,
+      note:'AA issue: final review + ongoing activities (deck map). The situation may have changed since raise. Then Issue → permit live.',
+      primary:{label:'Issue ✓',fn:"gen('Issue permit','Final review done. Issue the permit — it becomes live.','Issued → Live')"},
+      negatives:[{label:'Decline',danger:true,fn:"cm('decline')"}],
+      more:['Copy','Print','Comment']},
+    accept:{pill:'Accept (PA)',cls:'s-submit',desc:'PA accepts the issued permit',editable:false,
+      note:'PA accept: accept the issued permit to start work, or decline.',
+      primary:{label:'Accept ✓',fn:"gen('Accept permit','Accept the permit to start the work.','Accepted → work ongoing')"},
+      negatives:[{label:'Decline',danger:true,fn:"cm('decline')"}],
+      more:['Print']},
+    live:{pill:'Live — work ongoing',cls:'s-issued',desc:'Permit is live',editable:false,
+      note:'Permit live (read-only). Suspend to pause, Extend if approaching expiry, or Abandon (AA) to soft-delete.',
+      primary:null,
+      negatives:[{label:'Suspend',warn:true,fn:"gen('Suspend permit','Pause the live permit (PA).','Suspended')"},{label:'Extend',warn:true,fn:"gen('Request extension','Extend validity by +7 days.','+7 days requested')"},{label:'Abandon',danger:true,fn:"cm('abandon')"}],
+      more:['Copy','Print','Comment']},
+    finish:{pill:'Finish (PA)',cls:'s-finished',desc:'PA finishes the work',editable:false,
+      note:'PA finish: mark the work finished, then AA closes the permit. Close captures optional comment + lessons learned.',
+      primary:{label:'Finish',fn:"gen('Finish work','Mark the work as finished. AA will then close the permit.','Finished → to close')"},
+      negatives:[{label:'Close',danger:false,fn:"openM('closeModal')"}],
+      more:['Print']}
+  };
+
+  function btn(b){var cls=b.danger?'btn-danger':(b.warn?'btn-warn':'btn');return '<button class="'+cls+'" onclick="'+b.fn+'">'+b.label+'</button>';}
+  function applyStatus(k){
+    var c=CFG[k];
+    document.getElementById('ss-desc').textContent=c.desc;
+    var pill=document.getElementById('statusPill');pill.className='status '+c.cls;pill.textContent=c.pill;
+    document.getElementById('railNote').textContent=c.note;
+    // editable tags
+    document.querySelectorAll('.editTag, #editTag1').forEach(function(t){t.textContent=c.editable?'Editable':'Read-only';t.className=(t.id==='editTag1'?'':'editTag ')+'tag '+(c.editable?'tag-edit':'tag-ro');});
+    document.querySelectorAll('[data-ro]').forEach(function(f){if(c.editable)f.removeAttribute('readonly');else f.setAttribute('readonly','');});
+    // CTA bar
+    var h='';
+    (c.negatives||[]).forEach(function(b){h+=btn(b);});
+    if(c.extra)h+=btn(c.extra);
+    if(c.primary)h+='<button class="btn-permit" onclick="'+c.primary.fn+'">'+c.primary.label+'</button>';
+    h+='<button class="btn" onclick="document.getElementById(\'moreMenu\').classList.toggle(\'on\')">⋯</button>';
+    h+='<div class="more-menu" id="moreMenu">'+(c.more||[]).map(function(m){return '<button onclick="alert(\''+m+'\')">'+m+'</button>';}).join('')+'</div>';
+    document.getElementById('ctaBar').innerHTML=h;
+  }
+
+  // workflow modal builder, marks current
+  var STEPS=[['Raise · PA','done'],['Sign-off · Specialist','done'],['Verify · AA','verify'],['Authorise · SC','authorise'],['Issue · AA','issue'],['Accept · PA','accept'],['Live','live'],['Finish · PA','finish'],['Closed · AA','']];
+
+  // comment modal (decline/reject/abandon) — mandatory comment
+  var cmAction='';
+  function cm(action){cmAction=action;
+    var titles={decline:'Decline permit',reject:'Reject permit',abandon:'Abandon permit'};
+    var intros={decline:'Decline sends the permit back to the previous step. A comment is mandatory.',reject:'Reject soft-deletes the permit (kept with a Rejected status). A comment is mandatory.',abandon:'Abandon soft-deletes a live permit (AA). A comment is mandatory.'};
+    document.getElementById('cmTitle').textContent=titles[action];
+    document.getElementById('cmIntro').textContent=intros[action];
+    document.getElementById('cmText').value='';document.getElementById('cmConfirm').disabled=true;document.getElementById('cmHint').style.display='none';
+    openM('cmModal');
+  }
+  function cmValidate(){var v=document.getElementById('cmText').value.trim();document.getElementById('cmConfirm').disabled=v.length===0;}
+  function cmSubmit(){var v=document.getElementById('cmText').value.trim();if(!v){document.getElementById('cmHint').style.display='block';return;}alert(cmAction.toUpperCase()+' confirmed with comment:\n"'+v+'"');closeM('cmModal');location.href='02_permits.html';}
+
+  // generic confirm
+  function gen(title,body,result){
+    document.getElementById('genTitle').textContent=title;
+    document.getElementById('genBody').textContent=body;
+    document.getElementById('genConfirm').onclick=function(){alert(result);closeM('genModal');location.href='02_permits.html';};
+    openM('genModal');
+  }
+
+  // init
+  applyStatus('verify');
+  var secs=[].slice.call(document.querySelectorAll('.sec')),ri=[].slice.call(document.querySelectorAll('.rail-item'));
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);ri.forEach(function(r){r.classList.remove('active');});if(ri[i])ri[i].classList.add('active');}});},{rootMargin:'-30% 0px -60% 0px'});
+  secs.forEach(function(s){io.observe(s);});
+</script>
+<script src="riskassessment.js"></script>
+<script src="documents.js"></script>
+<template id="wf-template" data-wf-title="Permit lifecycle" data-wf-sub="History &amp; upcoming steps — read only">
+<div class="wf-obj"><span class="pid">27B-HWSP-20351</span><span class="status s-inspect">Verify</span></div>
+
+        <div class="wf-section-t">Workflow overview</div>
+        <div class="chips"><span class="chip-step chip-done">Raise ✓</span><span class="chev">›</span><span class="chip-step chip-done">Sign-off ✓</span><span class="chev">›</span><span class="chip-step chip-current">● Verify<span class="chip-here">HERE</span></span><span class="chev">›</span><span class="chip-step chip-future">Authorise</span><span class="chev">›</span><span class="chip-step chip-future">Issue</span></div>
+        <div class="chips"><span class="chip-step chip-future">Accept</span><span class="chev">›</span><span class="chip-step chip-future">Live</span><span class="chev">›</span><span class="chip-step chip-future">Finish</span><span class="chev">›</span><span class="chip-step chip-future">Closed</span></div>
+
+        <div class="wf-section-t" style="margin-top:20px">Detailed history &amp; next steps</div>
+        
+        <div class="tl">
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Raised</div><div class="tl-who">by <b>Y. Carter</b> · Performing Authority</div><div class="tl-when">22 Jul 2026 · 06:40</div>
+            <div class="tl-comment">Permit created &amp; saved. Cold work — pressure testing of wireline.</div>
+          </div></div>
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Submitted</div><div class="tl-who">by <b>Y. Carter</b> · Performing Authority</div><div class="tl-when">22 Jul · 06:45</div>
+          </div></div>
+          <div class="tl-item tl-done done"><div class="tl-dot">✓</div><div class="tl-body">
+            <div class="tl-step">Specialist sign-off</div><div class="tl-who">by <b>D. Holt</b> (Deck) &amp; <b>J. Stern</b> (HSEA)</div><div class="tl-when">22 Jul · 07:00</div>
+            <div class="tl-comment">HSEA: controls adequate, fire watch confirmed for hot work near HC lines.</div>
+          </div></div>
+          <div class="tl-item tl-current"><div class="tl-dot">●</div><div class="tl-body">
+            <div class="tl-step">Verify</div><div class="tl-who">assigned to <b>A. Denton</b> · Area Authority</div><div class="tl-when">In this state since 07:00 · 40 min</div>
+            <span class="tl-badge tb-here">You are here</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">4</div><div class="tl-body">
+            <div class="tl-step">Authorise</div><div class="tl-who">will be done by <b>Site Controller</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">5</div><div class="tl-body">
+            <div class="tl-step">Issue</div><div class="tl-who">will be done by <b>Area Authority</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+            <div class="tl-gate">🔗 <b>Gate:</b> can only be issued once isolation <b>27B-ICC-02484</b> is confirmed in place.</div>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">6</div><div class="tl-body">
+            <div class="tl-step">Accept → Live → Finish</div><div class="tl-who"><b>PA</b> accepts, work goes live, then PA finishes</div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+          <div class="tl-item tl-future"><div class="tl-dot">7</div><div class="tl-body">
+            <div class="tl-step">Closed</div><div class="tl-who">will be done by <b>Area Authority</b></div>
+            <span class="tl-badge tb-notstarted">Not started</span>
+          </div></div>
+        </div>
+
+        <div class="alt-sep">
+          <div class="alt-t">Alternate paths</div>
+          <div class="alt-sub">Possible deviations in this workflow — for information.</div>
+          <div class="alt-legend">
+            <div class="alt-item"><span class="alt-key ak-decline"></span><span><span class="ai-t">Decline</span> <span class="ai-d">→ back to previous step, with a mandatory comment</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-reject"></span><span><span class="ai-t">Reject</span> <span class="ai-d">→ soft-delete, available at verify / authorise</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-suspend"></span><span><span class="ai-t">Suspend (PA)</span> <span class="ai-d">→ pause work once the permit is live</span></span></div>
+            <div class="alt-item"><span class="alt-key ak-abandon"></span><span><span class="ai-t">Abandon (AA)</span> <span class="ai-d">→ terminate once the permit is live</span></span></div>
+          </div>
+        </div>
+</template>
+<script src="workflowdrawer.js"></script>
+</body></html>

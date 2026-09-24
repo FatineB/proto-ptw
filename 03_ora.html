@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — ORA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-ora); --module-bg:var(--c-ora-bg)}
+  /* ORA lifecycle statuses mapped onto shared status system */
+  .s-draft{background:var(--st-created-bg);color:var(--st-created)} .s-draft::before{background:var(--st-created)}
+  .s-review{background:var(--st-submit-bg);color:var(--st-submit)} .s-review::before{background:var(--st-submit)}
+  .s-authorise{background:var(--st-inspect-bg);color:var(--st-inspect)} .s-authorise::before{background:var(--st-inspect)}
+  .s-issued{background:var(--st-issued-bg);color:var(--st-issued)} .s-issued::before{background:var(--st-issued)}
+  .s-live{background:var(--st-issued-bg);color:var(--st-issued)} .s-live::before{background:var(--st-issued)}
+  .s-overdue{background:var(--st-suspend-bg);color:var(--st-suspend)} .s-overdue::before{background:var(--st-suspend)}
+  .s-closed{background:var(--st-closed-bg);color:var(--st-closed)} .s-closed::before{background:var(--st-closed)}
+
+  .tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+  .tab{padding:11px 18px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--c-ora);border-bottom-color:var(--c-ora)}
+  .tab .cnt{font-size:11px;background:var(--st-created-bg);color:var(--muted);padding:1px 7px;border-radius:10px;margin-left:6px;font-weight:600}
+  .tab.active .cnt{background:var(--c-ora-bg);color:var(--c-ora)}
+
+  .desc-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .area-cell{font-size:12.5px}
+  /* residual risk chips */
+  .res{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px}
+  .res-green{background:var(--ok-bg);color:var(--ok)}
+  .res-amber{background:var(--warn-bg);color:var(--warn)}
+  .res-red{background:var(--danger-bg);color:var(--danger)}
+  .ps-cell{font-size:12px}
+  .clock{font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .clock.urgent{color:var(--danger);font-weight:700}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;text-decoration:none}
+  .bridge-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}
+  .bridge-iso{background:var(--c-iso-bg);color:var(--c-iso-ink)}
+  .bridge-crr{background:#EAF2F8;color:#12507A}
+  .bridge-none{color:var(--muted)}
+  .row-link{cursor:pointer}
+</style>
+</head>
+<body data-active="ora">
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">+</span> Permit</a>
+    <a class="cta cta-npa"><span class="plus">+</span> Non-Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">+</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">+</span> ORA</a>
+  </div>
+  <div class="hd-tools">
+    <div class="hd-search">🔍</div>
+    <div class="hd-lang">EN ▾</div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <div class="subbar">
+      <div class="crumb"><a href="01_homepage.html">Home</a> › <b>ORA</b></div>
+      <div class="site-pill">Site: 27B ▾</div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1>ORA</h1><div class="sub">Operational Risk Assessments — barrier &amp; SECE status</div></div>
+        <a class="cta cta-ora" href="16_raise_ora.html" style="border-width:1.5px"><span class="plus">+</span> Raise an ORA</a>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">All ORA <span class="cnt">14</span></div>
+        <div class="tab">My ORA <span class="cnt">4</span></div>
+        <div class="tab">Needs my action <span class="cnt">2</span></div>
+        <div class="tab">Cumulative risk (CRR) <span class="cnt">3</span></div>
+      </div>
+
+      <div class="filterbar" id="oraToolbar">
+        <input class="search-in" placeholder="Search by ID, SECE, PS, MAH scenario, equipment…">
+        <span class="selectlike">Status ▾</span>
+        <span class="selectlike">Site ▾</span>
+        <span class="selectlike more-only" style="display:none">Deviation type ▾</span>
+        <span class="selectlike more-only" style="display:none">Residual risk ▾</span>
+        <div class="spacer"></div>
+        <button class="more-filters" onclick="toggleMore(this)">Show more filters</button>
+      </div>
+
+      <div class="panel">
+        <table>
+          <thead><tr>
+            <th>ORA ID</th><th>Description</th><th>Area</th><th>PS / SECE impacted</th><th>Residual</th><th>Status</th><th>Links</th><th>72h clock</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">27B-ORA-20461</span><div class="desc-sub">REV-002</div></td>
+              <td>Fire &amp; Gas detection degraded — BC deck<div class="desc-sub">SECE impairment · MAH: gas release</div></td>
+              <td class="area-cell">27B · BC deck</td>
+              <td class="ps-cell">PS 011/FEP · F&amp;G<div class="desc-sub">ORAE: R. Price</div></td>
+              <td><span class="res res-amber">AMBER</span></td>
+              <td><span class="status s-live">Live</span></td>
+              <td><span class="bridge-tag bridge-crr">📊 CRR</span> <span class="bridge-tag bridge-permit">🔗 27B-HWSP-20351</span></td>
+              <td><span class="clock">71:12 to revise</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16b_raise_ora_review.html'">
+              <td><span class="pid">27B-ORA-20512</span><div class="desc-sub">REV-000</div></td>
+              <td>Compressor shutdown — abnormal vibration<div class="desc-sub">Abnormal operating condition</div></td>
+              <td class="area-cell">27B · 27BC</td>
+              <td class="ps-cell">PS 014/EER<div class="desc-sub">ORAE: J. Stern</div></td>
+              <td><span class="res res-red">RED</span></td>
+              <td><span class="status s-review">In review</span></td>
+              <td><span class="bridge-tag bridge-iso">🔗 27B-ICC-02894</span></td>
+              <td><span class="clock urgent">04:38 to issue</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">27B-ORA-20227</span><div class="desc-sub">REV-001</div></td>
+              <td>Jacket inspection — temporary deck access deviation<div class="desc-sub">Temporary planned deviation</div></td>
+              <td class="area-cell">27B · Cellar deck</td>
+              <td class="ps-cell">PS 021/STR<div class="desc-sub">ORAE: R. Price</div></td>
+              <td><span class="res res-green">GREEN</span></td>
+              <td><span class="status s-issued">Issued</span></td>
+              <td><span class="bridge-tag bridge-crr">📊 CRR</span></td>
+              <td><span class="clock">Issued 08:12</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">27B-ORA-19770</span><div class="desc-sub">REV-000</div></td>
+              <td>Diesel generator unavailable<div class="desc-sub">SECE impairment · standby power</div></td>
+              <td class="area-cell">27B · Utilities</td>
+              <td class="ps-cell">PS 007/EPS<div class="desc-sub">ORAE: A. Denton</div></td>
+              <td><span class="res res-amber">AMBER</span></td>
+              <td><span class="status s-authorise">Authorise (ASSUP)</span></td>
+              <td><span class="bridge-tag bridge-crr">📊 CRR</span></td>
+              <td><span class="clock urgent">11:57 to issue</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">Thames-ORA-08830</span><div class="desc-sub">REV-000</div></td>
+              <td>Deluge system isolated for maintenance<div class="desc-sub">SECE impairment · firewater</div></td>
+              <td class="area-cell">Thames · Main deck</td>
+              <td class="ps-cell">PS 012/FEP<div class="desc-sub">ORAE: J. Stern</div></td>
+              <td><span class="res res-red">RED</span></td>
+              <td><span class="status s-live">Live</span></td>
+              <td><span class="bridge-tag bridge-iso">🔗 Thames-ICC-04590</span> <span class="bridge-tag bridge-permit">🔗 Thames-CW-22587</span></td>
+              <td><span class="clock">Overdue review</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">27B-ORA-20590</span><div class="desc-sub">Draft</div></td>
+              <td>Draft — procedural deviation for hot work zone<div class="desc-sub">Procedural deviation · not submitted</div></td>
+              <td class="area-cell">27B · —</td>
+              <td class="ps-cell">— not set —</td>
+              <td><span class="res res-green">GREEN</span></td>
+              <td><span class="status s-draft">Draft</span></td>
+              <td><span class="bridge-none">— none —</span></td>
+              <td><span class="clock">Not started</span></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='16_raise_ora.html'">
+              <td><span class="pid">Cleeton-ORA-06120</span><div class="desc-sub">REV-003</div></td>
+              <td>Safe staffing — reduced night crew<div class="desc-sub">Safe staffing</div></td>
+              <td class="area-cell">Cleeton · Platform</td>
+              <td class="ps-cell">PS 031/OPS<div class="desc-sub">ORAE: A. Denton</div></td>
+              <td><span class="res res-green">GREEN</span></td>
+              <td><span class="status s-closed">Closed</span></td>
+              <td><span class="bridge-none">— none —</span></td>
+              <td><span class="clock">Closed 24 Aug</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Showing 1–14 of 14</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn" disabled>›</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+</body>
+</html>

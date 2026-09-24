@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Tasks to do</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  .filters-row{display:flex;gap:22px;align-items:center;margin:16px 0 20px}
+  .filters-row label{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+  .filters-row input[type=checkbox]{width:18px;height:18px;accent-color:#3B4657}
+  .search-row{display:flex;gap:14px;margin-bottom:20px}
+  .search-in{border:1px solid var(--line);border-radius:var(--radius);padding:11px 14px 11px 38px;font-size:14px;width:320px;font-family:inherit;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' stroke='%235C6875' stroke-width='2'%3E%3Ccircle cx='6.5' cy='6.5' r='5'/%3E%3Cpath d='M14 14l-4-4'/%3E%3C/svg%3E") no-repeat 13px center}
+  .selectlike{border:1px solid var(--line);border-radius:var(--radius);padding:11px 16px;font-size:14px;color:var(--muted);background:#fff;cursor:pointer;min-width:150px;display:flex;justify-content:space-between;gap:10px}
+  .type-badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:4px 10px;border-radius:12px}
+  .type-badge .d{width:7px;height:7px;border-radius:50%}
+  .tb-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}.tb-permit .d{background:var(--c-permit)}
+  .tb-iso{background:var(--c-iso-bg);color:var(--c-iso-ink)}.tb-iso .d{background:var(--c-iso)}
+  .tb-ora{background:var(--c-ora-bg);color:var(--c-ora-ink)}.tb-ora .d{background:var(--c-ora)}
+  .tasks-panel{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .act{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .act:hover{border-color:var(--c-permit);color:var(--c-permit)}
+  td:last-child{text-align:right}
+  .pager{display:flex;justify-content:center;gap:8px;margin-top:24px}
+  .pager button{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:7px 13px;cursor:pointer;font-family:inherit;font-size:13px}
+  .pager button.on{background:var(--c-permit-bg);border-color:#C6C2EF;color:var(--c-permit-ink);font-weight:600}
+</style></head>
+<body data-active="tasks">
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">＋</span> Permit</a>
+    <a class="cta cta-npa" href="#"><span class="plus">＋</span> Non Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">＋</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">＋</span> ORA</a>
+  </div>
+  <div class="hd-tools"><div class="hd-search">🔍</div><div class="hd-lang">En ⇅</div></div>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <div class="content">
+      <div class="page-head"><h1>Tasks to do</h1></div>
+      <div class="filters-row">
+        <label><input type="checkbox" checked onchange="filt()" data-t="permit"> Permits (7)</label>
+        <label><input type="checkbox" checked onchange="filt()" data-t="iso"> Isolations (2)</label>
+        <label><input type="checkbox" checked onchange="filt()" data-t="ora"> ORA (1)</label>
+      </div>
+      <div class="search-row">
+        <input class="search-in" placeholder="Search…">
+        <div class="selectlike">Filter #1 <span>⇅</span></div>
+        <div class="selectlike">Filter #2 <span>⇅</span></div>
+        <div class="selectlike">Filter #3 <span>⇅</span></div>
+      </div>
+      <div class="tasks-panel">
+        <table id="tt">
+          <thead><tr><th>Type</th><th>ID</th><th>Description</th><th>Person in charge</th><th>Status</th><th>By</th><th>When</th><th></th></tr></thead>
+          <tbody>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">27-b-Hw203</td><td>Opening BC deck hatches — electrical HPU</td><td>(PA) M. Reyni</td><td>Verify</td><td>L. Bailey</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Authorise</span></td><td class="pid">321-A-gfvm32</td><td>Grinding adjacent bay</td><td>(PA) M. Reyni</td><td>Authorise</td><td>A. Danton</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">1-45-Ercv-Bf21</td><td>Isolation of export scrubber A trace heating</td><td>(PA) M. Reyni</td><td>Issue</td><td>M. Read</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="ora" onclick="if(!event.target.closest('.act'))location.href='16b_raise_ora_review.html'"><td><span class="type-badge tb-ora"><span class="d"></span>ORA</span></td><td class="pid">12-ptw-O012</td><td>Use of 110v saw — grating change out</td><td>(PA) M. Reyni</td><td>Verify</td><td>Y. Carter</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='16b_raise_ora_review.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='06_specialist_signoff_permit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Sign-off</span></td><td class="pid">13v-456-123</td><td>Isolation of export scrubber A trace heating</td><td>(PA) M. Reyni</td><td>Verify</td><td>H.Shaw</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='06_specialist_signoff_permit.html'">Approve</button></td></tr>
+<tr data-type="iso" onclick="if(!event.target.closest('.act'))location.href='06_specialist_signoff_iso.html'"><td><span class="type-badge tb-iso"><span class="d"></span>Sign-off</span></td><td class="pid">A-123-456</td><td>Continued operation of the diesel generation</td><td>(PA) M. Reyni</td><td>Authorise</td><td>M. Read</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='06_specialist_signoff_iso.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">Aqv-35678-12Y</td><td>Opening BC deck hatches — electrical HPU</td><td>(PA) M. Reyni</td><td>Extend</td><td>M. Read</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">AqwSD-14-012</td><td>Outboard rope access — paused</td><td>(PA) M. Reyni</td><td>Issue</td><td>A. Danton</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">rig-01-2367</td><td>Use of 110v saw — grating change out</td><td>(PA) M. Reyni</td><td>Authorise</td><td>L. Bailey</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+<tr data-type="permit" onclick="if(!event.target.closest('.act'))location.href='09_permit_edit.html'"><td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td><td class="pid">Iso-12-34pl01</td><td>Isolation of export scrubber A trace heating</td><td>(PA) M. Reyni</td><td>Verify</td><td>L. Bailey</td><td>24/07/26 - 14:38</td><td><button class="act" onclick="location.href='09_permit_edit.html'">Approve</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><button>‹</button><button class="on">1</button><button>2</button><button>…</button><button>12</button><button>›</button></div>
+    </div>
+  </div>
+</div>
+<script>
+  function filt(){
+    var act=[].slice.call(document.querySelectorAll('.filters-row input:checked')).map(function(c){return c.dataset.t;});
+    document.querySelectorAll('#tt tbody tr').forEach(function(tr){tr.style.display=act.indexOf(tr.dataset.type)>=0?'':'none';});
+  }
+</script>
+<script src="sidebar.js"></script>
+</body></html>

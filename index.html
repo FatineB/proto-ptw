@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Prototype hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  body{background:var(--bg);padding:0;margin:0}
+  .hub{max-width:1080px;margin:0 auto;padding:40px 32px 64px}
+  .hub-head{margin-bottom:28px}
+  .hub-head .logo{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:800;color:var(--brand);letter-spacing:.5px;margin-bottom:14px}
+  .hub-head .logo .mk{background:var(--brand);color:#fff;border-radius:6px;padding:3px 8px}
+  .hub-head h1{font-size:26px;font-weight:800;margin:0 0 6px}
+  .hub-head p{color:var(--muted);font-size:14px;margin:0;max-width:640px;line-height:1.5}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0 6px;font-size:12px;color:var(--muted)}
+  .legend b{color:var(--ink);font-weight:600}
+  .cat{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.3px}
+  .cat-create{background:var(--brand-soft);color:var(--brand-ink)}
+  .cat-manage{background:#EAF2F8;color:#12507A}
+  .cat-live{background:var(--ok-bg);color:var(--ok)}
+  .cat-xfn{background:var(--st-created-bg);color:var(--muted)}
+  .cat-artifact{background:var(--warn-bg);color:var(--warn)}
+
+  .mod{margin-top:28px}
+  .mod-h{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .mod-h .dot{width:10px;height:10px;border-radius:50%}
+  .dot-xfn{background:var(--muted)} .dot-permit{background:var(--c-permit)} .dot-iso{background:var(--c-iso)} .dot-ora{background:var(--c-ora)} .dot-stt{background:#730FC3}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+  .card{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-decoration:none;color:var(--ink);transition:border-color .12s,box-shadow .12s}
+  .card:hover{border-color:var(--brand);box-shadow:0 4px 14px rgba(20,28,38,.08)}
+  .card .num{font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 7px;white-space:nowrap;flex-shrink:0}
+  .card .body{flex:1;min-width:0}
+  .card .t{font-size:14px;font-weight:600;margin-bottom:3px}
+  .card .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .fn{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace}
+  .card.off{opacity:.6}
+  .card.off:hover{border-color:var(--warn)}
+  .foot{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="hub">
+  <div class="hub-head">
+    <div class="logo"><span class="mk">P2W</span> ePTW · CADRAGE PROTOTYPE</div>
+    <h1>Prototype hub</h1>
+    <p>All screens produced during the scoping sprint, grouped by module. Covers the two entry pathways —
+       <b>planned</b> (ORA → Permit → Isolation) and <b>reactive</b> (SECE → Isolation → ORA → Permit). Click any card to open the screen.</p>
+    <div class="legend">
+      <span><span class="cat cat-create">Create</span> isolated focus view</span>
+      <span><span class="cat cat-manage">Manage</span> standard shell</span>
+      <span><span class="cat cat-live">Live</span> focused execution</span>
+      <span><span class="cat cat-xfn">Cross</span> transverse</span>
+      <span><span class="cat cat-artifact">UX ref</span> decision artifact</span>
+    </div>
+  </div>
+
+  <!-- TRANSVERSE -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-xfn"></span> Transverse</div>
+    <div class="grid">
+      <a class="card" href="01_homepage.html"><span class="num">01</span><div class="body"><div class="t">Home</div><div class="meta"><span class="cat cat-xfn">Cross</span><span class="fn">01_homepage.html</span></div></div></a>
+      <a class="card" href="07_tasks_to_do.html"><span class="num">07</span><div class="body"><div class="t">Tasks to do</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">07_tasks_to_do.html</span></div></div></a>
+      <a class="card" href="08_lessons_learned.html"><span class="num">08</span><div class="body"><div class="t">Lessons learned</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">08_lessons_learned.html</span></div></div></a>
+      <a class="card" href="04_projects.html"><span class="num">04</span><div class="body"><div class="t">Projects</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">04_projects.html</span></div></div></a>
+      <a class="card" href="04b_project_detail.html"><span class="num">04b</span><div class="body"><div class="t">Project detail</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">04b_project_detail.html</span></div></div></a>
+    </div>
+  </div>
+
+  <!-- PERMIT -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-permit"></span> Permit (WCC)</div>
+    <div class="grid">
+      <a class="card" href="02_permits.html"><span class="num">02</span><div class="body"><div class="t">Permits list</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">02_permits.html</span></div></div></a>
+      <a class="card" href="06_raise_permit.html"><span class="num">06</span><div class="body"><div class="t">Raise a new Permit</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">06_raise_permit.html</span></div></div></a>
+      <a class="card" href="06b_raise_review.html"><span class="num">06b</span><div class="body"><div class="t">Review before submit</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">06b_raise_review.html</span></div></div></a>
+      <a class="card" href="06_specialist_signoff_permit.html"><span class="num">06</span><div class="body"><div class="t">Specialist sign-off (permit)</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">06_specialist_signoff_permit.html</span></div></div></a>
+      <a class="card" href="09_permit_edit.html"><span class="num">09</span><div class="body"><div class="t">Permit workflow / edit</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">09_permit_edit.html</span></div></div></a>
+      <a class="card" href="07_permit_lifecycle.html"><span class="num">07</span><div class="body"><div class="t">Permit lifecycle</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">07_permit_lifecycle.html</span></div></div></a>
+      <a class="card" href="10_permit_live.html"><span class="num">10</span><div class="body"><div class="t">Permit (live)</div><div class="meta"><span class="cat cat-live">Live</span><span class="fn">10_permit_live.html</span></div></div></a>
+    </div>
+  </div>
+
+  <!-- ISOLATION -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-iso"></span> Isolation (ICC)</div>
+    <div class="grid">
+      <a class="card" href="02_isolations.html"><span class="num">02</span><div class="body"><div class="t">Isolations list</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">02_isolations.html</span></div></div></a>
+      <a class="card" href="11_raise_isolation_start.html"><span class="num">11</span><div class="body"><div class="t">Raise an Isolation (dispatcher)</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">11_raise_isolation_start.html</span></div></div></a>
+      <a class="card" href="11_raise_isolation.html"><span class="num">11</span><div class="body"><div class="t">Raise a new Isolation</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">11_raise_isolation.html</span></div></div></a>
+      <a class="card" href="11b_raise_isolation_review.html"><span class="num">11b</span><div class="body"><div class="t">Review isolation before submit</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">11b_raise_isolation_review.html</span></div></div></a>
+      <a class="card" href="12_isolation_live.html"><span class="num">12</span><div class="body"><div class="t">Isolation (live)</div><div class="meta"><span class="cat cat-live">Live</span><span class="fn">12_isolation_live.html</span></div></div></a>
+      <a class="card" href="13_isolation_points.html"><span class="num">13</span><div class="body"><div class="t">Isolation points (execution)</div><div class="meta"><span class="cat cat-live">Live</span><span class="fn">13_isolation_points.html</span></div></div></a>
+      <a class="card" href="14_isolation_workflow.html"><span class="num">14</span><div class="body"><div class="t">Isolation workflow</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">14_isolation_workflow.html</span></div></div></a>
+      <a class="card" href="06_specialist_signoff_iso.html"><span class="num">06</span><div class="body"><div class="t">Specialist sign-off (iso)</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">06_specialist_signoff_iso.html</span></div></div></a>
+      <a class="card" href="15_isolation_group.html"><span class="num">15</span><div class="body"><div class="t">Isolation group</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">15_isolation_group.html</span></div></div></a>
+      <a class="card" href="15_isolation_group_new.html"><span class="num">15</span><div class="body"><div class="t">New isolation group</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">15_isolation_group_new.html</span></div></div></a>
+      <a class="card" href="15_isolation_group_empty.html"><span class="num">15</span><div class="body"><div class="t">Isolation group (empty state)</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">15_isolation_group_empty.html</span></div></div></a>
+    </div>
+  </div>
+
+  <!-- ORA -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-ora"></span> ORA (Operational Risk Assessment)</div>
+    <div class="grid">
+      <a class="card" href="03_ora.html"><span class="num">03</span><div class="body"><div class="t">ORA list</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">03_ora.html</span></div></div></a>
+      <a class="card" href="16_raise_ora.html"><span class="num">16</span><div class="body"><div class="t">Raise ORA — Step 1 (capture event)</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">16_raise_ora.html</span></div></div></a>
+      <a class="card" href="16b_raise_ora_review.html"><span class="num">16b</span><div class="body"><div class="t">Review Step 1 (capture event)</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">16b_raise_ora_review.html</span></div></div></a>
+      <a class="card" href="16c_raise_ora_complete.html"><span class="num">16c</span><div class="body"><div class="t">Complete ORA (72h · Step 2)</div><div class="meta"><span class="cat cat-create">Create</span><span class="fn">16c_raise_ora_complete.html</span></div></div></a>
+    </div>
+  </div>
+
+  <!-- STT -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-stt"></span> STT — Sanction to Test (Permit ∥ Isolation sync)</div>
+    <div class="grid">
+      <a class="card" href="20_stt_coordination.html"><span class="num">20</span><div class="body"><div class="t">STT coordination</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">20_stt_coordination.html</span></div></div></a>
+      <a class="card" href="21_stt_start_testing.html"><span class="num">21</span><div class="body"><div class="t">STT Start Testing</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">21_stt_start_testing.html</span></div></div></a>
+      <a class="card" href="22_stt_finish.html"><span class="num">22</span><div class="body"><div class="t">STT Finish &amp; Close</div><div class="meta"><span class="cat cat-manage">Manage</span><span class="fn">22_stt_finish.html</span></div></div></a>
+    </div>
+  </div>
+
+  <!-- UX REFERENCE -->
+  <div class="mod">
+    <div class="mod-h"><span class="dot dot-xfn"></span> UX reference (not part of the app flow)</div>
+    <div class="grid">
+      <a class="card off" href="11c_points_cards_compare.html"><span class="num">11c</span><div class="body"><div class="t">Isolation points: cards vs table</div><div class="meta"><span class="cat cat-artifact">UX ref</span><span class="fn">11c_points_cards_compare.html</span></div></div></a>
+    </div>
+  </div>
+
+  <div class="foot">
+    27 screens · shared design system <code>eptw.css</code> · Inter typeface · two pathways wired end-to-end.
+    Colour code: <b style="color:var(--c-permit)">permit</b> · <b style="color:var(--c-iso)">isolation</b> · <b style="color:var(--c-ora)">ORA</b>.
+  </div>
+</div>
+</body>
+</html>

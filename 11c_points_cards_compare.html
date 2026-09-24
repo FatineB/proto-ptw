@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Isolation points: cards vs table</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  
+  .cmp{max-width:1000px;margin:0 auto}
+  .cmp-h{margin-bottom:8px}
+  .cmp-h h1{font-size:20px;font-weight:600}
+  .cmp-h p{color:var(--muted);font-size:13px;margin-top:4px}
+  .toggle-row{display:flex;gap:8px;margin:18px 0}
+  .tg{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted)}
+  .tg.on{background:var(--c-iso);border-color:var(--c-iso);color:#fff}
+  .view{display:none}.view.on{display:block}
+  .note{display:flex;gap:9px;background:var(--c-iso-bg);border:1px solid #EAD3AE;border-radius:var(--radius);padding:11px 13px;font-size:12.5px;color:#7A4E12;margin-bottom:16px}
+
+  /* ===== CARD VIEW ===== */
+  .ip-card{border:1px solid var(--line);border-radius:8px;margin-bottom:12px;background:#fff;overflow:hidden}
+  .ip-card.open{border-color:var(--c-iso);box-shadow:0 1px 0 var(--c-iso-bg)}
+  .ipc-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer}
+  .ipc-head:hover{background:#FAFBFC}
+  .ipc-ord{width:26px;height:26px;border-radius:6px;background:var(--c-iso-bg);color:var(--c-iso);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+  .ipc-tag{font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums;min-width:92px}
+  .ipc-desc{color:var(--ink);font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .type-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .tp-elec{background:#FFF4DE;color:var(--c-iso-ink)}.tp-mech{background:#E7ECF1;color:#3B4657}.tp-inst{background:#E5EEF7;color:#2C6FB5}.tp-proc{background:#E3F5EE;color:#1C9E7A}
+  .ipc-chev{color:var(--muted);font-size:13px;transition:transform .18s;margin-left:4px}
+  .ip-card.open .ipc-chev{transform:rotate(180deg)}
+  .ipc-body{display:none;padding:4px 16px 18px;border-top:1px solid var(--line-soft)}
+  .ip-card.open .ipc-body{display:block}
+  .fgrid{display:grid;grid-template-columns:80px 80px 1fr;gap:14px;margin-top:14px}
+  .fgrid.two{grid-template-columns:1fr 1fr}
+  .fgrid.three{grid-template-columns:1fr 1fr 1fr}
+  .field label{display:block;font-size:11.5px;font-weight:600;margin-bottom:5px;color:var(--muted)}
+  input[type=text],textarea,select{width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;font-size:13px;font-family:inherit;background:#fff;color:var(--ink)}
+  .full{margin-top:14px}
+  /* IST inside card */
+  .ist-in{margin-top:16px;background:#F1FAF6;border:1px solid #BFE6D6;border-radius:var(--radius);padding:14px}
+  .ist-in .ist-h{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#0F6B4F;margin-bottom:4px}
+  .ist-in .ist-sub{font-size:11.5px;color:#3B7A64;margin-bottom:12px}
+  .ist-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .ist-out{margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .std-badge{font-size:12px;font-weight:700;padding:5px 11px;border-radius:10px;background:var(--ok-bg);color:#0F6B4F}
+  .out-f{font-size:12px;color:var(--muted)}.out-f b{color:var(--ink);font-size:14px}
+  .card-foot{display:flex;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)}
+  .del-link{margin-left:auto;color:var(--muted);font-size:12.5px;cursor:pointer;border:0;background:none;font-family:inherit}
+  .del-link:hover{color:var(--danger)}
+  .add-ip{border:1px dashed var(--c-iso);background:var(--c-iso-bg);color:var(--c-iso);font-weight:700;padding:11px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
+  .mini-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:var(--radius);padding:7px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600}
+  .mini-btn:hover{border-color:var(--c-iso);color:var(--c-iso)}
+
+  /* ===== TABLE + DRAWER VIEW ===== */
+  table.ipc-tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.ipc-tbl thead th{background:#F7F9FB;text-align:left;padding:10px 14px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft)}
+  table.ipc-tbl tbody td{padding:11px 14px;border-bottom:1px solid var(--line-soft)}
+  table.ipc-tbl tbody tr{cursor:pointer}
+  table.ipc-tbl tbody tr:hover{background:#F7F9FB}
+  table.ipc-tbl tbody tr.sel{background:var(--c-iso-bg)}
+  table.ipc-tbl tbody tr:last-child td{border-bottom:0}
+  .c-ord{width:44px;text-align:center;color:var(--muted);font-weight:600}
+  .c-tag{font-weight:600;font-variant-numeric:tabular-nums}
+  .c-status{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap}
+  .cs-ok{background:var(--ok-bg);color:#0F6B4F}
+  .cs-todo{background:var(--warn-bg);color:var(--warn)}
+  .c-open{color:var(--c-iso);font-weight:600;font-size:12.5px}
+  .tbl-foot{display:flex;gap:10px;margin-top:12px;align-items:center}
+
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:rgba(20,28,38,.32);opacity:0;visibility:hidden;transition:.2s;z-index:50}
+  .scrim.on{opacity:1;visibility:visible}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:520px;max-width:94vw;background:#fff;box-shadow:-8px 0 30px rgba(20,28,38,.18);transform:translateX(100%);transition:transform .24s cubic-bezier(.4,0,.2,1);z-index:51;display:flex;flex-direction:column}
+  .drawer.on{transform:none}
+  .dw-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line-soft)}
+  .dw-ord{width:26px;height:26px;border-radius:6px;background:var(--c-iso-bg);color:var(--c-iso);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .dw-title{font-weight:600;font-size:15px;flex:1}
+  .dw-nav{display:flex;gap:4px}
+  .dw-nav button{border:1px solid var(--line);background:#fff;border-radius:var(--radius);width:30px;height:30px;cursor:pointer;color:var(--muted);font-family:inherit}
+  .dw-nav button:hover{border-color:var(--c-iso);color:var(--c-iso)}
+  .dw-close{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer;padding:4px 8px}
+  .dw-body{padding:20px;overflow-y:auto;flex:1}
+  .dw-foot{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--line-soft)}
+  .dw-foot .save{background:var(--c-iso);border:0;color:#fff;font-weight:600;padding:11px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit;flex:1}
+  .dw-foot .savenext{background:#fff;border:1px solid var(--c-iso);color:var(--c-iso);font-weight:600;padding:11px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit;flex:1}
+  .dw-foot .del{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:var(--radius);padding:11px 14px;cursor:pointer;font-family:inherit}
+  .dw-foot .del:hover{border-color:var(--danger);color:var(--danger)}
+
+  /* ===== TABLE VIEW (current) ===== */
+  .ip-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .ip-scroll{overflow-x:auto}
+  table.ip{width:100%;min-width:1020px;border-collapse:collapse;font-size:12.5px}
+  table.ip thead th{background:#F7F9FB;text-align:left;padding:9px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  table.ip tbody td{padding:8px 11px;border-bottom:1px solid var(--line-soft)}
+  table.ip select,table.ip input{padding:7px 9px;font-size:12.5px}
+  .ord{width:52px;text-align:center}
+</style></head>
+<body>
+<div class="cmp">
+  <div class="cmp-h">
+    <h1>Isolation points — two layouts to compare</h1>
+    <p>Same data, same design system. Toggle between the card layout (proposed for the raise form) and the table layout (current).</p>
+  </div>
+  <div class="toggle-row">
+    <button class="tg on" id="tgDrawer" onclick="show('drawer')">▤ Table + drawer (recommended)</button>
+    <button class="tg" id="tgCards" onclick="show('cards')">◨ Cards</button>
+    <button class="tg" id="tgTable" onclick="show('table')">▦ Table (current)</button>
+  </div>
+
+  <!-- ===== TABLE + DRAWER ===== -->
+  <div class="view on" id="vDrawer">
+    <div class="note">🔒 <div>Compact table for scanning &amp; mass actions — scales to dozens of points. Click a row to open the <b>detail drawer</b> (full fields + Isolation Selection Tool for Process points). Navigate point-to-point without leaving the list.</div></div>
+    <table class="ipc-tbl">
+      <thead><tr><th class="c-ord">#</th><th>Tag</th><th>Description</th><th>Type</th><th>Isolated → De-isolated</th><th>Detail</th><th></th></tr></thead>
+      <tbody>
+        <tr onclick="openDw(1)"><td class="c-ord">1</td><td class="c-tag">P200AEM</td><td>P200A KO Drum Pump Motor SWBD100 A10.6</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Removed → Replaced</td><td><span class="c-status cs-ok">Complete</span></td><td class="c-open">Open →</td></tr>
+        <tr onclick="openDw(2)"><td class="c-ord">2</td><td class="c-tag">LBC-V-201</td><td>Open drains inlet isolation valve</td><td><span class="type-pill tp-proc">Process</span></td><td>Closed → Open</td><td><span class="c-status cs-ok">Complete · II</span></td><td class="c-open">Open →</td></tr>
+        <tr onclick="openDw(3)"><td class="c-ord">3</td><td class="c-tag">LBC-V-450</td><td>HP condensate transfer isolation valve</td><td><span class="type-pill tp-proc">Process</span></td><td>Closed → Open</td><td><span class="c-status cs-todo">Selection tool ⚠</span></td><td class="c-open">Open →</td></tr>
+        <tr onclick="openDw(4)"><td class="c-ord">4</td><td class="c-tag">P200BEM</td><td>P200B KO Drum Pump Motor SWBD100 B14.4</td><td><span class="type-pill tp-elec">Electrical</span></td><td>Removed → Replaced</td><td><span class="c-status cs-ok">Complete</span></td><td class="c-open">Open →</td></tr>
+      </tbody>
+    </table>
+    <div class="tbl-foot">
+      <button class="add-ip" style="width:auto" onclick="openDw('new')">+ Add isolation point</button>
+      <button class="mini-btn">↕ Reorder</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted)">4 points · 2 process · 1 needs selection tool</span>
+    </div>
+  </div>
+
+  <!-- Drawer + scrim -->
+  <div class="scrim" id="scrim" onclick="closeDw()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="dw-head">
+      <span class="dw-ord" id="dwOrd">2</span>
+      <div class="dw-title" id="dwTitle">LBC-V-201</div>
+      <div class="dw-nav"><button onclick="stepDw(-1)" title="Previous point">↑</button><button onclick="stepDw(1)" title="Next point">↓</button></div>
+      <button class="dw-close" onclick="closeDw()">✕</button>
+    </div>
+    <div class="dw-body" id="dwBody"><!-- filled by JS --></div>
+    <div class="dw-foot">
+      <button class="del">🗑</button>
+      <button class="savenext" onclick="stepDw(1)">Save &amp; next ↓</button>
+      <button class="save" onclick="closeDw()">Save point</button>
+    </div>
+  </aside>
+
+  <!-- ===== CARDS ===== -->
+  <div class="view" id="vCards">
+    <div class="note">🔒 <div>One card per point. Collapsed = quick scan; expanded = full detail. <b>Process</b> points reveal the Isolation Selection Tool inline, attached to the right point.</div></div>
+
+    <!-- Card 1 — Electrical, collapsed -->
+    <div class="ip-card" id="c1">
+      <div class="ipc-head" onclick="tog('c1')">
+        <span class="ipc-ord">1</span>
+        <span class="ipc-tag">P200AEM</span>
+        <span class="ipc-desc">P200A KO Drum Pump Motor SWBD100 A10.6</span>
+        <span class="type-pill tp-elec">Electrical</span>
+        <span class="ipc-chev">▼</span>
+      </div>
+      <div class="ipc-body">
+        <div class="fgrid">
+          <div class="field"><label>Iso #</label><input type="text" value="1"></div>
+          <div class="field"><label>De-iso #</label><input type="text" value="1"></div>
+          <div class="field"><label>Method</label><input type="text" value="Fuse removed"></div>
+        </div>
+        <div class="fgrid three">
+          <div class="field"><label>Isolated state</label><input type="text" value="Removed"></div>
+          <div class="field"><label>De-isolated state</label><input type="text" value="Replaced"></div>
+          <div class="field"><label>Normal LO/LC</label><select><option>----</option><option>LO</option><option>LC</option></select></div>
+        </div>
+        <div class="field full"><label>Comment</label><input type="text" placeholder="—"></div>
+        <div class="card-foot">
+          <button class="mini-btn" onclick="event.stopPropagation()">⧉ Duplicate</button>
+          <button class="del-link" onclick="event.stopPropagation()">🗑 Remove point</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 — Process, expanded, with IST -->
+    <div class="ip-card open" id="c2">
+      <div class="ipc-head" onclick="tog('c2')">
+        <span class="ipc-ord">2</span>
+        <span class="ipc-tag">LBC-V-201</span>
+        <span class="ipc-desc">Open drains inlet isolation valve</span>
+        <span class="type-pill tp-proc">Process</span>
+        <span class="ipc-chev">▼</span>
+      </div>
+      <div class="ipc-body">
+        <div class="fgrid">
+          <div class="field"><label>Iso #</label><input type="text" value="2"></div>
+          <div class="field"><label>De-iso #</label><input type="text" value="2"></div>
+          <div class="field"><label>Method</label><input type="text" value="Valve closed &amp; locked"></div>
+        </div>
+        <div class="fgrid three">
+          <div class="field"><label>Isolated state</label><input type="text" value="Closed"></div>
+          <div class="field"><label>De-isolated state</label><input type="text" value="Open"></div>
+          <div class="field"><label>Normal LO/LC</label><select><option>----</option><option selected>LC</option><option>LO</option></select></div>
+        </div>
+        <div class="field full"><label>Comment</label><input type="text" placeholder="—"></div>
+
+        <div class="ist-in">
+          <div class="ist-h">⚙ Isolation Selection Tool <span style="font-weight:400;color:#3B7A64">— Process point</span></div>
+          <div class="ist-sub">Derives the minimum isolation standard. ⚠ Confined space / hot work → positive isolations mandatory.</div>
+          <div class="ist-grid">
+            <div class="field"><label>Substance category</label><select><option>2. Flammable/Explosive</option><option>1. Toxic</option><option>3. Non-hazardous</option></select></div>
+            <div class="field"><label>Pressure</label><select><option>≤ 10 barg</option><option>10–50 barg</option><option>&gt; 50 barg</option></select></div>
+            <div class="field"><label>Line size</label><select><option>≤ 2"</option><option>2–6"</option><option>&gt; 6"</option></select></div>
+            <div class="field"><label>Release factor</label><select><option>Low</option><option>Medium</option><option>High</option></select></div>
+            <div class="field"><label>Location factor</label><select><option>Low (1-2 at risk/remote)</option><option>Medium</option><option>High (manned)</option></select></div>
+            <div class="field"><label>Justification if lower</label><input type="text" placeholder="RA ref + exposure…"></div>
+          </div>
+          <div class="ist-out">
+            <span class="out-f">Outcome factor: <b>C</b></span>
+            <span class="std-badge">Isolation standard: II — Proved isolation</span>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <button class="mini-btn" onclick="event.stopPropagation()">⧉ Duplicate</button>
+          <button class="mini-btn" onclick="event.stopPropagation()">🔗 Link to another isolation</button>
+          <button class="del-link" onclick="event.stopPropagation()">🗑 Remove point</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-ip">+ Add isolation point</button>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="mini-btn">↕ Reorder points</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted);align-self:center">2 points · 1 process</span>
+    </div>
+  </div>
+
+  <!-- ===== TABLE ===== -->
+  <div class="view" id="vTable">
+    <div class="note">🔒 <div>All points in one grid. Strong for scanning many points and mass actions — weaker for dense data entry on a narrow width. The Selection Tool sits below, detached from its point.</div></div>
+    <div class="ip-wrap"><div class="ip-scroll">
+      <table class="ip">
+        <thead><tr><th class="ord">Iso #</th><th class="ord">De-iso #</th><th>Tag no.</th><th>Description</th><th>Type</th><th>Method</th><th>Isolated</th><th>De-isolated</th><th>LO/LC</th><th>Comment</th></tr></thead>
+        <tbody>
+          <tr><td class="ord"><input value="1"></td><td class="ord"><input value="1"></td><td><input value="P200AEM"></td><td><input value="P200A KO Drum Pump Motor"></td><td><select><option>Electrical</option><option>Process</option></select></td><td><input value="Fuse removed"></td><td><input value="Removed"></td><td><input value="Replaced"></td><td><select><option>----</option></select></td><td><input placeholder="—"></td></tr>
+          <tr><td class="ord"><input value="2"></td><td class="ord"><input value="2"></td><td><input value="LBC-V-201"></td><td><input value="Open drains inlet valve"></td><td><select><option selected>Process</option><option>Electrical</option></select></td><td><input value="Closed &amp; locked"></td><td><input value="Closed"></td><td><input value="Open"></td><td><select><option selected>LC</option></select></td><td><input placeholder="—"></td></tr>
+        </tbody>
+      </table>
+    </div></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px">↳ Isolation Selection Tool for Process points would render here, below the table — not next to LBC-V-201.</p>
+  </div>
+</div>
+
+<script>
+  function show(v){
+    document.getElementById('vDrawer').classList.toggle('on',v==='drawer');
+    document.getElementById('vCards').classList.toggle('on',v==='cards');
+    document.getElementById('vTable').classList.toggle('on',v==='table');
+    document.getElementById('tgDrawer').classList.toggle('on',v==='drawer');
+    document.getElementById('tgCards').classList.toggle('on',v==='cards');
+    document.getElementById('tgTable').classList.toggle('on',v==='table');
+    if(v!=='drawer') closeDw();
+  }
+  function tog(id){document.getElementById(id).classList.toggle('open');}
+
+  // ---- Drawer ----
+  const PTS={
+    1:{ord:1,tag:'P200AEM',desc:'P200A KO Drum Pump Motor SWBD100 A10.6',type:'Electrical',method:'Fuse removed',iso:'Removed',deiso:'Replaced',lolc:'----'},
+    2:{ord:2,tag:'LBC-V-201',desc:'Open drains inlet isolation valve',type:'Process',method:'Valve closed & locked',iso:'Closed',deiso:'Open',lolc:'LC',subst:'2. Flammable/Explosive',press:'≤ 10 barg',size:'≤ 2"',loc:'Low (1-2 at risk/remote)',outcome:'C',std:'II — Proved isolation'},
+    3:{ord:3,tag:'LBC-V-450',desc:'HP condensate transfer isolation valve',type:'Process',method:'',iso:'Closed',deiso:'Open',lolc:'LC',subst:'2. Flammable/Explosive',press:'> 50 barg',size:'2–6"',loc:'High (manned area)',outcome:'',std:''},
+    4:{ord:4,tag:'P200BEM',desc:'P200B KO Drum Pump Motor SWBD100 B14.4',type:'Electrical',method:'Fuse removed',iso:'Removed',deiso:'Replaced',lolc:'----'}
+  };
+  let cur=2;
+  function sel(o){return t=>`<option${t===o?' selected':''}>${t}</option>`;}
+  function drawerBody(p){
+    const isProc=p.type==='Process';
+    let ist='';
+    if(isProc){
+      const derived=p.std?`<span class="std-badge">Isolation standard: ${p.std}</span>`:`<span class="c-status cs-todo">⚠ Complete the tool to derive the standard</span>`;
+      ist=`<div class="ist-in" style="margin-top:18px">
+        <div class="ist-h">⚙ Isolation Selection Tool <span style="font-weight:400;color:#3B7A64">— Process point</span></div>
+        <div class="ist-sub">Derives the minimum isolation standard. ⚠ Confined space / hot work → positive isolations mandatory.</div>
+        <div class="ist-grid">
+          <div class="field"><label>Substance category</label><select>${['2. Flammable/Explosive','1. Toxic','3. Non-hazardous'].map(sel(p.subst)).join('')}</select></div>
+          <div class="field"><label>Pressure</label><select>${['≤ 10 barg','10–50 barg','> 50 barg'].map(sel(p.press)).join('')}</select></div>
+          <div class="field"><label>Line size</label><select>${['≤ 2"','2–6"','> 6"'].map(sel(p.size)).join('')}</select></div>
+          <div class="field"><label>Release factor</label><select><option>Low</option><option>Medium</option><option>High</option></select></div>
+          <div class="field"><label>Location factor</label><select>${['Low (1-2 at risk/remote)','Medium','High (manned area)'].map(sel(p.loc)).join('')}</select></div>
+          <div class="field"><label>Justification if lower</label><input type="text" placeholder="RA ref + exposure…"></div>
+        </div>
+        <div class="ist-out"><span class="out-f">Outcome factor: <b>${p.outcome||'—'}</b></span>${derived}</div>
+      </div>`;
+    }
+    return `
+      <div class="fgrid"><div class="field"><label>Iso #</label><input value="${p.ord}"></div><div class="field"><label>De-iso #</label><input value="${p.ord}"></div><div class="field"><label>Type</label><select>${['Electrical','Instruments','Mechanical','Process'].map(sel(p.type)).join('')}</select></div></div>
+      <div class="field full"><label>Tag no.</label><input value="${p.tag}"></div>
+      <div class="field full"><label>Description</label><input value="${p.desc}"></div>
+      <div class="field full"><label>Method</label><input value="${p.method}" placeholder="Method / isolated state"></div>
+      <div class="fgrid three"><div class="field"><label>Isolated state</label><input value="${p.iso}"></div><div class="field"><label>De-isolated state</label><input value="${p.deiso}"></div><div class="field"><label>Normal LO/LC</label><select>${['----','LO','LC'].map(sel(p.lolc)).join('')}</select></div></div>
+      <div class="field full"><label>Comment</label><input placeholder="—"></div>
+      ${ist}`;
+  }
+  function paint(){
+    const p=PTS[cur];
+    document.getElementById('dwOrd').textContent=p.ord;
+    document.getElementById('dwTitle').textContent=p.tag+' · '+p.type;
+    document.getElementById('dwBody').innerHTML=drawerBody(p);
+    [...document.querySelectorAll('#vDrawer tbody tr')].forEach((tr,i)=>tr.classList.toggle('sel',i+1===cur));
+  }
+  function openDw(id){
+    if(id==='new'){alert('New point → drawer opens empty');return;}
+    cur=id;paint();
+    document.getElementById('scrim').classList.add('on');
+    document.getElementById('drawer').classList.add('on');
+  }
+  function closeDw(){
+    document.getElementById('scrim').classList.remove('on');
+    document.getElementById('drawer').classList.remove('on');
+  }
+  function stepDw(d){cur=Math.min(4,Math.max(1,cur+d));paint();}
+</script>
+</body></html>

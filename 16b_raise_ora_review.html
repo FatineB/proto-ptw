@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Review ORA before submit</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-ora); --module-bg:var(--c-ora-bg)}
+  .rail-step-label{font-size:12px;font-weight:700;margin:0 0 8px}
+  .rail-step-label.s2{margin-top:18px}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;color:var(--ink)}
+  .rail-btn.done{color:var(--ok);border-color:#B4E0CE}
+  .rail-btn.active{background:#3B4657;color:#fff;border-color:#3B4657}
+  .rail-btn.outline{color:var(--c-ora)}
+  .rail-btn.sub{padding-left:26px;font-size:12.5px;font-weight:500}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-save{color:var(--muted)}
+  .rail-progress .rp-fill{width:100%}
+  .review-head{text-align:center;margin-bottom:22px}
+  .review-head h1{font-size:24px;font-weight:600}
+  .review-head p{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .crr-inline{display:flex;gap:12px;align-items:center;justify-content:center;background:var(--c-ora-bg);border:1px solid #E9B9C1;border-radius:8px;padding:12px 18px;margin-bottom:18px;font-size:12.5px;color:#9A2F41}
+  .crr-inline b{font-weight:700}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:22px 26px;margin-bottom:18px;position:relative}
+  .rcard h3{text-align:center;font-size:15px;font-weight:700;margin-bottom:18px}
+  .rcard .edit{position:absolute;top:20px;right:24px;color:var(--c-ora);font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+  .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;text-align:center}
+  .rf label{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px}
+  .rf .v{font-size:13.5px;color:var(--ink)}
+  .risk-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:12px}
+  .risk-amber{background:var(--warn-bg);color:var(--warn)}
+  .risk-red{background:var(--danger-bg);color:var(--danger)}
+  .yes{color:#0F6B4F;font-weight:700}
+  .no{color:var(--danger);font-weight:700}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px}
+  .bridge-sece{background:#F3ECF7;color:#730FC3}
+  .bridge-max{background:#EAF1F7;color:#12507A}
+  .mit-mini{width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-align:left;margin-top:4px}
+  .mit-mini th{background:#F7F9FB;padding:8px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+  .mit-mini td{padding:8px 11px;border-top:1px solid var(--line-soft)}
+  .freq{font-weight:700;color:var(--c-ora)}
+  .submit-box{background:#F5F7FA;border-radius:8px;padding:26px;text-align:center;margin-top:6px}
+  .submit-box h4{font-size:14px;font-weight:700;margin-bottom:8px}
+  .submit-box .clk{font-size:12.5px;color:#9A2F41;margin-bottom:16px}
+  .btn-submit{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn-submit:hover{background:#2C3542}
+  .tovalidate{font-size:10px;font-weight:700;letter-spacing:.4px;color:#9A6212;background:var(--warn-bg);border:1px dashed var(--warn);border-radius:4px;padding:2px 7px;margin-left:6px}
+  .ft-ref{font-variant-numeric:tabular-nums;font-size:12px;color:var(--brand-ink);background:var(--brand-soft);border-radius:4px;padding:1px 7px;font-weight:700}
+  .clock-badge{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:12px;padding:1px 9px;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .clock-badge.disabled{color:#9aa4ad;background:#fff;border-color:var(--line)}
+</style></head>
+<body>
+<div class="focus-bar">
+  <div class="ft-t">ORA › <b>Raise a new ORA</b> <span class="ft-ref">DRAFT · Thames-ORA-00347</span> <span class="clock-badge disabled">⏱ 72:00 — clock starts at Step 2</span></div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="03_ora.html">Cancel</a>
+    <a class="btn-outline" href="16_raise_ora.html">Back to edit</a>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner"><div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-step-label">Step 1: captured event</div>
+    <a href="16_raise_ora.html" class="rail-btn done">✓ 1&nbsp;&nbsp;Details</a>
+    <a href="16_raise_ora.html" class="rail-btn done sub">✓ a&nbsp;&nbsp;SECE impairment</a>
+    <a href="16_raise_ora.html" class="rail-btn done sub">✓ b&nbsp;&nbsp;Initial response</a>
+    <div class="rail-step-label s2">Review</div>
+    <a class="rail-btn active">Review Step 1</a>
+    <a class="rail-btn outline" onclick="document.getElementById('submitBox').scrollIntoView({behavior:'smooth'})">Validate &amp; continue</a>
+    <div class="rail-progress"><div class="rp-top"><span>Completion</span><span class="rp-save">Auto-save: 09:12</span></div><div class="rp-bar"><div class="rp-fill"></div></div></div>
+  </aside>
+  <div>
+    <div class="review-head"><h1>Review before submit</h1><p>Read-only summary of the ORA you are about to submit. Use Edit to change a section.</p></div>
+
+    <div class="crr-inline">📊 <span>Cumulative risk · copied from <b>27B-ORA-20461-REV-002</b> · 2 other ORAs live on 27B / BC deck</span></div>
+
+    <div class="rcard">
+      <a class="edit" href="16_raise_ora.html">Edit</a>
+      <h3>1 · Details</h3>
+      <div class="rgrid">
+        <div class="rf" style="grid-column:1/-1"><label>Description</label><div class="v">F&amp;G loop 12 impaired — detection coverage reduced on BC deck</div></div>
+        <div class="rf"><label>Area (georef)</label><div class="v">27B · BC deck</div></div>
+        <div class="rf"><label>ORA Team Leader</label><div class="v">C. Boyd (OIM/SC)</div></div>
+        <div class="rf"><label>Type of isolation</label><div class="v">None</div></div>
+        <div class="rf"><label>Start on</label><div class="v">24 Jul 2026 · 09:00</div></div>
+        <div class="rf"><label>Finish on</label><div class="v">—</div></div>
+        <div class="rf"><label>Equipment <span class="bridge-tag bridge-max">🔗 MAXIMO</span></label><div class="v">FG-12 · F&amp;G loop 12 · 10203040</div></div>
+        <div class="rf"><label>Project</label><div class="v">— none —</div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="16_raise_ora.html">Edit</a>
+      <h3>2 · ORA Information</h3>
+      <div class="rgrid">
+        <div class="rf"><label>SECE description</label><div class="v">F&amp;G detection loop failure</div></div>
+        <div class="rf"><label>MAH scenario <span class="bridge-tag bridge-sece">🔗 Snowflake</span></label><div class="v">Gas release — process area</div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Initial response &amp; assessment</label><div class="v">Limit operations — <span style="color:var(--muted)">justification: reduce ignition risk while F&amp;G loop is impaired</span></div></div>
+        <div class="rf" style="grid-column:1/-1"><label>c · Barrier / SECE impacted <span class="bridge-tag bridge-sece">🔗 Snowflake</span></label><div class="v">001/HYC — Hydrocarbon containment (ORAE: R. Price) · 005/F&amp;G — Fire &amp; Gas detection (ORAE: J. Stern) <span class="no">· 2 PS → double validation</span></div></div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <a class="edit" href="16_raise_ora.html">Edit</a>
+      <h3>3 · Document section</h3>
+      <div class="rgrid">
+        <div class="rf" style="grid-column:1/-1"><label>Documents uploaded</label><div class="v"><span class="bridge-tag bridge-max">🔗 Barrier impairment note.pdf</span></div></div>
+        <div class="rf" style="grid-column:1/-1"><label>Templates</label><div class="v">URL Link</div></div>
+      </div>
+    </div>
+
+    <div class="submit-box" id="submitBox">
+      <h4>Validate Step 1 — ORA sections captured</h4>
+      <div class="clk" style="color:var(--muted)">Validating opens Step 2 (72h) where the live clock starts: complete the risk assessment, mitigation and documents, then submit.</div>
+      <button class="btn-submit" onclick="location.href='16c_raise_ora_complete.html'">Validate Step 1 &amp; continue →</button>
+    </div>
+  </div>
+</div></div></div>
+</body></html>

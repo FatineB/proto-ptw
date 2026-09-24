@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Raise an Isolation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  .wrap{max-width:840px;margin:0 auto;padding:56px 24px}
+  .head{text-align:center;margin-bottom:40px}
+  .head h1{font-size:26px;font-weight:600}
+  .head p{color:var(--muted);font-size:14px;margin-top:8px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .choice{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:28px 26px;cursor:pointer;transition:.15s;text-decoration:none;color:var(--ink);display:flex;flex-direction:column}
+  .choice:hover{border-color:var(--c-iso);box-shadow:0 8px 26px rgba(224,138,43,.12);transform:translateY(-2px)}
+  .choice .ic{width:52px;height:52px;border-radius:12px;background:var(--c-iso-bg);color:var(--c-iso);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px}
+  .choice h2{font-size:17px;font-weight:600;margin-bottom:8px}
+  .choice p{font-size:13px;color:var(--muted);line-height:1.5;flex:1}
+  .choice .schema{margin:18px 0 4px;display:flex;align-items:center;justify-content:center;min-height:70px}
+  .choice .go{margin-top:16px;font-size:13px;font-weight:600;color:var(--c-iso);display:flex;align-items:center;gap:6px}
+  /* single schema */
+  .node{border:1.5px solid var(--c-iso);background:var(--c-iso-bg);color:var(--c-iso);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600}
+  .node.dim{border-color:var(--line);background:#fff;color:var(--muted);border-style:solid}
+  .node.sm{padding:5px 11px;font-size:11px}
+  .tree{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .tree .kids{display:flex;gap:8px;margin-top:2px}
+  .tree .branch{position:relative;padding-top:12px}
+  .tree .branch::before{content:"";position:absolute;top:0;left:50%;width:1px;height:12px;background:var(--line)}
+  .note{margin-top:34px;text-align:center;font-size:12.5px;color:var(--muted);background:#fff;border:1px solid var(--line-soft);border-radius:8px;padding:14px 18px}
+  .note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit focus-exit--danger" href="02_isolations.html"><span class="x">✕</span> Cancel</a>
+  <div class="focus-sep"></div>
+  <div class="ft-t">Isolations › <b>Raise an Isolation</b></div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <h1>What do you want to raise?</h1>
+    <p>Start a single isolation, or a group that holds several linked isolations under one parent.</p>
+  </div>
+
+  <div class="choices">
+    <a class="choice" href="11_raise_isolation.html">
+      <div class="ic">🔒</div>
+      <h2>Single isolation</h2>
+      <p>One Isolation Control Certificate with its own points, risk assessment and lifecycle. The standard case.</p>
+      <div class="schema"><div class="node">1 ICC</div></div>
+      <div class="go">Start a single isolation →</div>
+    </a>
+
+    <a class="choice" href="15_isolation_group_new.html">
+      <div class="ic">🗂</div>
+      <h2>Group of isolations</h2>
+      <p>A parent that holds several child isolations — like a folder. Each child is a full isolation; the parent shares common context (area, equipment) that children can override.</p>
+      <div class="schema">
+        <div class="tree">
+          <div class="node">Parent group</div>
+          <div class="branch"><div class="kids"><span class="node sm">ICC</span><span class="node sm">ICC</span><span class="node sm">ICC</span></div></div>
+        </div>
+      </div>
+      <div class="go">Start a group →</div>
+    </a>
+  </div>
+
+  <div class="note">💡 <b>Not sure?</b> Start single — you can link it into a group later. The parent pre-fills shared context; each child can still override it. <i>(Model to validate in workshop.)</i></div>
+</div>
+</body>
+</html>

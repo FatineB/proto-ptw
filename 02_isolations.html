@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Isolations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  /* status colors specific to ICC states, mapped onto the shared status system */
+  .s-raised{background:var(--st-created-bg);color:var(--st-created)} .s-raised::before{background:var(--st-created)}
+  .s-submitted{background:var(--st-submit-bg);color:var(--st-submit)} .s-submitted::before{background:var(--st-submit)}
+  .s-authorised{background:var(--st-issued-bg);color:var(--st-issued)} .s-authorised::before{background:var(--st-issued)}
+  .s-isolating{background:var(--st-inspect-bg);color:var(--st-inspect)} .s-isolating::before{background:var(--st-inspect)}
+  .s-inplace{background:var(--st-issued-bg);color:var(--st-issued)} .s-inplace::before{background:var(--st-issued)}
+  .s-testing{background:#F3ECF7;color:#730FC3} .s-testing::before{background:#730FC3}
+  .s-suspended{background:var(--st-suspend-bg);color:var(--st-suspend)} .s-suspended::before{background:var(--st-suspend)}
+  .s-deisolating{background:var(--st-inspect-bg);color:var(--st-inspect)} .s-deisolating::before{background:var(--st-inspect)}
+  .s-snag{background:var(--warn-bg);color:var(--warn)} .s-snag::before{background:var(--warn)}
+   
+  .s-abandoned{background:var(--st-abandon-bg);color:var(--st-abandon)} .s-abandoned::before{background:var(--st-abandon)}
+
+  .tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+  .tab{padding:11px 18px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--c-iso);border-bottom-color:var(--c-iso)}
+  .tab .cnt{font-size:11px;background:var(--st-created-bg);color:var(--muted);padding:1px 7px;border-radius:10px;margin-left:6px;font-weight:600}
+  .tab.active .cnt{background:var(--c-iso-bg);color:var(--c-iso)}
+
+  .desc-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .area-cell{font-size:12.5px}
+  .type-mix{display:flex;gap:4px}
+  .tm{font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px}
+  .tm-e{background:#FFF4DE;color:var(--c-iso-ink)}.tm-p{background:#E3F5EE;color:#1C9E7A}.tm-m{background:#E7ECF1;color:#3B4657}.tm-i{background:#E5EEF7;color:#2C6FB5}
+  .pts{display:flex;align-items:center;gap:8px;font-size:12.5px}
+  .pts-bar{width:52px;height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+  .pts-fill{height:100%;background:var(--st-issued)}
+  .bridge-tag{display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px}
+  .bridge-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}.bridge-none{color:var(--muted)}
+  .row-link{cursor:pointer}
+  .wf-mini{border:0;background:none;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px}
+  .wf-mini:hover{background:var(--c-iso-bg)}
+  .fav-star{border:0;background:none;cursor:pointer;font-size:15px;color:#C3CDD6;padding:0 2px;line-height:1;vertical-align:middle}
+  .fav-star.on{color:#F5A623}
+  tr.fav-hidden{display:none}
+</style>
+</head>
+<body data-active="isolations">
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">+</span> Permit</a>
+    <a class="cta cta-npa"><span class="plus">+</span> Non-Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">+</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">+</span> ORA</a>
+  </div>
+  <div class="hd-tools">
+    <div class="hd-search">🔍</div>
+    <div class="hd-lang">EN ▾</div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <div class="subbar">
+      <div class="crumb"><a href="#">Home</a> › <b>Isolations</b></div>
+      <div class="site-pill">Site: Thames ▾</div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1>Isolations</h1><div class="sub">Isolation Control Certificates (ICC)</div></div>
+        <a class="cta cta-iso" href="11_raise_isolation_start.html" style="border-width:1.5px"><span class="plus">+</span> Raise an Isolation</a>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">All isolations <span class="cnt">24</span></div>
+        <div class="tab">My isolations <span class="cnt">6</span></div>
+        <div class="tab">Needs my action <span class="cnt">3</span></div>
+      </div>
+
+      <div class="filterbar">
+        <input class="search-in" placeholder="Search by ID, tag, equipment, description…">
+        <span class="selectlike">Status ▾</span>
+        <span class="selectlike">Type ▾</span>
+        <span class="selectlike">Site ▾</span>
+        <div class="spacer"></div>
+        <span class="result-count">48 isolations</span>
+      </div>
+
+      <div class="panel">
+        <table>
+          <thead><tr>
+            <th>ICC ID</th><th>Description</th><th>Area</th><th>Types</th><th>Points</th><th>Status</th><th>Permit</th><th>Last action</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-link" onclick="location.href='12_isolation_live.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-02540</span></td>
+              <td>Isolation for LBC-PSV-6700-B<div class="desc-sub">Open drains tank pump B protection PSV</div></td>
+              <td class="area-cell">27B · Leg well South</td>
+              <td><div class="type-mix"><span class="tm tm-e">E</span><span class="tm tm-p">P</span></div></td>
+              <td><div class="pts">6/6 <div class="pts-bar"><div class="pts-fill" style="width:100%"></div></div></div></td>
+              <td><span class="status s-inplace">Isolation-in-Place</span></td>
+              <td><span class="bridge-tag bridge-permit">🔗 27B-CW-01784</span></td>
+              <td>1 Sep · Confirm <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='13_isolation_points.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">Thames-ICC-04590</span></td>
+              <td>Cubicle withdrawn — demo isolation<div class="desc-sub">3 electrical points</div></td>
+              <td class="area-cell">Thames · Main deck</td>
+              <td><div class="type-mix"><span class="tm tm-e">E</span></div></td>
+              <td><div class="pts">2/3 <div class="pts-bar"><div class="pts-fill" style="width:66%"></div></div></div></td>
+              <td><span class="status s-isolating">Isolating</span></td>
+              <td><span class="bridge-tag bridge-permit">🔗 Thames-CW-22587</span></td>
+              <td>27 Aug · Isolate <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='14_isolation_workflow.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-02913</span></td>
+              <td>PSV recertification isolation<div class="desc-sub">HP condensate transfer</div></td>
+              <td class="area-cell">27B · 27BC</td>
+              <td><div class="type-mix"><span class="tm tm-p">P</span></div></td>
+              <td><div class="pts">4/4 <div class="pts-bar"><div class="pts-fill" style="width:100%"></div></div></div></td>
+              <td><span class="status s-testing">Testing (STT)</span></td>
+              <td><span class="bridge-tag bridge-permit">🔗 27B-CW-01799</span></td>
+              <td>Today · Request STT <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='12_isolation_live.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">Cleeton-ICC-05550</span></td>
+              <td>KO drum &amp; methanol pumps campaign<div class="desc-sub">Large multi-point isolation</div></td>
+              <td class="area-cell">Cleeton · SWBD100</td>
+              <td><div class="type-mix"><span class="tm tm-e">E</span></div></td>
+              <td><div class="pts">139/139 <div class="pts-bar"><div class="pts-fill" style="width:100%"></div></div></div></td>
+              <td><span class="status s-suspended">Suspended</span></td>
+              <td><span class="bridge-none">— none —</span></td>
+              <td>26 Aug · Suspend <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='11b_raise_isolation_review.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-02945</span></td>
+              <td>Instrument loop isolation<div class="desc-sub">Awaiting authorisation</div></td>
+              <td class="area-cell">27B · Cellar deck</td>
+              <td><div class="type-mix"><span class="tm tm-i">I</span></div></td>
+              <td><div class="pts">0/2 <div class="pts-bar"><div class="pts-fill" style="width:0%"></div></div></div></td>
+              <td><span class="status s-submitted">Submitted</span></td>
+              <td><span class="bridge-none">— none —</span></td>
+              <td>Today · Submit <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='14_isolation_workflow.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-02947</span></td>
+              <td>Valve maintenance isolation<div class="desc-sub">Snag raised during de-isolation</div></td>
+              <td class="area-cell">27B · Weather deck</td>
+              <td><div class="type-mix"><span class="tm tm-p">P</span><span class="tm tm-m">M</span></div></td>
+              <td><div class="pts">3/5 <div class="pts-bar"><div class="pts-fill" style="width:60%"></div></div></div></td>
+              <td><span class="status s-snag">Snag</span></td>
+              <td><span class="bridge-tag bridge-permit">🔗 27B-CW-01820</span></td>
+              <td>Yesterday · Snag <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='11_raise_isolation.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-03020</span></td>
+              <td>Draft — pump motor isolation<div class="desc-sub">Not yet submitted</div></td>
+              <td class="area-cell">27B · —</td>
+              <td><div class="type-mix"><span class="tm tm-e">E</span></div></td>
+              <td><div class="pts">0/1 <div class="pts-bar"><div class="pts-fill" style="width:0%"></div></div></div></td>
+              <td><span class="status s-raised">Raised</span></td>
+              <td><span class="bridge-none">— none —</span></td>
+              <td>Today · Created <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+            <tr class="row-link" onclick="location.href='12_isolation_live.html'">
+              <td><button class="fav-star" onclick="event.stopPropagation();toggleFav(this)" title="Favourite">☆</button> <span class="pid">27B-ICC-02894</span></td>
+              <td>Compressor isolation<div class="desc-sub">Completed &amp; closed</div></td>
+              <td class="area-cell">27B · 27BC</td>
+              <td><div class="type-mix"><span class="tm tm-e">E</span><span class="tm tm-p">P</span></div></td>
+              <td><div class="pts">8/8 <div class="pts-bar"><div class="pts-fill" style="width:100%"></div></div></div></td>
+              <td><span class="status s-closed">Closed</span></td>
+              <td><span class="bridge-tag bridge-permit">🔗 27B-CW-01755</span></td>
+              <td>24 Aug · Close <button class="wf-mini" onclick="event.stopPropagation();openWorkflow()" title="Workflow">🗺</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Showing 1–20 of 48</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<template id="wf-template" data-wf-title="Isolation lifecycle" data-wf-sub="ICC · 27B-ICC-02484 · full workflow">
+<div class="card">
+        <div class="card-h"><h2>Next steps</h2><span class="muted">Actions available from <b style="color:var(--c-iso)">Isolation-in-Place</b></span></div>
+        <div class="card-b">
+          <div class="ctx-actions">
+            <button class="ca primary" onclick="alert('Request STT → Testing (controlled test, then re-isolate)')">🧪 Request STT<span class="role">Testing loop</span></button>
+            <button class="ca warn" onclick="alert('Suspend → Suspended')">⏸ Suspend<span class="role">AA</span></button>
+            <a class="ca warn" href="13_isolation_points.html">🔓 Initiate De-Isolation<span class="role">AA</span></a>
+            <button class="ca danger" onclick="alert('Abandon → Abandoned (soft delete)')">⊘ Abandon<span class="role">AA</span></button>
+            <button class="ca" onclick="alert('Counter-sign')">✍ Counter-sign</button>
+            <button class="ca" onclick="alert('Print / Update isolation points')">🏷 Print/update points</button>
+            <button class="ca" onclick="alert('Send email')">✉ Send email</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>Workflow history</h2><span class="muted">7 transitions</span></div>
+        <div class="card-b"><div class="wf">
+          <div class="wf-row pending">
+            <div class="wf-act">De-Isolation<span class="trans">Removal Authorise</span></div>
+            <div class="wf-who">Awaiting <b>Area Authority</b><span class="role">AA</span></div>
+            <div class="wf-time">—</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Confirm<span class="trans">Confirmation</span><span class="wf-badge now">Current</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:23</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Isolate<span class="trans">Isolation</span></div>
+            <div class="wf-who"><b>T. Bennett</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">1 Sep 2025<br>07:22</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Verify<span class="trans">Authorisation</span></div>
+            <div class="wf-who"><b>Y. Smith</b><span class="role">AA</span><span class="cmt">"ok"</span></div>
+            <div class="wf-time">26 Aug 2025<br>14:31</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Counter-signed</div>
+            <div class="wf-who"><b>P. Wood</b></div>
+            <div class="wf-time">26 Aug 2025<br>14:25</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Submit</div>
+            <div class="wf-who"><b>Y. Smith</b></div>
+            <div class="wf-time">25 Aug 2025<br>16:55</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-act">Created</div>
+            <div class="wf-who"><b>G. Bramley</b><span class="role">Mech Ops</span></div>
+            <div class="wf-time">25 Aug 2025<br>11:33</div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: state machine -->
+    <div class="sm-stack">
+      <div class="card">
+        <div class="card-h"><h2>Isolation state machine</h2></div>
+        <div class="card-b">
+          <div class="sm-note">Where this certificate sits in the ICC lifecycle. Branches (STT, Suspend, Snag, Abandon) shown as side transitions.</div>
+          <div class="sm-diagram">
+            <div class="sm-node done">Raised</div>
+            <div class="sm-arrow"><span class="lbl">Submit</span></div>
+            <div class="sm-node done">Submitted</div>
+            <div class="sm-arrow"><span class="lbl">Verify</span></div>
+            <div class="sm-node done">Authorised</div>
+            <div class="sm-arrow"><span class="lbl">Isolate</span></div>
+            <div class="sm-node done">Isolating</div>
+            <div class="sm-arrow"><span class="lbl">Confirm</span></div>
+            <div class="sm-node current">Isolation-in-Place</div>
+            <div class="sm-branch">
+              <span class="sm-chip stt">⇄ Request STT · Testing</span>
+              <span class="sm-chip">⏸ Suspend</span>
+              <span class="sm-chip">⊘ Abandon</span>
+            </div>
+            <div class="sm-arrow"><span class="lbl">De-Isolate</span></div>
+            <div class="sm-node future">De-isolating</div>
+            <div class="sm-branch"><span class="sm-chip">⚠ Snag</span></div>
+            <div class="sm-arrow"><span class="lbl">Close</span></div>
+            <div class="sm-node future">Closed</div>
+          </div>
+          <div class="sm-legend">
+            <span><span class="lg-dot lg-done"></span>Done</span>
+            <span><span class="lg-dot lg-cur"></span>Current</span>
+            <span><span class="lg-dot lg-fut"></span>Upcoming</span>
+          </div>
+        </div>
+      </div>
+</template>
+<script src="workflowdrawer.js"></script>
+<script>
+  function toggleFav(btn){
+    var on=btn.classList.toggle('on');
+    btn.textContent = on ? '★' : '☆';
+    var tr=btn.closest('tr'); if(tr) tr.setAttribute('data-fav', on?'1':'0');
+  }
+  // pre-mark a couple as favourites for demo + apply ?filter=fav
+  (function(){
+    var stars=document.querySelectorAll('.fav-star');
+    [0,2].forEach(function(i){ if(stars[i]){ stars[i].classList.add('on'); stars[i].textContent='★'; var tr=stars[i].closest('tr'); if(tr)tr.setAttribute('data-fav','1'); } });
+    if(new URLSearchParams(location.search).get('filter')==='fav'){
+      document.querySelectorAll('tr.row-link').forEach(function(tr){
+        if(tr.getAttribute('data-fav')!=='1') tr.classList.add('fav-hidden');
+      });
+      var ph=document.querySelector('.page-head h1'); if(ph) ph.textContent='★ Favourite '+ph.textContent;
+    }
+  })();
+</script>
+</body>
+</html>

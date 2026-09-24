@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Raise a new Permit</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-permit); --module-bg:var(--c-permit-bg)}
+  html{scroll-behavior:smooth}
+  .focus-title .ft-t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .focus-title .ft-ref{font-variant-numeric:tabular-nums;font-size:12px;color:var(--brand-ink);background:var(--brand-soft);border-radius:4px;padding:1px 7px;font-weight:700}
+  .focus-title .ft-s{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .focus-title .ft-s .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}
+  .rail-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;padding-left:4px}
+  .rail-item.active .rk{background:var(--c-permit);border-color:var(--c-permit);color:#fff}
+  .rail-item .ri-t{font-size:13px;font-weight:600}
+  .rail-item .ri-s{font-size:11px;color:var(--muted)}
+  .sec-h .req{font-size:11px;color:var(--danger);font-weight:600}
+  .sec-h .opt{font-size:11px;color:var(--muted);font-weight:600}
+  .field:last-child{margin-bottom:0}
+  .field .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+  input[readonly]{background:#F1F3F5;color:var(--muted)}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .dnc-field{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:#FAFBFC}
+  .dnc-ico{width:30px;height:30px;border-radius:var(--radius);background:var(--brand-soft);color:var(--brand-ink);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .dnc-txt{flex:1}
+  .dnc-txt .dnc-t{font-size:13px;font-weight:600}
+  .dnc-txt .dnc-d{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .sw{position:relative;flex-shrink:0}
+  .sw input{display:none}
+  .sw label{display:inline-block;width:42px;height:24px;border-radius:12px;background:#C6CFD8;cursor:pointer;transition:background .15s}
+  .sw label::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+  .sw input:checked + label{background:var(--brand)}
+  .sw input:checked + label::after{left:20px}
+  .bridge-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px}
+  .bridge-iso{background:var(--c-iso-bg);color:var(--c-iso-ink)}
+  .bridge-max{background:#EAF1F7;color:#12507A}
+  .badge-link{margin-left:auto;font-size:11px;background:var(--ok-bg);color:var(--ok);padding:3px 9px;border-radius:10px;font-weight:600}
+  .iso-result{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-top:10px}
+  .iso-result .ir-id{font-weight:600;color:var(--brand-ink)}
+  .iso-result .ir-meta{font-size:12px;color:var(--muted)}
+  /* RA level switch */
+  .ra-level{display:flex;gap:10px;margin-bottom:14px}
+  .ra-chip{flex:1;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;cursor:pointer;text-align:center}
+  .ra-chip .rc-t{font-weight:700;font-size:14px}
+  .ra-chip .rc-d{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .ra-chip.on{border-color:var(--c-permit);background:var(--c-permit-bg);box-shadow:inset 0 0 0 1px var(--c-permit)}
+  .ra-chip.on .rc-t{color:var(--c-permit-ink)}
+  /* L1 vs L2 conditional blocks */
+  .ra-block{display:none}
+  .ra-block.show{display:block;animation:fade .2s ease}
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+  .l1-note{background:var(--ok-bg);border:1px solid #B4E0CE;border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:#0F6B4F;margin-bottom:14px}
+  .col-haz{min-width:160px}
+  .risk-badge{font-size:12px;font-weight:700;padding:7px 10px;border-radius:12px;cursor:pointer;border:1px solid transparent;white-space:nowrap;width:100%;text-align:center;display:block}
+  .risk-lo{background:var(--ok-bg);color:var(--ok)}
+  .risk-empty{background:#fff;border:1px dashed var(--line);color:var(--muted);font-weight:600}
+  .risk-badge .rb-s{font-weight:600;opacity:.75;font-size:11px}
+  .row-del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:4px 6px;border-radius:4px}
+  .row-del:hover{background:var(--danger-bg);color:var(--danger)}
+  .ra-team-block h4{font-size:12.5px;font-weight:600;margin-bottom:2px}
+  .co-note{font-size:11.5px;color:var(--warn);margin-bottom:12px}
+  .btn-permit{background:var(--c-permit);border:1px solid var(--c-permit);color:#fff;font-weight:600;padding:8px 18px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+  .btn-permit:hover{background:#4a43c4}
+  .drop{border:1px dashed var(--line);border-radius:var(--radius);padding:22px;text-align:center;color:var(--muted);background:#FBFCFD}
+  .drop b{color:var(--c-permit)}
+  /* matrix modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:50;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:10px;max-width:640px;width:100%;overflow:hidden}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .modal-h h3{font-size:15px;font-weight:600}
+  .modal-h .m-ctx{font-size:12px;color:var(--muted)}
+  .modal-h .x{margin-left:auto;cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none}
+  .modal-b{padding:20px}
+  .challenge{background:var(--warn-bg);border:1px dashed var(--warn);border-radius:var(--radius);padding:10px 14px;font-size:12.5px;color:#8A5A12;margin-bottom:16px}
+  .challenge b{color:var(--warn)}
+  .modal-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:12px}
+  .m-readout .rp{display:inline-block;padding:3px 10px;border-radius:10px;font-weight:700;margin-left:6px}
+  .modal-f .actions{margin-left:auto;display:flex;gap:10px}
+  .rail-step-label{font-size:12px;font-weight:700;color:var(--ink);margin:0 0 8px}
+  .rail-step-label.s2{margin-top:18px}
+  .rail-btn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;font-size:13.5px;font-weight:600;color:var(--c-permit);cursor:pointer;text-decoration:none;font-family:inherit}
+  .rail-btn.active{background:#3B4657;color:#fff;border-color:#3B4657}
+  .rail-btn.disabled{color:#AAB4BD;cursor:default}
+  .rail-progress{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .rail-progress .rp-top .rp-l{font-weight:600}
+  .rail-progress .rp-top .rp-save{color:var(--muted)}
+  .radio-inline label{font-weight:400;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:0}
+  .form-grid4{display:grid;grid-template-columns:auto auto auto 1fr;gap:22px;align-items:start;margin-bottom:18px}
+  .btn-validate{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+  .btn-validate:hover{background:#2C3542}
+  .cancel-bar{display:flex;gap:10px}
+  .ora-gate{display:flex;gap:12px;align-items:flex-start;background:var(--ok-bg);border:1px solid #B4E0CE;border-radius:8px;padding:12px 16px;margin-bottom:18px}
+  .ora-gate .og-ico{font-size:18px;line-height:1.2}
+  .ora-gate .og-t{font-size:13px;font-weight:700;color:#0F6B4F}
+  .ora-gate .og-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .ora-gate .og-body{flex:1}
+  .res-green{background:var(--ok-bg);color:var(--ok);font-size:10.5px;font-weight:700}
+</style></head>
+<body>
+<div class="focus-bar">
+  <div class="focus-title"><div class="ft-t" style="font-size:15px">Permits › <b>Raise a new Permit</b></div></div>
+  <div class="focus-actions cancel-bar">
+    <a class="btn-outline" href="02_permits.html">Cancel</a>
+    <a class="btn-outline" href="02_permits.html">Save &amp; exit</a>
+  </div>
+</div>
+<div class="focus-body"><div class="focus-inner">
+  <div class="ora-gate">
+    <span class="og-ico">🛡️</span>
+    <div class="og-body">
+      <div class="og-t">ORA gate — barrier risk assessed for this area</div>
+      <div class="og-sub">A new permit can be issued: cumulative risk on <b>27B · BC deck</b> is within tolerance.</div>
+    </div>
+    <a href="16_raise_ora.html" class="bridge-tag bridge-ora" style="text-decoration:none;align-self:center">🔗 27B-ORA-20461 <span class="res res-green" style="margin-left:4px;padding:1px 7px;border-radius:8px">GREEN ✓</span></a>
+  </div>
+  <div class="flow-layout">
+  <aside class="rail">
+    <div class="rail-step-label">Step 1: Permit sections</div>
+    <a href="#sec-details" class="rail-btn active">1&nbsp;&nbsp;Details</a>
+    <a href="#sec-equip" class="rail-btn">2&nbsp;&nbsp;Equipment &amp; links</a>
+    <a href="#sec-ra" class="rail-btn">3&nbsp;&nbsp;Risk assessment</a>
+    <a href="#sec-doc" class="rail-btn">4&nbsp;&nbsp;Add documents</a>
+    <div class="rail-step-label s2">Step 2: Review</div>
+    <a href="06b_raise_review.html" class="rail-btn">5&nbsp;&nbsp;Review</a>
+    <a href="06b_raise_review.html" class="rail-btn disabled">6&nbsp;&nbsp;Submit</a>
+    <div class="rail-progress">
+      <div class="rp-top"><span class="rp-l">Completion</span><span class="rp-save">Auto-save: 13:32</span></div>
+      <div class="rp-bar"><div class="rp-fill" style="width:35%"></div></div>
+    </div>
+  </aside>
+  <div class="flow-sections">
+    <section class="sec sec-center" id="sec-details"><div class="sec-b" style="padding-top:24px">
+      <h2 style="text-align:center;font-size:16px;margin-bottom:20px">1 · Details</h2>
+      <div class="field"><label>Title — task description (max 100)</label><input type="text" placeholder="Change light fitting"></div>
+      <div class="form-grid4">
+        <div class="field"><label>Type of workflow</label><div class="radio-inline"><label><input type="radio" name="wf">Routine</label><label><input type="radio" name="wf">Standard</label></div></div>
+        <div class="field"><label>Shift</label><div class="radio-inline"><label><input type="radio" name="sh">Day</label><label><input type="radio" name="sh">Night</label></div></div>
+        <div class="field"><label>Lone worker?</label><div class="radio-inline"><label><input type="radio" name="lw">Yes</label><label><input type="radio" name="lw">No</label></div></div>
+        <div class="field"><label>Type of permit</label><select><option>Hot work</option><option>Cold work</option><option>Confined space</option><option>Electrical</option><option>Rope access</option></select></div>
+      </div>
+      <div class="field"><div class="dnc-field"><div class="dnc-ico">🔒</div><div class="dnc-txt"><div class="dnc-t">Do not copy</div><div class="dnc-d">Blocks duplication of this permits.</div></div><div class="sw"><input type="checkbox" id="dnc"><label for="dnc"></label></div></div></div>
+      <div class="field"><label>Person in charge (same georef level)</label><select><option>P. Nevitt (PA)</option><option>M. Read (PA)</option></select></div>
+      <div class="row3"><div class="field"><label>Location</label><select><option>Bacton</option></select></div><div class="field"><label>Level</label><select><option>27B</option></select></div><div class="field"><label>Room</label><select><option>BC deck</option></select></div></div>
+      <div class="field"><label>Purpose (detailed description)</label><textarea></textarea></div>
+      <div class="row2" style="margin-bottom:0"><div class="field" style="margin-bottom:0"><label>Date — start on</label><input type="text" value="24 Jul 2026 06:00" readonly></div><div class="field" style="margin-bottom:0"><label>End date (auto +7d · locked)</label><input type="text" value="31 Jul 2026 06:00" readonly></div></div>
+    </div></section>
+    <section class="sec sec-center" id="sec-equip"><div class="sec-b" style="padding-top:24px">
+      <h2 style="text-align:center;font-size:16px;margin-bottom:20px">2 · Equipment &amp; links</h2>
+      <div class="field"><label>Isolation linked 🔗 ISO (search existing)</label><input type="text" placeholder="27B-ICC-02484"></div>
+      <div class="row3"><div class="field"><label>Maximo Number (V2: list)</label><input type="text" placeholder="10203040"></div><div class="field"><label>Equipment Number (V2: Systemref)</label><input type="text" placeholder="LF-1"></div><div class="field"><label>Equipment description</label><input type="text" placeholder="Light fitting"></div></div>
+      <div class="field" style="margin-bottom:0"><label>Project (link existing)</label><select><option>— none —</option></select></div>
+    </div></section>
+    <section class="sec sec-center" id="sec-ra"><div class="sec-b" style="padding-top:24px">
+      <div id="risk-assessment" data-ra-title="3 · Risk assessment"></div>
+    </div></section>
+    <section class="sec sec-center" id="sec-doc"><div class="sec-b" style="padding-top:24px">
+      <h2 style="text-align:center;font-size:16px;margin-bottom:20px">4 · Document section</h2>
+      <div class="field" style="margin-bottom:8px;font-size:12.5px;color:var(--muted)">Testimonies, pictures of damages, investigation report…</div>
+      <div id="documents" data-docs="Method statement.pdf|Site plan.jpg"></div>
+      <div class="field" style="margin-bottom:0;margin-top:14px"><label>Templates</label><div style="border:1px solid var(--line);border-radius:20px;padding:10px 16px;font-size:13px">URL Link</div></div>
+      <button class="btn-validate" onclick="location.href='06b_raise_review.html'">Validate</button>
+    </div></section>
+  </div>
+</div></div></div>
+
+<script src="riskassessment.js"></script>
+<script src="documents.js"></script>
+</body></html>

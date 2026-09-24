@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — Lessons learned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+
+  .ll-panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .search-in{border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px 8px 32px;font-size:13px;width:260px;font-family:inherit;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%235C6875' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='M13 13l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 11px center}
+  .selectlike{border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13px;color:var(--muted);background:#fff;cursor:pointer}
+  .seg-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+  .type-chip{border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 13px;font-size:12.5px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:inherit}
+  .type-chip .dot{width:9px;height:9px;border-radius:50%}
+  .type-chip.on.t-permit{background:var(--c-permit-bg);border-color:#C6C2EF;color:var(--c-permit-ink)}
+  .type-chip.on.t-iso{background:var(--c-iso-bg);border-color:#E7C99A;color:var(--c-iso-ink)}
+  .type-chip.on.t-ora{background:var(--c-ora-bg);border-color:#E6A6B0;color:var(--c-ora-ink)}
+  .type-chip .dot.d-permit{background:var(--c-permit)}.type-chip .dot.d-iso{background:var(--c-iso)}.type-chip .dot.d-ora{background:var(--c-ora)}
+
+  .type-badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:4px 10px;border-radius:12px}
+  .type-badge .d{width:7px;height:7px;border-radius:50%}
+  .tb-permit{background:var(--c-permit-bg);color:var(--c-permit-ink)}.tb-permit .d{background:var(--c-permit)}
+  .tb-iso{background:var(--c-iso-bg);color:var(--c-iso-ink)}.tb-iso .d{background:var(--c-iso)}
+  .tb-ora{background:var(--c-ora-bg);color:var(--c-ora-ink)}.tb-ora .d{background:var(--c-ora)}
+
+  .cat{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:6px;background:var(--brand-soft);color:var(--brand-ink)}
+  .tags{display:flex;flex-wrap:wrap;gap:4px}
+  .tag{font-size:10.5px;color:var(--muted);background:var(--st-created-bg);border-radius:10px;padding:2px 8px}
+  .lead{color:var(--ink);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .go{color:var(--muted);opacity:0;transition:.1s;font-size:16px}
+  tbody tr:hover .go{opacity:1;color:var(--brand)}
+
+  /* modale carte détail */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,28,38,.5);z-index:50;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:10px;max-width:640px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(20,28,38,.3)}
+  .modal-h{padding:18px 22px;border-bottom:1px solid var(--line-soft);display:flex;align-items:flex-start;gap:12px}
+  .modal-h .x{margin-left:auto;cursor:pointer;color:var(--muted);font-size:20px;border:0;background:none;line-height:1}
+  .modal-h h3{font-size:16px;font-weight:600;margin-bottom:6px}
+  .modal-h .meta-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .modal-b{padding:22px;max-height:60vh;overflow:auto}
+  .ll-source{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:13px}
+  .ll-source .src-id{font-weight:600;color:var(--brand-ink)}
+  .ll-source a{margin-left:auto;color:var(--brand);text-decoration:none;font-size:12.5px;font-weight:600}
+  .ll-text{font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-line}
+  .ll-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-soft)}
+  .ll-fields .f label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:2px}
+  .ll-fields .f .v{font-size:13.5px}
+  .modal-f{padding:14px 22px;border-top:1px solid var(--line-soft);display:flex;gap:10px;align-items:center}
+  .modal-f .spacer{flex:1}
+  .btn-primary2{background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:var(--radius);padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+
+  .ws-note{margin-top:16px;background:var(--warn-bg);border:1px dashed var(--warn);border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:#8A5A12}
+  .ws-note b{color:var(--warn)}
+</style>
+</head>
+<body data-active="lessons">
+<div class="header">
+  <div class="hd-brand"><span class="logo">PERENCO</span><span class="sub">e-Permit To Work</span></div>
+  <div class="hd-ctas">
+    <a class="cta cta-permit" href="06_raise_permit.html"><span class="plus">＋</span> Permit</a>
+    <a class="cta cta-npa" href="#"><span class="plus">＋</span> Non Permit</a>
+    <a class="cta cta-iso" href="11_raise_isolation_start.html"><span class="plus">＋</span> Isolation</a>
+    <a class="cta cta-ora" href="16_raise_ora.html"><span class="plus">＋</span> ORA</a>
+  </div>
+  <div class="hd-tools"><div class="hd-search">🔍</div><div class="hd-lang">En ⇅</div></div>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <h1>Lessons learned</h1>
+          <div class="sub">Feedback captured at closure of permits, isolations &amp; ORAs · a shared knowledge base</div>
+        </div>
+      </div>
+
+      <div class="filterbar">
+        <input class="search-in" placeholder="Search lessons…">
+        <span class="seg-label" style="margin-left:6px">Type</span>
+        <span class="type-chip on t-permit" data-type="permit" onclick="toggleType(this)"><span class="dot d-permit"></span>Permit</span>
+        <span class="type-chip on t-iso" data-type="iso" onclick="toggleType(this)"><span class="dot d-iso"></span>Isolation</span>
+        <span class="type-chip on t-ora" data-type="ora" onclick="toggleType(this)"><span class="dot d-ora"></span>ORA</span>
+        <span class="selectlike">Category ▾</span>
+        <div class="spacer"></div>
+        <span class="selectlike">Sort: Newest ▾</span>
+      </div>
+
+      <div class="ll-panel">
+        <table id="llTable">
+          <thead><tr>
+            <th>Type</th><th>Source ID</th><th>Work title</th><th>Category</th><th>Tags</th><th>Location</th><th>Author</th><th>Closed on</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr data-type="permit" data-idx="0">
+              <td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td>
+              <td class="pid">27B-HWSP-20351</td>
+              <td><span class="lead">Opening BC deck hatches using electrical HPU</span></td>
+              <td><span class="cat">Hot work</span></td>
+              <td><div class="tags"><span class="tag">gas test</span><span class="tag">HPU</span></div></td>
+              <td>27B / BC deck</td><td>M. Read</td><td>22 Jun 2026</td>
+              <td><span class="go">›</span></td>
+            </tr>
+            <tr data-type="iso" data-idx="1">
+              <td><span class="type-badge tb-iso"><span class="d"></span>Isolation</span></td>
+              <td class="pid">27B-ICC-02484</td>
+              <td><span class="lead">Isolation of export scrubber A trace heating</span></td>
+              <td><span class="cat">Electrical isolation</span></td>
+              <td><div class="tags"><span class="tag">trace heating</span><span class="tag">LOTO</span></div></td>
+              <td>27B / process</td><td>A. Denton</td><td>20 Jun 2026</td>
+              <td><span class="go">›</span></td>
+            </tr>
+            <tr data-type="ora" data-idx="2">
+              <td><span class="type-badge tb-ora"><span class="d"></span>ORA</span></td>
+              <td class="pid">27B-ORA-20461-REV-003</td>
+              <td><span class="lead">27BC export compression continued operation</span></td>
+              <td><span class="cat">Barrier / SECE</span></td>
+              <td><div class="tags"><span class="tag">compression</span><span class="tag">MAH</span></div></td>
+              <td>27BC / process</td><td>C. Boyd</td><td>18 Jun 2026</td>
+              <td><span class="go">›</span></td>
+            </tr>
+            <tr data-type="permit" data-idx="3">
+              <td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td>
+              <td class="pid">27A-CW-75662</td>
+              <td><span class="lead">Entry into Leman SE &amp; SW 500mz for diving</span></td>
+              <td><span class="cat">Diving / subsea</span></td>
+              <td><div class="tags"><span class="tag">500m zone</span><span class="tag">SIMOPS</span></div></td>
+              <td>27A / subsea</td><td>Y. Carter</td><td>15 Jun 2026</td>
+              <td><span class="go">›</span></td>
+            </tr>
+            <tr data-type="permit" data-idx="4">
+              <td><span class="type-badge tb-permit"><span class="d"></span>Permit</span></td>
+              <td class="pid">27E-RAC-01784</td>
+              <td><span class="lead">27E outboard rope access — remove &amp; replace anode</span></td>
+              <td><span class="cat">Rope access</span></td>
+              <td><div class="tags"><span class="tag">working at height</span><span class="tag">weather</span></div></td>
+              <td>27E / outboard</td><td>C. Boyd</td><td>11 Jun 2026</td>
+              <td><span class="go">›</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info" id="footcount">Showing 1–5 of 5</span>
+          <button class="pg-btn" disabled>‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn" disabled>›</button>
+        </div>
+      </div>
+
+      <div class="ws-note">🔍 <b>À challenger en atelier :</b> feature non calée. Points ouverts — position dans le menu (niveau 1 vs sous Permits), champs d'une lesson, catégories/tags normalisés ou libres, qui peut créer/éditer, et lien avec la modale affichée à la copie d'un permit ("Display lessons learned when it's a copy").</div>
+    </div>
+  </div>
+</div>
+
+<!-- modale carte détail -->
+<div class="modal-bg" id="llModal">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <h3 id="m-title">—</h3>
+        <div class="meta-row" id="m-metarow"></div>
+      </div>
+      <button class="x" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-b">
+      <div class="ll-source" id="m-source"></div>
+      <div class="ll-text" id="m-text"></div>
+      <div class="ll-fields">
+        <div class="f"><label>Category</label><div class="v" id="m-cat"></div></div>
+        <div class="f"><label>Location</label><div class="v" id="m-loc"></div></div>
+        <div class="f"><label>Author (closed by)</label><div class="v" id="m-author"></div></div>
+        <div class="f"><label>Closed on</label><div class="v" id="m-date"></div></div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal()">Close</button>
+      <div class="spacer"></div>
+      <button class="btn-primary2" id="m-open">Open source document ›</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  const DATA=[
+    {type:"Permit",tb:"tb-permit",id:"27B-HWSP-20351",title:"Opening BC deck hatches using electrical HPU",cat:"Hot work",loc:"27B / BC deck",author:"M. Read",date:"22 Jun 2026",
+     text:"Gas testing was delayed because the HPU had to be relocated twice to reach the hatches on the far side of the deck.\n\nRecommendation: pre-position the HPU during the isolation phase and confirm hose reach before the permit start time. Add a check to the pre-job brief so the fire watch is briefed on the relocated exclusion zone."},
+    {type:"Isolation",tb:"tb-iso",id:"27B-ICC-02484",title:"Isolation of export scrubber A trace heating",cat:"Electrical isolation",loc:"27B / process",author:"A. Denton",date:"20 Jun 2026",
+     text:"The trace heating circuit was fed from two distribution boards, which was not obvious from the P&ID. First isolation attempt left one circuit live.\n\nRecommendation: cross-check the electrical schedule against the P&ID before raising the ICC. Update the master data so both feeds are linked to the same equipment tag."},
+    {type:"ORA",tb:"tb-ora",id:"27B-ORA-20461-REV-003",title:"27BC export compression continued operation",cat:"Barrier / SECE",loc:"27BC / process",author:"C. Boyd",date:"18 Jun 2026",
+     text:"Continued operation with a degraded fire & gas zone required a compensating measure that was agreed verbally but not documented in time, delaying authorisation.\n\nRecommendation: capture compensating measures directly in the ORA barrier section so the SC can authorise without a separate email trail."},
+    {type:"Permit",tb:"tb-permit",id:"27A-CW-75662",title:"Entry into Leman SE & SW 500mz for diving",cat:"Diving / subsea",loc:"27A / subsea",author:"Y. Carter",date:"15 Jun 2026",
+     text:"A conflicting vessel movement was identified only at the issue step, because the deck/marine activities were not visible in the permit view.\n\nRecommendation: this is exactly the case the deck-map conflict view should catch — link marine SIMOPS to the permit period so conflicts surface before issue, not at issue."},
+    {type:"Permit",tb:"tb-permit",id:"27E-RAC-01784",title:"27E outboard rope access — remove & replace anode",cat:"Rope access",loc:"27E / outboard",author:"C. Boyd",date:"11 Jun 2026",
+     text:"Work window was lost twice due to weather; the 7-day permit expired before completion and had to be re-raised from scratch.\n\nRecommendation: consider an extension path for weather-dependent outboard work rather than a full re-raise, and record the weather limits in the task description."}
+  ];
+
+  function openModal(idx){
+    const d=DATA[idx];
+    document.getElementById('m-title').textContent=d.title;
+    document.getElementById('m-metarow').innerHTML='<span class="type-badge '+d.tb+'"><span class="d"></span>'+d.type+'</span><span class="cat">'+d.cat+'</span>';
+    document.getElementById('m-source').innerHTML='<span>Source '+d.type+'</span> <span class="src-id">'+d.id+'</span><a href="#">View document ›</a>';
+    document.getElementById('m-text').textContent=d.text;
+    document.getElementById('m-cat').textContent=d.cat;
+    document.getElementById('m-loc').textContent=d.loc;
+    document.getElementById('m-author').textContent=d.author;
+    document.getElementById('m-date').textContent=d.date;
+    document.getElementById('m-open').textContent='Open source '+d.type+' ›';
+    document.getElementById('llModal').classList.add('on');
+  }
+  function closeModal(){document.getElementById('llModal').classList.remove('on');}
+  document.getElementById('llModal').addEventListener('click',e=>{if(e.target.id==='llModal')closeModal();});
+
+  document.querySelectorAll('#llTable tbody tr').forEach(tr=>{
+    tr.addEventListener('click',()=>openModal(+tr.dataset.idx));
+  });
+
+  function toggleType(el){
+    el.classList.toggle('on');
+    const active=[...document.querySelectorAll('.type-chip.on')].map(c=>c.dataset.type);
+    let shown=0;
+    document.querySelectorAll('#llTable tbody tr').forEach(tr=>{
+      const ok=active.includes(tr.dataset.type);tr.style.display=ok?'':'none';if(ok)shown++;
+    });
+    document.getElementById('footcount').textContent='Showing '+shown+' lesson'+(shown===1?'':'s');
+  }
+</script>
+<script src="sidebar.js"></script>
+</body>
+</html>

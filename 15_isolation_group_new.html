@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ePTW — New isolation group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="eptw.css">
+<style>
+  :root{--module:var(--c-iso); --module-bg:var(--c-iso-bg)}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 24px 80px}
+  .intro{display:flex;gap:11px;background:var(--c-iso-bg);border:1px solid #EAD3AE;border-radius:var(--radius);padding:13px 15px;font-size:12.5px;color:#7A4E12;margin-bottom:22px}
+  .sec-h .req{font-size:11px;color:var(--danger);font-weight:600}
+  .sec-h .opt{font-size:11px;color:var(--muted);font-weight:600}
+  .field:last-child{margin-bottom:0}
+  .field .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+  .search-field{position:relative}
+  .search-field input{padding-right:38px}
+  .search-field .si{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .shared-tag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--c-iso);background:var(--c-iso-bg);padding:2px 8px;border-radius:8px;margin-left:6px}
+  .btn-create{width:100%;background:#3B4657;color:#fff;border:0;border-radius:var(--radius);padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+  .btn-create:hover{background:#2C3542}
+  .create-note{text-align:center;font-size:12px;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="focus-bar">
+  <a class="focus-exit focus-exit--danger" href="11_raise_isolation_start.html"><span class="x">✕</span> Cancel</a>
+  <div class="focus-sep"></div>
+  <div class="ft-t">Isolations › <b>New isolation group</b> <span class="ft-ref">DRAFT · 27B-ICG-00043</span></div>
+  <div class="focus-actions">
+    <a class="btn-outline" href="02_isolations.html">Save &amp; exit</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">🗂 <div><b>Group setup.</b> Fill the shared context once. It pre-fills every child isolation you add to this group — each child can still override any value. No isolation points here: those live in the children.</div></div>
+
+  <!-- group identity -->
+  <div class="sec">
+    <div class="sec-h"><span class="sh-num">1</span><h2>Group</h2><span class="req">Required</span></div>
+    <div class="sec-b">
+      <div class="field">
+        <label>Group name <span class="hint">— what this campaign covers</span></label>
+        <input type="text" placeholder="e.g. Compressor train C — major overhaul">
+      </div>
+      <div class="field">
+        <label>Purpose <span class="hint">— optional</span></label>
+        <textarea placeholder="Why this group of isolations is being raised…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- shared context -->
+  <div class="sec">
+    <div class="sec-h"><span class="sh-num">2</span><h2>Shared context <span class="shared-tag">↓ pre-fills children</span></h2><span class="opt">Overridable</span></div>
+    <div class="sec-b">
+      <div class="field">
+        <label>Area <span class="hint">— georef (Location / Level / Room)</span></label>
+        <div class="search-field"><input type="text" placeholder="Search and add area…"><span class="si">🔍</span></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Installation <span class="hint">— site</span></label><input type="text" placeholder="e.g. Thames"></div>
+        <div class="field"><label>System</label><input type="text" placeholder="Free text"></div>
+      </div>
+      <div class="field">
+        <label>Permit linked <span class="bridge-tag" style="background:var(--c-permit-bg);color:var(--c-permit-ink);display:inline-flex;gap:4px;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px">🔗 PTW</span> <span class="hint">— optional, search existing</span></label>
+        <div class="search-field"><input type="text" placeholder="Search a permit…"><span class="si">🔍</span></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Maximo number <span class="hint">— optional</span></label><input type="text" placeholder="—"></div>
+        <div class="field"><label>MOC number <span class="hint">— optional</span></label><input type="text" placeholder="—"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-create" onclick="location.href='15_isolation_group_empty.html'">Create group &amp; add first isolation</button>
+  <div class="create-note">You'll land on the group, then add child isolations one by one.</div>
+</div>
+</body>
+</html>
